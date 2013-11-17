@@ -184,7 +184,7 @@ function init_edd_discounts() {
 					$new_columns[ 'type' ]   = __( 'Type', 'edd_discounts' );
 					$new_columns[ 'value' ]  = __( 'Value', 'edd_discounts' );
 					$new_columns[ 'users' ]  = __( 'Users', 'edd_discounts' );
-					$new_columns[ 'groups' ] = __( 'Groups', 'edd_discounts' );
+					$new_columns[ 'groups' ] = __( 'Roles', 'edd_discounts' );
 					$new_columns[ 'date' ]   = __( 'Date', 'edd_discounts' );
 					return $new_columns;
 				}
