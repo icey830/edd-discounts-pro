@@ -1,121 +1,91 @@
 <?php
-wp_nonce_field('edd_dp_save_meta', 'edd_dp_meta_nonce');
-?>
-<style type="text/css">
-#edit-slug-box {
-    display: none
-}
-</style>
-<div id="discount_options" class="panel edd_options_panel">
-    <div class="options_group">
-<?php
-// Discount Types
+wp_nonce_field( 'edd_dp_save_meta', 'edd_dp_meta_nonce' );
+echo '<style type="text/css">#edit-slug-box { display: none;}</style>';
+echo '<div id="discount_options" class="panel edd_options_panel"><div class="options_group">';
 $args = array(
-    'id' => 'type',
-    'label' => __('Discount Type', 'edd_discounts'),
-    'options' => $this->getDiscountTypes()
+	 'id' => 'type',
+	'label' => __( 'Discount Type', 'edd_discounts_pro' ),
+	'options' => $this->getDiscountTypes() 
 );
-echo EDD_CF_Forms::select($args);
-
-// Quantity
+echo EDD_CF_Forms::select( $args );
 $args = array(
-    'id' => 'quantity',
-    'label' => __('Quantity', 'edd_discounts'),
-    'type' => 'number',
-    'desc' => __('Enter a value, i.e. 20', 'edd_discounts'),
-    'placeholder' => '0',
-	'min' => 0
+	 'id' => 'quantity',
+	'label' => __( 'Quantity', 'edd_discounts_pro' ),
+	'type' => 'number',
+	'desc' => __( 'Enter a value, i.e. 20', 'edd_discounts_pro' ),
+	'placeholder' => '0',
+	'min' => 0 
 );
-echo EDD_CF_Forms::input($args);
-
-// Value
+echo EDD_CF_Forms::input( $args );
 $args = array(
-    'id' => 'value',
-    'label' => __('Discount Value', 'edd_discounts'),
-    'type' => 'text',
-    'desc' => __('<br />Enter a value, i.e. 9.99 or 20%.', 'edd_discounts').(' '.__('For free please enter 100%.', 'edd_discounts')),
-    'placeholder' => '0.00'
+	 'id' => 'value',
+	'label' => __( 'Discount Value', 'edd_discounts_pro' ),
+	'type' => 'text',
+	'desc' => __( '<br />Enter a value, i.e. 9.99 or 20%.', 'edd_discounts_pro' ) . ( ' ' . __( 'For free please enter 100%.', 'edd_discounts_pro' ) ),
+	'placeholder' => '0.00' 
 );
-echo EDD_CF_Forms::input($args);
-?>
-
-</div>
-<div class="options_group">
-<?php
-// Include product ID's
-$selected = implode(',', (array)get_post_meta($post->ID, 'download', true));
-
-$args = array(
-    'id'            => 'products',
-    'type'          => 'hidden',        /* use hidden input type for Select2 custom data loading */
-    'class'         => 'long',
-    'label'         => __('Products', 'edd_discounts'),
-    'desc'          => __('Control which products this coupon can apply to.','edd_discounts'),
-    'value'         => $selected
+echo EDD_CF_Forms::input( $args );
+echo '</div>';
+echo '<div class="options_group">';
+$selected = implode( ',', (array) get_post_meta( $post->ID, 'download', true ) );
+$args     = array(
+	 'id' => 'products',
+	'type' => 'hidden',
+	/* use hidden input type for Select2 custom data loading */
+	'class' => 'long',
+	'label' => __( 'Products', 'edd_discounts_pro' ),
+	'desc' => __( 'Control which products this coupon can apply to.', 'edd_discounts_pro' ),
+	'value' => $selected 
 );
-echo EDD_CF_Forms::input($args);
-
-// Categories
+echo EDD_CF_Forms::input( $args );
 $categories = array();
-foreach (get_terms('download_category', array('hide_empty' => false)) as $category)
-{
-    $categories[$category->term_id] = $category->name;
+foreach ( get_terms( 'download_category', array(
+	 'hide_empty' => false 
+) ) as $category ) {
+	$categories[ $category->term_id ] = $category->name;
 }
-
 $args = array(
-    'id' => 'categories',
-    'label' => __('Categories', 'edd_discounts'),
-    'desc' => __('Control which product categories this discount can apply to.', 'edd_discounts'),
-    'multiple' => true,
-    'placeholder' => __('Any category', 'edd_discounts'),
-    'class' => 'select long',
-    'options' => $categories
+	 'id' => 'categories',
+	'label' => __( 'Categories', 'edd_discounts_pro' ),
+	'desc' => __( 'Control which product categories this discount can apply to.', 'edd_discounts_pro' ),
+	'multiple' => true,
+	'placeholder' => __( 'Any category', 'edd_discounts_pro' ),
+	'class' => 'select long',
+	'options' => $categories 
 );
-echo EDD_CF_Forms::select($args);
-
-// Users
+echo EDD_CF_Forms::select( $args );
 $users = $this->getUsers();
-$args = array(
-    'id' => 'users',
-    'label' => __('Users', 'edd_discounts'),
-    'desc' => __('Control which user this discount can apply to.', 'edd_discounts'),
-    'multiple' => true,
-    'placeholder' => __('Any user', 'edd_discounts'),
-    'class' => 'select long',
-    'options' => $users
+$args  = array(
+	 'id' => 'users',
+	'label' => __( 'Users', 'edd_discounts_pro' ),
+	'desc' => __( 'Control which user this discount can apply to.', 'edd_discounts_pro' ),
+	'multiple' => true,
+	'placeholder' => __( 'Any user', 'edd_discounts_pro' ),
+	'class' => 'select long',
+	'options' => $users 
 );
-echo EDD_CF_Forms::select($args);
-
-// Roles
+echo EDD_CF_Forms::select( $args );
+// Roles (we'll call them groups in core so we don't get confusion when EDD finally integrates w/groups plugin)
 $groups = $this->getRoles();
-$args = array(
-    'id' => 'groups',
-    'label' => __('Roles', 'edd_discounts'),
-    'desc' => __('Control which roles this discount can apply to.', 'edd_discounts'),
-    'multiple' => true,
-    'placeholder' => __('Any roles', 'edd_discounts'),
-    'class' => 'select long',
-    'options' => $groups
+$args   = array(
+	 'id' => 'groups',
+	'label' => __( 'Roles', 'edd_discounts_pro' ),
+	'desc' => __( 'Control which roles this discount can apply to.', 'edd_discounts_pro' ),
+	'multiple' => true,
+	'placeholder' => __( 'Any roles', 'edd_discounts_pro' ),
+	'class' => 'select long',
+	'options' => $groups 
 );
-
-echo EDD_CF_Forms::select($args);
-
-// First purchase discount?
-	$args = array(
-		'id' => 'first_purchase',
-		'label' => __('Only first purchase?', 'edd_discounts'),
-		'desc' => __('Select to allow the discount for the first purchase that client has made in your shop.', 'edd_discounts')
-	);
-	//echo EDD_CF_Forms::checkbox($args);
+echo EDD_CF_Forms::select( $args );
 ?>
 </div>
 <script type="text/javascript">
 		var quantity_help = {
-        'product_quantity':"<?php _e('Quantity of selected product in cart to apply discount, i.e. 5.', 'edd_discounts'); ?>",
-        'cart_quantity':"<?php _e('Number of products in cart to apply discount, i.e. 5.', 'edd_discounts'); ?>",
-        'each_x_products':"<?php _e('Which product has a discount, i.e. every third is 3 in this field.', 'edd_discounts'); ?>",
-				'from_x_products':"<?php _e('After how many products you want to give the discount, i.e. third, fourth and so on product discounted is 2 in this field.', 'edd_discounts'); ?>",
-        'cart_threshold':"<?php _e('Minimum cart value to apply discount.', 'edd_discounts'); ?>"
+			'product_quantity':"<?php _e( 'Quantity of selected product in cart to apply discount, i.e. 5.', 'edd_discounts_pro' ); ?>",
+			'cart_quantity':"<?php _e( 'Number of products in cart to apply discount, i.e. 5.', 'edd_discounts_pro' ); ?>",
+			'each_x_products':"<?php _e( 'Which product has a discount, i.e. every third is 3 in this field.', 'edd_discounts_pro' ); ?>",
+			'from_x_products':"<?php _e( 'After how many products you want to give the discount, i.e. third, fourth and so on product discounted is 2 in this field.', 'edd_discounts_pro' ); ?>",
+			'cart_threshold':"<?php _e( 'Minimum cart value to apply discount.', 'edd_discounts_pro' ); ?>"
 		}
 </script>
 <script type="text/javascript">
@@ -144,9 +114,9 @@ echo EDD_CF_Forms::select($args);
             minimumInputLength: 3,
             multiple: true,
             closeOnSelect: true,
-            placeholder: "<?php _e('Any product', 'edd_discounts'); ?>",
+            placeholder: "<?php _e( 'Any product', 'edd_discounts_pro' ); ?>",
             ajax: {
-                url: "<?php echo (!is_ssl()) ? str_replace('https', 'http', admin_url('admin-ajax.php')) : admin_url('admin-ajax.php'); ?>",
+                url: "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function(term, page) {
@@ -169,7 +139,7 @@ echo EDD_CF_Forms::select($args);
                 var data = [];
                 jQuery.ajax({
                     type: 		'GET',
-                    url:        "<?php echo (!is_ssl()) ? str_replace('https', 'http', admin_url('admin-ajax.php')) : admin_url('admin-ajax.php'); ?>",
+                    url:        "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
                     dataType: 	"json",
                     data: 		stuff,
                     success: 	function( result ) {
