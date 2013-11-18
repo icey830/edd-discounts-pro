@@ -44,9 +44,6 @@ class EDD_Discounts {
 			), 10, 2 );
 		}
 	}
-	public function discount_submenu() {
-		add_submenu_page( 'edit.php?post_type=download', __( 'Discounts PRO', 'edd_discounts_pro' ), __( 'Discounts PRO', 'edd_discounts_pro' ), 'manage_options', 'edit.php?post_type=customer_discount' );
-	}
 	public function discount_metabox() {
 		add_meta_box( 'edd_discounts_data', __( 'Discount Data', 'edd_discounts_pro' ), array(
 			 $this,

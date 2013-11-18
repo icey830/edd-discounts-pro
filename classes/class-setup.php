@@ -135,4 +135,7 @@ class EDD_DP_Setup {
 			'show_in_menu' => false 
 		) );
 	}
+	public function discount_submenu() {
+		add_submenu_page( 'edit.php?post_type=download', __( 'Discounts PRO', 'edd_discounts_pro' ), __( 'Discounts PRO', 'edd_discounts_pro' ), 'manage_options', 'edit.php?post_type=customer_discount' );
+	}
 }

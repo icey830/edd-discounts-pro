@@ -53,10 +53,9 @@ class EDD_Discounts_Pro {
 			self::$instance = new EDD_Discounts_Pro;
 			self::$instance->define_globals();
 			self::$instance->includes();
-			self::$instance->setup();
 			// Setup class instances
-			self::$instance->discounts = new EDD_Discounts;
 			self::$instance->setup     = new EDD_DP_Setup;
+			self::$instance->discounts = new EDD_Discounts;
 		}
 		return self::$instance;
 	}
@@ -98,9 +97,6 @@ class EDD_Discounts_Pro {
 		require_once edd_dp_plugin_dir . 'classes/class-forms.php';
 		require_once edd_dp_plugin_dir . 'classes/class-product.php';
 		require_once edd_dp_plugin_dir . 'classes/class-discounts.php';
-	}
-	public function setup() {
-		$this->setup = new EDD_DP_Setup;
 	}
 }
 /**
