@@ -138,4 +138,8 @@ class EDD_DP_Setup {
 	public function discount_submenu() {
 		add_submenu_page( 'edit.php?post_type=download', __( 'Discounts PRO', 'edd_discounts_pro' ), __( 'Discounts PRO', 'edd_discounts_pro' ), 'manage_options', 'edit.php?post_type=customer_discount' );
 	}
+	public function dp_version() {
+		// Newline on both sides to avoid being in a blob
+		echo '<meta name="generator" content="EDD DP v' . edd_dp_plugin_version . '" />' . "\n";
+	}
 }
