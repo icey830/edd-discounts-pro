@@ -94,7 +94,7 @@ class EDD_DP_Setup {
 			return;
 		}
 		$current_screen = get_current_screen();
-		if ( $current_screen->post_type === 'customer_discounts' ) {
+		if ( $current_screen->post_type === 'customer_discount' ) {
 			wp_enqueue_style( 'edd-select2', edd_dp_assets_url . 'css/select2.css', '', '2.1', 'screen' );
 			wp_register_style( 'edd_discounts_admin', edd_dp_assets_url . 'css/admin.css' );
 			wp_enqueue_style( 'edd_discounts_admin' );
