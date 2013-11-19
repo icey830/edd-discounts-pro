@@ -51,7 +51,7 @@ class EDD_Discounts {
 		), 'customer_discount', 'normal', 'high' );
 	}
 	public function discount_template( $post ) {
-		require_once edd_dp_plugin_dir . 'templates/admin_box.php';
+		require_once edd_dp_plugin_dir . 'templates/admin.php';
 	}
 	public function save_discount( $postId ) {
 		if ( !$_POST ) {
