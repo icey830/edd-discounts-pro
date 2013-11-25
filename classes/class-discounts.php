@@ -16,7 +16,11 @@ class EDD_Discounts {
 			add_filter( 'edd_download_price', array(
 				 $this,
 				'getPrice' 
-			), 10, 2 );
+			),10 , 2 );
+			add_filter( 'edd_get_download_price', array(
+				 $this,
+				'getPrice' 
+			),10 , 2 );
 		} else {
 			add_action( 'add_meta_boxes', array(
 				 $this,
@@ -397,7 +401,7 @@ class EDD_Discounts {
 	}
 	public function getPrice( $price, $productId ) {
 		$discounts = $this->getCustomerDiscounts( $productId );
-		$product   = new EDD_DCF_Product( $productId );
+		$product   = new EDD_DCF_Product( $productId, $price );
 		if ( !empty( $discounts ) ) {
 			$discount = array_shift( $discounts );
 			$price    = $this->calculatePrice( $discount, $product, $price );
