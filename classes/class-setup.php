@@ -76,7 +76,7 @@ class EDD_DP_Setup {
 	<?php
 	}
 	public function load_textdomain() {
-		load_plugin_textdomain( 'edd-discounts-pro', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain( 'edd-dp', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 	public function admin_enqueue_scripts() {
 		if ( !is_admin() ) {
