@@ -103,22 +103,22 @@ class EDD_DP_Setup {
 	public function register_post_type() {
 		register_post_type( 'customer_discount', array(
 			 'labels' => array(
-				 'menu_name' => __( 'Discounts', 'edd_discounts_pro' ),
-				'name' => __( 'Discounts', 'edd_discounts_pro' ),
-				'singular_name' => __( 'Discount', 'edd_discounts_pro' ),
-				'add_new' => __( 'Add Discount', 'edd_discounts_pro' ),
-				'add_new_item' => __( 'Add New Discount', 'edd_discounts_pro' ),
-				'edit' => __( 'Edit', 'edd_discounts_pro' ),
-				'edit_item' => __( 'Edit Discount', 'edd_discounts_pro' ),
-				'new_item' => __( 'New Discount', 'edd_discounts_pro' ),
-				'view' => __( 'View Discounts', 'edd_discounts_pro' ),
-				'view_item' => __( 'View Discount', 'edd_discounts_pro' ),
-				'search_items' => __( 'Search Discounts', 'edd_discounts_pro' ),
-				'not_found' => __( 'No Discounts found', 'edd_discounts_pro' ),
-				'not_found_in_trash' => __( 'No Discounts found in trash', 'edd_discounts_pro' ),
-				'parent' => __( 'Parent Discount', 'edd_discounts_pro' ) 
+				 'menu_name' => __( 'Discounts', 'edd_dp' ),
+				'name' => __( 'Discounts', 'edd_dp' ),
+				'singular_name' => __( 'Discount', 'edd_dp' ),
+				'add_new' => __( 'Add Discount', 'edd_dp' ),
+				'add_new_item' => __( 'Add New Discount', 'edd_dp' ),
+				'edit' => __( 'Edit', 'edd_dp' ),
+				'edit_item' => __( 'Edit Discount', 'edd_dp' ),
+				'new_item' => __( 'New Discount', 'edd_dp' ),
+				'view' => __( 'View Discounts', 'edd_dp' ),
+				'view_item' => __( 'View Discount', 'edd_dp' ),
+				'search_items' => __( 'Search Discounts', 'edd_dp' ),
+				'not_found' => __( 'No Discounts found', 'edd_dp' ),
+				'not_found_in_trash' => __( 'No Discounts found in trash', 'edd_dp' ),
+				'parent' => __( 'Parent Discount', 'edd_dp' ) 
 			),
-			'description' => __( 'This is where you can add new discounts that customers can use in your store.', 'edd_discounts_pro' ),
+			'description' => __( 'This is where you can add new discounts that customers can use in your store.', 'edd_dp' ),
 			'public' => true,
 			'show_ui' => true,
 			'capability_type' => 'post',
@@ -136,7 +136,7 @@ class EDD_DP_Setup {
 		) );
 	}
 	public function discount_submenu() {
-		add_submenu_page( 'edit.php?post_type=download', __( 'Discounts PRO', 'edd_discounts_pro' ), __( 'Discounts PRO', 'edd_discounts_pro' ), 'manage_options', 'edit.php?post_type=customer_discount' );
+		add_submenu_page( 'edit.php?post_type=download', __( 'Discounts PRO', 'edd_dp' ), __( 'Discounts PRO', 'edd_dp' ), 'manage_options', 'edit.php?post_type=customer_discount' );
 	}
 	public function dp_version() {
 		// Newline on both sides to avoid being in a blob

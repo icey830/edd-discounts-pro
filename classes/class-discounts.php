@@ -4,13 +4,13 @@ class EDD_Discounts {
 	private $_discounts;
 	public function __construct() {
 		$this->_discountTypes = array(
-			 'fixed_price' => __( 'Fixed Price', 'edd_discounts_pro' ),
-			'percentage_price' => __( 'Percentage Price', 'edd_discounts_pro' ),
-			'product_quantity' => __( 'Product Quantity', 'edd_discounts_pro' ),
-			'each_x_products' => __( 'Each X products', 'edd_discounts_pro' ),
-			'from_x_products' => __( 'From X products', 'edd_discounts_pro' ),
-			'cart_quantity' => __( 'Products in cart', 'edd_discounts_pro' ),
-			'cart_threshold' => __( 'Cart threshold', 'edd_discounts_pro' ) 
+			'fixed_price' => __( 'Fixed Price', 'edd_dp' ),
+			'percentage_price' => __( 'Percentage Price', 'edd_dp' ),
+			'product_quantity' => __( 'Product Quantity', 'edd_dp' ),
+			'each_x_products' => __( 'Each X products', 'edd_dp' ),
+			'from_x_products' => __( 'From X products', 'edd_dp' ),
+			'cart_quantity' => __( 'Products in cart', 'edd_dp' ),
+			'cart_threshold' => __( 'Cart threshold', 'edd_dp' ) 
 		);
 		if ( !is_admin() ) {
 			add_filter( 'edd_download_price', array(
@@ -22,6 +22,7 @@ class EDD_Discounts {
 				'getPrice' 
 			),10 , 2 );
 		} else {
+			add_filter( 'post_updated_messages', array($this, 'form_updated_message') );
 			add_action( 'add_meta_boxes', array(
 				 $this,
 				'discount_metabox' 
@@ -49,7 +50,7 @@ class EDD_Discounts {
 		}
 	}
 	public function discount_metabox() {
-		add_meta_box( 'edd_discounts_data', __( 'Discount Data', 'edd_discounts_pro' ), array(
+		add_meta_box( 'edd_discounts_data', __( 'Discount Data', 'edd_dp' ), array(
 			 $this,
 			'discount_template' 
 		), 'customer_discount', 'normal', 'high' );
@@ -115,12 +116,12 @@ class EDD_Discounts {
 	}
 	public function adminColumns( $columns ) {
 		$new_columns[ 'cb' ]     = '<input type="checkbox" />';
-		$new_columns[ 'title' ]  = __( 'Name', 'edd_discounts_pro' );
-		$new_columns[ 'type' ]   = __( 'Type', 'edd_discounts_pro' );
-		$new_columns[ 'value' ]  = __( 'Value', 'edd_discounts_pro' );
-		$new_columns[ 'users' ]  = __( 'Users', 'edd_discounts_pro' );
-		$new_columns[ 'groups' ] = __( 'Roles', 'edd_discounts_pro' );
-		$new_columns[ 'date' ]   = __( 'Date', 'edd_discounts_pro' );
+		$new_columns[ 'title' ]  = __( 'Name', 'edd_dp' );
+		$new_columns[ 'type' ]   = __( 'Type', 'edd_dp' );
+		$new_columns[ 'value' ]  = __( 'Value', 'edd_dp' );
+		$new_columns[ 'users' ]  = __( 'Users', 'edd_dp' );
+		$new_columns[ 'groups' ] = __( 'Roles', 'edd_dp' );
+		$new_columns[ 'date' ]   = __( 'Date', 'edd_dp' );
 		return $new_columns;
 	}
 	public function adminColumn( $column, $post_id ) {
@@ -130,7 +131,14 @@ class EDD_Discounts {
 				echo count( $type ) == 1 ? $this->getDiscountType( $type ) : '-';
 				break;
 			case 'value':
-				$value = get_post_meta( $post_id, 'value', true );
+				$type = get_post_meta( $post_id, 'type', true );
+				if( $type == 'percentage_price'){
+					$value = get_post_meta( $post_id, 'value', true ).'%';			
+				}
+				else{
+					$value = get_post_meta( $post_id, 'value', true );
+				}
+				
 				echo $value ? $value : '-';
 				break;
 			case 'users':
@@ -500,4 +508,22 @@ class EDD_Discounts {
 		}
 		return true;
 	}
+	    function form_updated_message( $messages ) {
+        $message = array(
+             0 => '',
+             1 => __( 'Checkout fields updated!', 'edd_cfm' ),
+             2 => __( 'Custom field updated.', 'edd_cfm' ),
+             3 => __( 'Custom field deleted.', 'edd_cfm' ),
+             4 => __( 'Discount updated.', 'edd_cfm' ),
+             5 => isset($_GET['revision']) ? sprintf( __( 'Form restored to revision from %s', 'edd_cfm' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+             6 => __( 'Discount published.', 'edd_cfm' ),
+             7 => __( 'Discount saved!', 'edd_cfm' ),
+             8 => __( 'Discount submitted.', 'edd_cfm' ),
+             9 => '',
+            10 => __( 'Discount draft updated.', 'edd_cfm' ),
+        );
+
+        $messages['customer_discount'] = $message;
+        return $messages;
+    }
 }

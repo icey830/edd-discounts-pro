@@ -19,6 +19,10 @@ class EDD_CF_Forms {
 		);
 		extract( wp_parse_args( $field, $args ) );
 		$value = isset( $value ) ? esc_attr( $value ) : get_post_meta( $post->ID, $id, true );
+		$disc_type =  get_post_meta( $post->ID, 'type', true );
+		if ($id == 'value' && $disc_type == 'percentage_price'){
+			$value = $value.'%';
+		}
 		$name  = isset( $name ) ? $name : $id;
 		$html  = '';
 		$html .= "<p class='form-field {$id}_field'>";

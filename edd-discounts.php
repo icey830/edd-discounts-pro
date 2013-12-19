@@ -10,7 +10,7 @@
  * Requires at least:   3.6
  * Tested up to:        3.6
  *
- * Text Domain:         edd_discounts_pro
+ * Text Domain:         edd_dp
  * Domain Path:         /edd-discounts-pro/languages/
  *
  * @category            Plugin
@@ -23,9 +23,9 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 /** Check if Easy Digital Downloads is active */
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-class EDD_Discounts_Pro {
+class edd_dp {
 	/**
-	 * @var EDD_Discounts_Pro The one true EDD_Discounts_Pro
+	 * @var edd_dp The one true edd_dp
 	 * @since 1.4
 	 */
 	private static $instance;
@@ -34,23 +34,23 @@ class EDD_Discounts_Pro {
 	// Setup objects for each class
 	public $discounts;
 	/**
-	 * Main EDD_Discounts_Pro Instance
+	 * Main edd_dp Instance
 	 *
-	 * Insures that only one instance of EDD_Discounts_Pro exists in memory at any one
+	 * Insures that only one instance of edd_dp exists in memory at any one
 	 * time. Also prevents needing to define globals all over the place.
 	 *
 	 * @since 1.0
 	 * @static
 	 * @staticvar array $instance
-	 * @uses EDD_Discounts_Pro::setup_globals() Setup the globals needed
-	 * @uses EDD_Discounts_Pro::includes() Include the required files
-	 * @uses EDD_Discounts_Pro::setup_actions() Setup the hooks and actions
+	 * @uses edd_dp::setup_globals() Setup the globals needed
+	 * @uses edd_dp::includes() Include the required files
+	 * @uses edd_dp::setup_actions() Setup the hooks and actions
 	 * @see EDD()
-	 * @return The one true EDD_Discounts_Pro
+	 * @return The one true edd_dp
 	 */
 	public static function instance() {
-		if ( !isset( self::$instance ) && !( self::$instance instanceof EDD_Discounts_Pro ) ) {
-			self::$instance = new EDD_Discounts_Pro;
+		if ( !isset( self::$instance ) && !( self::$instance instanceof edd_dp ) ) {
+			self::$instance = new edd_dp;
 			self::$instance->define_globals();
 			self::$instance->includes();
 			// Setup class instances
@@ -100,7 +100,7 @@ class EDD_Discounts_Pro {
 	}
 }
 /**
- * The main function responsible for returning the one true EDD_Discounts_Pro
+ * The main function responsible for returning the one true edd_dp
  * Instance to functions everywhere.
  *
  * Use this function like you would a global variable, except without needing
@@ -109,9 +109,9 @@ class EDD_Discounts_Pro {
  * Example: <?php $edd_dp = EDD_DP(); ?>
  *
  * @since 2.0
- * @return object The one true EDD_Discounts_Pro Instance
+ * @return object The one true edd_dp Instance
  */
 function EDD_DP() {
-	return EDD_Discounts_Pro::instance();
+	return edd_dp::instance();
 }
 EDD_DP();
