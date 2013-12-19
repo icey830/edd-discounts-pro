@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name:         Easy Digital Downloads - Discounts Pro
+ * Plugin Name:         Easy Digital Downloads - Discounts PRO
  * Plugin URI:          https://easydigitaldownloads.com/extension/discounts-pro/
- * Description:         Some sorta voodoo with discounts.
+ * Description:         Add powerful discounting options to EDD
  * Author:              Chris Christoff
  * Author URI:          http://www.chriscct7.com
  *
@@ -11,12 +11,12 @@
  * Tested up to:        3.6
  *
  * Text Domain:         edd_dp
- * Domain Path:         /edd-discounts-pro/languages/
+ * Domain Path:         /edd_dp/languages/
  *
  * @category            Plugin
  * @copyright           Copyright © 2013 Chris Christoff
  * @author              Chris Christoff
- * @package             EDD DP
+ * @package             DP
  */
 if ( !defined( 'ABSPATH' ) ) {
 	exit;
@@ -26,7 +26,7 @@ include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 class edd_dp {
 	/**
 	 * @var edd_dp The one true edd_dp
-	 * @since 1.4
+	 * @since 1.0
 	 */
 	private static $instance;
 	public $id = 'edd_dp';
