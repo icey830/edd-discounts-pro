@@ -16,7 +16,7 @@
  * @category            Plugin
  * @copyright           Copyright © 2013 Chris Christoff
  * @author              Chris Christoff
- * @package             DP
+ * @package             EDD_DP
  */
 if ( !defined( 'ABSPATH' ) ) {
 	exit;
