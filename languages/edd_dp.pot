@@ -1,0 +1,256 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: EDD DP 1.0\n"
+"POT-Creation-Date: 2013-12-19 15:48-0500\n"
+"PO-Revision-Date: 2013-12-19 15:48-0500\n"
+"Last-Translator: Chris Christoff <translate@chriscct7.com>\n"
+"Language-Team: Chris Christoff <hello@chriscct7.com>\n"
+"Language: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;__e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: ..\n"
+
+#: ../edd-discounts.php:63
+msgid "Discounts Pro"
+msgstr ""
+
+#: ../assets/lib/EDD_License_Handler.php:126
+#, php-format
+msgid "%1$s License Key"
+msgstr ""
+
+#: ../assets/lib/EDD_License_Handler.php:256
+msgid "Deactivate License"
+msgstr ""
+
+#: ../classes/class-discounts.php:11
+msgid "Fixed Price"
+msgstr ""
+
+#: ../classes/class-discounts.php:12
+msgid "Percentage Price"
+msgstr ""
+
+#: ../classes/class-discounts.php:13
+msgid "Product Quantity"
+msgstr ""
+
+#: ../classes/class-discounts.php:14
+msgid "Each X products"
+msgstr ""
+
+#: ../classes/class-discounts.php:15
+msgid "From X products"
+msgstr ""
+
+#: ../classes/class-discounts.php:16
+msgid "Products in cart"
+msgstr ""
+
+#: ../classes/class-discounts.php:17
+msgid "Cart threshold"
+msgstr ""
+
+#: ../classes/class-discounts.php:60
+msgid "Discount Data"
+msgstr ""
+
+#: ../classes/class-discounts.php:71
+msgid "Discount Type"
+msgstr ""
+
+#: ../classes/class-discounts.php:77
+msgid "Quantity"
+msgstr ""
+
+#: ../classes/class-discounts.php:79
+msgid "Enter a value, i.e. 20"
+msgstr ""
+
+#: ../classes/class-discounts.php:86
+msgid "Discount Value"
+msgstr ""
+
+#: ../classes/class-discounts.php:88
+msgid "<br />Enter a value, i.e. 9.99 or 20%."
+msgstr ""
+
+#: ../classes/class-discounts.php:88
+msgid "For free please enter 100%."
+msgstr ""
+
+#: ../classes/class-discounts.php:100
+msgid "Products"
+msgstr ""
+
+#: ../classes/class-discounts.php:101
+msgid "Control which products this coupon can apply to."
+msgstr ""
+
+#: ../classes/class-discounts.php:113
+msgid "Categories"
+msgstr ""
+
+#: ../classes/class-discounts.php:114
+msgid "Control which product categories this discount can apply to."
+msgstr ""
+
+#: ../classes/class-discounts.php:116
+msgid "Any category"
+msgstr ""
+
+#: ../classes/class-discounts.php:124 ../classes/class-discounts.php:300
+msgid "Users"
+msgstr ""
+
+#: ../classes/class-discounts.php:125
+msgid "Control which user this discount can apply to."
+msgstr ""
+
+#: ../classes/class-discounts.php:127
+msgid "Any user"
+msgstr ""
+
+#: ../classes/class-discounts.php:136 ../classes/class-discounts.php:301
+msgid "Roles"
+msgstr ""
+
+#: ../classes/class-discounts.php:137
+msgid "Control which roles this discount can apply to."
+msgstr ""
+
+#: ../classes/class-discounts.php:139
+msgid "Any roles"
+msgstr ""
+
+#: ../classes/class-discounts.php:297
+msgid "Name"
+msgstr ""
+
+#: ../classes/class-discounts.php:298
+msgid "Type"
+msgstr ""
+
+#: ../classes/class-discounts.php:299
+msgid "Value"
+msgstr ""
+
+#: ../classes/class-discounts.php:302
+msgid "Date"
+msgstr ""
+
+#: ../classes/class-discounts.php:691
+msgid "Checkout fields updated!"
+msgstr ""
+
+#: ../classes/class-discounts.php:692
+msgid "Custom field updated."
+msgstr ""
+
+#: ../classes/class-discounts.php:693
+msgid "Custom field deleted."
+msgstr ""
+
+#: ../classes/class-discounts.php:694
+msgid "Discount updated."
+msgstr ""
+
+#: ../classes/class-discounts.php:695
+#, php-format
+msgid "Form restored to revision from %s"
+msgstr ""
+
+#: ../classes/class-discounts.php:696
+msgid "Discount published."
+msgstr ""
+
+#: ../classes/class-discounts.php:697
+msgid "Discount saved!"
+msgstr ""
+
+#: ../classes/class-discounts.php:698
+msgid "Discount submitted."
+msgstr ""
+
+#: ../classes/class-discounts.php:700
+msgid "Discount draft updated."
+msgstr ""
+
+#: ../classes/class-setup.php:62
+msgid ""
+"<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires Easy "
+"Digital Downloads 1.8 or higher in order to function properly."
+msgstr ""
+
+#: ../classes/class-setup.php:72
+msgid ""
+"<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires "
+"WordPress 3.6 or higher in order to function properly."
+msgstr ""
+
+#: ../classes/class-setup.php:106 ../classes/class-setup.php:107
+msgid "Discounts"
+msgstr ""
+
+#: ../classes/class-setup.php:108
+msgid "Discount"
+msgstr ""
+
+#: ../classes/class-setup.php:109
+msgid "Add Discount"
+msgstr ""
+
+#: ../classes/class-setup.php:110
+msgid "Add New Discount"
+msgstr ""
+
+#: ../classes/class-setup.php:111
+msgid "Edit"
+msgstr ""
+
+#: ../classes/class-setup.php:112
+msgid "Edit Discount"
+msgstr ""
+
+#: ../classes/class-setup.php:113
+msgid "New Discount"
+msgstr ""
+
+#: ../classes/class-setup.php:114
+msgid "View Discounts"
+msgstr ""
+
+#: ../classes/class-setup.php:115
+msgid "View Discount"
+msgstr ""
+
+#: ../classes/class-setup.php:116
+msgid "Search Discounts"
+msgstr ""
+
+#: ../classes/class-setup.php:117
+msgid "No Discounts found"
+msgstr ""
+
+#: ../classes/class-setup.php:118
+msgid "No Discounts found in trash"
+msgstr ""
+
+#: ../classes/class-setup.php:119
+msgid "Parent Discount"
+msgstr ""
+
+#: ../classes/class-setup.php:121
+msgid ""
+"This is where you can add new discounts that customers can use in your store."
+msgstr ""
+
+#: ../classes/class-setup.php:139
+msgid "Discounts PRO"
+msgstr ""
