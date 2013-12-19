@@ -57,18 +57,18 @@ class EDD_Discounts {
 	public function discount_template( $post ) {
 		require_once edd_dp_plugin_dir . 'templates/admin.php';
 	}
-	public function save_discount( $postId ) {
+	public function save_discount( $post_id ) {
 		if ( !$_POST ) {
-			return $postId;
+			return $post_id;
 		}
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-			return $postId;
+			return $post_id;
 		}
 		if ( !isset( $_POST[ 'edd_dp_meta_nonce' ] ) || ( isset( $_POST[ 'edd_dp_meta_nonce' ] ) && !wp_verify_nonce( $_POST[ 'edd_dp_meta_nonce' ], 'edd_dp_save_meta' ) ) ) {
-			return $postId;
+			return $post_id;
 		}
-		if ( !current_user_can( 'edit_post', $postId ) ) {
-			return $postId;
+		if ( !current_user_can( 'edit_post', $post_id ) ) {
+			return $post_id;
 		}
 		$type     = strip_tags( stripslashes( trim( ( $_POST[ 'type' ] ) ) ) );
 		$quantity = strip_tags( stripslashes( trim( ( $_POST[ 'quantity' ] ) ) ) );
@@ -104,14 +104,14 @@ class EDD_Discounts {
 		} else {
 			$groups = array();
 		}
-		update_post_meta( $postId, 'type', $type );
-		update_post_meta( $postId, 'quantity', $quantity );
-		update_post_meta( $postId, 'value', $value );
-		update_post_meta( $postId, 'free_shipping', $free_shipping );
-		update_post_meta( $postId, 'products', $products );
-		update_post_meta( $postId, 'categories', $categories );
-		update_post_meta( $postId, 'users', $users );
-		update_post_meta( $postId, 'groups', $groups );
+		update_post_meta( $post_id, 'type', $type );
+		update_post_meta( $post_id, 'quantity', $quantity );
+		update_post_meta( $post_id, 'value', $value );
+		update_post_meta( $post_id, 'free_shipping', $free_shipping );
+		update_post_meta( $post_id, 'download', $products );
+		update_post_meta( $post_id, 'categories', $categories );
+		update_post_meta( $post_id, 'users', $users );
+		update_post_meta( $post_id, 'groups', $groups );
 	}
 	public function adminColumns( $columns ) {
 		$new_columns[ 'cb' ]     = '<input type="checkbox" />';
@@ -123,18 +123,18 @@ class EDD_Discounts {
 		$new_columns[ 'date' ]   = __( 'Date', 'edd_discounts_pro' );
 		return $new_columns;
 	}
-	public function adminColumn( $column, $postId ) {
+	public function adminColumn( $column, $post_id ) {
 		switch ( $column ) {
 			case 'type':
-				$type = get_post_meta( $postId, 'type', true );
+				$type = get_post_meta( $post_id, 'type', true );
 				echo count( $type ) == 1 ? $this->getDiscountType( $type ) : '-';
 				break;
 			case 'value':
-				$value = get_post_meta( $postId, 'value', true );
+				$value = get_post_meta( $post_id, 'value', true );
 				echo $value ? $value : '-';
 				break;
 			case 'users':
-				$ids = get_post_meta( $postId, 'users', true );
+				$ids = get_post_meta( $post_id, 'users', true );
 				if ( empty( $ids ) ) {
 					return;
 				}
@@ -152,7 +152,7 @@ class EDD_Discounts {
 				echo rtrim( $links, ', ' );
 				break;
 			case 'groups':
-				$groups = get_post_meta( $postId, 'groups', true );
+				$groups = get_post_meta( $post_id, 'groups', true );
 				if ( empty( $groups ) ) {
 					return;
 				}
