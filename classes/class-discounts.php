@@ -26,6 +26,7 @@ class EDD_Discounts {
 				'getPrice'
 			), 10, 2);
 		} else {
+			add_action( 'add_meta_boxes', array( $this, 'edd_remove_all_the_metaboxes'), 100 );
 			add_filter('post_updated_messages', array(
 				$this,
 				'form_updated_message'
@@ -56,6 +57,49 @@ class EDD_Discounts {
 			), 10, 2);
 		}
 	}
+	// Kudos thomasgriffin
+	public function edd_remove_all_the_metaboxes() {
+ 
+		global $wp_meta_boxes;
+ 
+		// This is the post type you want to target. Adjust it to match yours.
+		$post_type  = 'customer_discount';
+ 
+		// These are the metabox IDs you want to pass over. They don't have to match exactly. preg_match will be run on them.
+		$pass_over  = array( 'submitdiv', 'edd_discounts_data' );
+ 
+		// All the metabox contexts you want to check.
+		$contexts   = array( 'normal', 'advanced', 'side' );
+ 
+		// All the priorities you want to check.
+		$priorities = array( 'high', 'core', 'default', 'low' );
+ 
+		// Loop through and target each context.
+		foreach ( $contexts as $context ) {
+			// Now loop through each priority and start the purging process.
+			foreach ( $priorities as $priority ) {
+				if ( isset( $wp_meta_boxes[$post_type][$context][$priority] ) ) {
+					foreach ( (array) $wp_meta_boxes[$post_type][$context][$priority] as $id => $metabox_data ) {
+						// If the metabox ID to pass over matches the ID given, remove it from the array and continue.
+						if ( in_array( $id, $pass_over ) ) {
+							unset( $pass_over[$id] );
+							continue;
+						}
+ 
+						// Otherwise, loop through the pass_over IDs and if we have a match, continue.
+						foreach ( $pass_over as $to_pass ) {
+							if ( preg_match( '#^' . $id . '#i', $to_pass ) )
+								continue;
+						}
+ 
+						// If we reach this point, remove the metabox completely.
+						unset( $wp_meta_boxes[$post_type][$context][$priority][$id] );
+					}
+				}
+			}
+		}
+ 
+	}
 	public function discount_metabox() {
 		add_meta_box('edd_discounts_data', __('Discount Data', 'edd_dp'), array(
 			$this,
@@ -63,8 +107,9 @@ class EDD_Discounts {
 		), 'customer_discount', 'normal', 'high');
 	}
 	public function discount_template($post) {
+		
 		wp_nonce_field('edd_dp_save_meta', 'edd_dp_meta_nonce');
-		echo '<style type="text/css">#edit-slug-box { display: none;}</style>';
+		echo '<style type="text/css">#edit-slug-box { display: none;} #minor-publishing-actions, .misc-pub-visibility{ display: none;}</style>';
 		echo '<div id="discount_options" class="panel edd_options_panel"><div class="options_group">';
 		$args = array(
 			'id' => 'type',
