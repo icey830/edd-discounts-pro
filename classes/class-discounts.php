@@ -17,14 +17,7 @@ class EDD_Discounts {
 			'cart_threshold' => __('Cart threshold', 'edd_dp')
 		);
 		if (!is_admin()) {
-			add_filter('edd_download_price', array(
-				$this,
-				'getPrice'
-			), 10, 2);
-			add_filter('edd_get_download_price', array(
-				$this,
-				'getPrice'
-			), 10, 2);
+			add_action( 'template_redirect', array( $this, 'apply_discounts' ) );
 		} else {
 			add_action( 'add_meta_boxes', array( $this, 'edd_remove_all_the_metaboxes'), 100 );
 			add_filter('post_updated_messages', array(
@@ -45,15 +38,15 @@ class EDD_Discounts {
 			));
 			add_action('wp_ajax_edd_json_search_products_and_variations', array(
 				$this,
-				'ajaxSearchProductsVariations'
+				'ajax_search_product_vars'
 			));
 			add_filter('manage_edit-customer_discount_columns', array(
 				$this,
-				'adminColumns'
+				'columns'
 			));
 			add_action('manage_customer_discount_posts_custom_column', array(
 				$this,
-				'adminColumn'
+				'column_value'
 			), 10, 2);
 		}
 	}
@@ -114,7 +107,7 @@ class EDD_Discounts {
 		$args = array(
 			'id' => 'type',
 			'label' => __('Discount Type', 'edd_dp'),
-			'options' => $this->getDiscountTypes()
+			'options' => $this->get_discount_types()
 		);
 		echo EDD_CF_Forms::select($args);
 		$args = array(
@@ -163,7 +156,7 @@ class EDD_Discounts {
 			'options' => $categories
 		);
 		echo EDD_CF_Forms::select($args);
-		$users = $this->getUsers();
+		$users = $this->get_users();
 		$args  = array(
 			'id' => 'users',
 			'label' => __('Users', 'edd_dp'),
@@ -175,7 +168,7 @@ class EDD_Discounts {
 		);
 		echo EDD_CF_Forms::select($args);
 		// Roles (we'll call them groups in core so we don't get confusion when EDD finally integrates w/groups plugin)
-		$groups = $this->getRoles();
+		$groups = $this->get_roles();
 		$args   = array(
 			'id' => 'groups',
 			'label' => __('Roles', 'edd_dp'),
@@ -337,7 +330,7 @@ class EDD_Discounts {
 		update_post_meta($post_id, 'users', $users);
 		update_post_meta($post_id, 'groups', $groups);
 	}
-	public function adminColumns($columns) {
+	public function columns($columns) {
 		$new_columns['cb']     = '<input type="checkbox" />';
 		$new_columns['title']  = __('Name', 'edd_dp');
 		$new_columns['type']   = __('Type', 'edd_dp');
@@ -347,11 +340,11 @@ class EDD_Discounts {
 		$new_columns['date']   = __('Date', 'edd_dp');
 		return $new_columns;
 	}
-	public function adminColumn($column, $post_id) {
+	public function column_value($column, $post_id) {
 		switch ($column) {
 			case 'type':
 				$type = get_post_meta($post_id, 'type', true);
-				echo count($type) == 1 ? $this->getDiscountType($type) : '-';
+				echo count($type) == 1 ? $this->get_discount_type($type) : '-';
 				break;
 			case 'value':
 				$type = get_post_meta($post_id, 'type', true);
@@ -387,7 +380,7 @@ class EDD_Discounts {
 					return;
 				}
 				$links  = '';
-				$groups = $this->getRoles(array(
+				$groups = $this->get_roles(array(
 					'include' => $groups
 				));
 				foreach ($groups as $role => $name) {
@@ -461,25 +454,13 @@ class EDD_Discounts {
 		echo json_encode($found_products);
 		die();
 	}
-	public function ajaxSearchProductsVariations() {
+	public function ajax_search_product_vars() {
 		$this->edd_json_search_products('', array(
 			'download'
 		));
 	}
-	public function getUsersWithGroups() {
-		global $wp_roles;
-		$roles = array();
-		foreach ($wp_roles->role_names as $role => $role_name) {
-			$users = get_users(array(
-				'role' => $role
-			));
-			foreach ($users as $user) {
-				$roles[$role][$user->ID] = $user->display_name;
-			}
-		}
-		return $roles;
-	}
-	public function getRoles($args = array()) {
+
+	public function get_roles($args = array()) {
 		global $wp_roles;
 		$defaults = array(
 			'include' => array()
@@ -499,7 +480,7 @@ class EDD_Discounts {
 		}
 		return $roles;
 	}
-	public function getUsers() {
+	public function get_users() {
 		$users_data = get_users();
 		$users      = array();
 		foreach ($users_data as $user) {
@@ -507,13 +488,13 @@ class EDD_Discounts {
 		}
 		return $users;
 	}
-	public function getDiscountTypes() {
+	public function get_discount_types() {
 		return $this->_discountTypes;
 	}
-	public function getDiscountType($key) {
+	public function get_discount_type($key) {
 		return isset($this->_discountTypes[$key]) ? $this->_discountTypes[$key] : null;
 	}
-	public function getDiscountValue($discount, $value) {
+	public function get_discount_value($discount, $value) {
 		switch ($discount->type) {
 			case 'fixed_price':
 				return edd_price($value);
@@ -522,9 +503,9 @@ class EDD_Discounts {
 		}
 		return '';
 	}
-	public function getCustomerDiscounts($product, $customerId = false) {
+	public function get_customer_discounts($product, $customerId = false) {
 		if ($this->_discounts === null) {
-			$this->_getDiscounts();
+			$this->get_discounts();
 		}
 		if (!$customerId) {
 			$customerId = get_current_user_id();
@@ -536,24 +517,15 @@ class EDD_Discounts {
 		}
 		$discounts = array();
 		foreach ($this->_discounts as $item) {
-			if ($this->_isApplicable($item, $product, $customer)) {
+			if ($this->is_applicable($item, $product, $customer)) {
 				$discounts[] = $item;
 			}
 		}
-		// Sort discounts by their "power ranking"
 		$that = $this;
-		create_function('$a, $b', 'global $that, $product;$aPrice = $that->calculatePrice($a, $product, $product->price);$bPrice = $that->calculatePrice($b, $product, $product->price);return $aPrice == $bPrice ? 0 : ($aPrice > $bPrice ? 1 : -1);');
-		// #BlamePippin
-		//usort($discounts, function ($a, $b) use ($that, $product)
-		//{
-		//	$aPrice = $that->calculatePrice($a, $product, $product->price);
-		//	$bPrice = $that->calculatePrice($b, $product, $product->price);
-		//
-		//	return $aPrice == $bPrice ? 0 : ($aPrice > $bPrice ? 1 : -1);
-		//});
+		create_function('$a, $b', 'global $that, $product;$aPrice = $that->calculate_new_product_price($a, $product, $product->price);$bPrice = $that->calculate_new_product_price($b, $product, $product->price);return $aPrice == $bPrice ? 0 : ($aPrice > $bPrice ? 1 : -1);');
 		return $discounts;
 	}
-	public function calculatePrice($discount, $productObject, $price) {
+	public function calculate_new_product_price($discount, $product, $price) {
 		$price = (float) $price;
 		switch ($discount->type) {
 			// Cart discounts
@@ -584,7 +556,13 @@ class EDD_Discounts {
 				$price = round($price * (100 - (float) $discount->value) / 100, 2);
 				break;
 			case 'product_quantity':
-				if ($this->_hasProduct($productObject, $discount)) {
+				$incart = false;
+				foreach (edd_cart::get_cart() as $item) {
+					if ($item['product_id'] == $product->id || in_array($item['product_id'], $discount->products)) {
+						$incart = true;
+					}
+				}
+				if ($this->_hasProduct($product, $discount)) {
 					if (strpos($discount->value, '%') !== false) {
 						// Percentage value
 						$price = round($price - $price * (float) rtrim($discount->value, '%') / 100, 2);
@@ -595,7 +573,8 @@ class EDD_Discounts {
 				}
 				break;
 			case 'each_x_products':
-				$quantity = $this->_getProductQuantity($productObject, $discount);
+				$quantity = 0;
+				$quantity = edd_get_cart_item_quantity($product->id);
 				if ($quantity >= $discount->quantity) {
 					if (strpos($discount->value, '%') !== false) {
 						// Percentage value
@@ -613,7 +592,8 @@ class EDD_Discounts {
 				}
 				break;
 			case 'from_x_products':
-				$quantity = $this->_getProductQuantity($productObject, $discount);
+				$quantity = 0;
+				$quantity = edd_get_cart_item_quantity($product->id);
 				if ($quantity >= $discount->quantity) {
 					if (strpos($discount->value, '%') !== false) {
 						// Percentage value
@@ -627,40 +607,28 @@ class EDD_Discounts {
 				}
 				break;
 		}
-		return $price < 0 ? 0 : $price;
+		$price = $price < 0 ? 0 : $price;
+		$to_return = array( "discount" => $discount, "price" => $price);
+		return $to_return;
 	}
-	public function getPrice($price, $productId) {
-		$discounts = $this->getCustomerDiscounts($productId);
-		$product   = new EDD_DCF_Product($productId, $price);
+	public function get_discount($price, $product_id) {
+		$storeprice = $price;
+		$discounts = $this->get_customer_discounts($product_id);
+		$product   = new EDD_DCF_Product($product_id, $price);
 		if (!empty($discounts)) {
 			$discount = array_shift($discounts);
-			$price    = $this->calculatePrice($discount, $product, $price);
-			$price    = apply_filters('edd_multi_currencies_exchange', $price);
-			return $price;
-		} else {
-			return $price;
-		}
-	}
-	private function _getProductQuantity($product, $discount) {
-		$quantity = 0;
-		$cart     = edd_get_cart_contents();
-		foreach ($cart as $item) {
-			// Specified product || Simple product || Variable product
-			if ($item['product_id'] == $product->id || in_array($item['product_id'], $discount->products)) {
-				$quantity += $item['quantity'];
+			$discount    = $this->calculate_new_product_price($discount, $product, $price);
+			$price = $discount['price'];
+			$title = get_the_title($discount['discount']);
+			$fee = ($storeprice - $price) * -1;
+			$fee_test = $fee * 500;
+			$fee_test = (int) $fee;
+			if ( $fee != 0){
+				EDD()->fees->add_fee( $fee, $title, 'edd_dp_'.$product_id );
 			}
 		}
-		return $quantity;
 	}
-	private function _hasProduct($product, $discount) {
-		foreach (edd_cart::get_cart() as $item) {
-			if ($item['product_id'] == $product->id || in_array($item['product_id'], $discount->products)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	private function _getDiscounts() {
+	private function get_discounts() {
 		$this->_discounts = array();
 		$discounts        = get_posts(array(
 			'numberposts' => -1,
@@ -684,7 +652,7 @@ class EDD_Discounts {
 			$this->_discounts[] = $discount;
 		}
 	}
-	private function _isApplicable($discount, $product, $customer) {
+	private function is_applicable($discount, $product, $customer) {
 		// Check if discount is applicable to the product
 		if (!empty($discount->products) && !in_array($product, $discount->products)) {
 			return false;
@@ -703,10 +671,10 @@ class EDD_Discounts {
 				break;
 			case 'product_quantity':
 				$quantity = 0;
-				foreach (edd_cart::get_cart() as $cartItem) {
+				foreach (edd_cart::get_cart() as $cart_item) {
 					// Simple products
-					if ($cartItem['product_id'] == $product->id && (empty($discount->products) || in_array($cartItem['product_id'], $discount->products))) {
-						$quantity += $cartItem['quantity'];
+					if ($cart_item['product_id'] == $product->id && (empty($discount->products) || in_array($cart_item['product_id'], $discount->products))) {
+						$quantity += $cart_item['quantity'];
 					}
 				}
 				if ($quantity < $discount->quantity) {
@@ -747,5 +715,43 @@ class EDD_Discounts {
 		
 		$messages['customer_discount'] = $message;
 		return $messages;
+	}
+
+	public function apply_discounts() {
+
+		global $wpdb;
+		if( is_admin() ){
+			return;
+		}
+		if ( !( edd_is_checkout() || ( defined('DOING_AJAX') && DOING_AJAX ) ) ){
+			return;
+		}
+
+		$cart_items  = edd_get_cart_contents();
+		$cart_details = edd_get_cart_content_details();
+		$fees = edd_get_cart_fees();
+
+		// for some reason removing the first cart item makes the contents empty
+		if( empty( $cart_items ) ){
+			return;
+		}
+		
+		foreach ($fees as $fee => $val){
+			if (substr($fee,0,7) === 'edd_dp_'){
+				EDD()->fees->remove_fee($fee);
+			}
+		}
+		// start praying
+		EDD()->session->set( 'edd_cart', NULL );
+		$counter = 0;
+		foreach($cart_details as $item => $val){
+				while($counter < $val['quantity']){
+					$this->get_discount($val['price'],$val['id']);							
+					// add to cart	
+					edd_add_to_cart($val['id']);
+					$counter++;
+				}
+				$counter = 0;
+		}
 	}
 }
