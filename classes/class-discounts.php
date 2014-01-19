@@ -619,7 +619,7 @@ class EDD_Discounts {
 			$discount = array_shift($discounts);
 			$discount    = $this->calculate_new_product_price($discount, $product, $price);
 			$price = $discount['price'];
-			$title = get_the_title($discount['discount']);
+			$title = get_the_title($product->id);
 			$fee = ($storeprice - $price) * -1;
 			$fee_test = $fee * 500;
 			$fee_test = (int) $fee;
