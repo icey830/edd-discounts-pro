@@ -746,7 +746,7 @@ class EDD_Discounts {
 		foreach($cart_details as $item => $val){
 				while($counter < $val['quantity']){
 					// add to cart
-					edd_add_to_cart($val['id']);
+					edd_add_to_cart($val['id'], $val['item_number']['options']);
 					
 					// Apply the discount (if available)
 					$this->get_discount($val['price'],$val['id']);
