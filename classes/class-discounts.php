@@ -701,11 +701,11 @@ class EDD_Discounts {
 	function form_updated_message($messages) {
 		$message = array(
 			0 => '',
-			1 => __('Checkout fields updated!', 'edd_cfm'),
-			2 => __('Custom field updated.', 'edd_cfm'),
-			3 => __('Custom field deleted.', 'edd_cfm'),
+			1 => __('Discount Updated!', 'edd_cfm'),
+			2 => __('Discount updated.', 'edd_cfm'),
+			3 => __('Discount deleted.', 'edd_cfm'),
 			4 => __('Discount updated.', 'edd_cfm'),
-			5 => isset($_GET['revision']) ? sprintf(__('Form restored to revision from %s', 'edd_cfm'), wp_post_revision_title((int) $_GET['revision'], false)) : false,
+			5 => isset($_GET['revision']) ? sprintf(__('Discount restored to revision from %s', 'edd_cfm'), wp_post_revision_title((int) $_GET['revision'], false)) : false,
 			6 => __('Discount published.', 'edd_cfm'),
 			7 => __('Discount saved!', 'edd_cfm'),
 			8 => __('Discount submitted.', 'edd_cfm'),
