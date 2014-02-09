@@ -619,11 +619,11 @@ class EDD_Discounts {
 			$discount = array_shift($discounts);
 			$discount    = $this->calculate_new_product_price($discount, $product, $price);
 			$price = $discount['price'];
-			$title = get_the_title($product->id);
+			$title = get_the_title($product_id) . ' - ' . __( 'Discount', 'edd_cfm' );
 			$fee = ($storeprice - $price) * -1;
 			$fee_test = $fee * 500;
 			$fee_test = (int) $fee;
-			if ( $fee != 0){
+			if ( $fee != 0 ){
 				EDD()->fees->add_fee( $fee, $title, 'edd_dp_'.$product_id );
 			}
 		}
@@ -718,7 +718,6 @@ class EDD_Discounts {
 	}
 
 	public function apply_discounts() {
-
 		global $wpdb;
 		if( is_admin() ){
 			return;
@@ -746,9 +745,12 @@ class EDD_Discounts {
 		$counter = 0;
 		foreach($cart_details as $item => $val){
 				while($counter < $val['quantity']){
-					$this->get_discount($val['price'],$val['id']);							
-					// add to cart	
+					// add to cart
 					edd_add_to_cart($val['id']);
+					
+					// Apply the discount (if available)
+					$this->get_discount($val['price'],$val['id']);
+
 					$counter++;
 				}
 				$counter = 0;

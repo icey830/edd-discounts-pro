@@ -8,5 +8,6 @@ class EDD_DCF_Product {
 			 'fields' => 'ids' 
 		) );
 		$this->price      = $price;
+		$this->id         = $product;
 	}
 }
