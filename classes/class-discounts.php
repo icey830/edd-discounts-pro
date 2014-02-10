@@ -624,20 +624,25 @@ class EDD_Discounts {
 	}
 
 	public function get_discount( $price, $product_id ) {
+
 		$storeprice = $price;
-		$discounts = $this->get_customer_discounts( $product_id );
-		$product   = new EDD_DCF_Product( $product_id, $price );
+		$discounts  = $this->get_customer_discounts( $product_id );
+		$product    = new EDD_DCF_Product( $product_id, $price );
+		
 		if ( ! empty( $discounts ) ) {
+			
 			$discount = array_shift( $discounts );
-			$discount    = $this->calculate_new_product_price( $discount, $product, $price );
-			$price = $discount['price'];
-			$title = get_the_title( $product_id ) . ' - ' . __( 'Discount', 'edd_cfm' );
-			$fee = ( $storeprice - $price ) * -1;
+			$discount = $this->calculate_new_product_price( $discount, $product, $price );
+			$price    = $discount['price'];
+			$title    = get_the_title( $product_id ) . ' - ' . __( 'Discount', 'edd_cfm' );
+			$fee      = ( $storeprice - $price ) * -1;
 			$fee_test = $fee * 500;
 			$fee_test = (int) $fee;
+			
 			if ( $fee != 0 ) {
 				EDD()->fees->add_fee( $fee, $title, 'edd_dp_'.$product_id );
 			}
+
 		}
 	}
 	private function get_discounts() {
@@ -754,7 +759,7 @@ class EDD_Discounts {
 				EDD()->fees->remove_fee( $fee );
 			}
 		}
-		
+
 		// start praying
 		EDD()->session->set( 'edd_cart', NULL );
 		$counter = 0;
