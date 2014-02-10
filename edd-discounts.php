@@ -24,15 +24,20 @@ if ( !defined( 'ABSPATH' ) ) {
 /** Check if Easy Digital Downloads is active */
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 class edd_dp {
+
 	/**
 	 * @var edd_dp The one true edd_dp
 	 * @since 1.0
 	 */
 	private static $instance;
+	
 	public $id = 'edd_dp';
+	
 	public $basename;
+	
 	// Setup objects for each class
 	public $discounts;
+	
 	/**
 	 * Main edd_dp Instance
 	 *
@@ -92,13 +97,16 @@ class edd_dp {
 		}
 		$license = new EDD_License( __FILE__, edd_dp_plugin_name, edd_dp_plugin_version, 'Chris Christoff' );
 	}
+
 	public function includes() {
 		require_once edd_dp_plugin_dir . 'classes/class-setup.php';
 		require_once edd_dp_plugin_dir . 'classes/class-forms.php';
 		require_once edd_dp_plugin_dir . 'classes/class-product.php';
 		require_once edd_dp_plugin_dir . 'classes/class-discounts.php';
 	}
+
 }
+
 /**
  * The main function responsible for returning the one true edd_dp
  * Instance to functions everywhere.
