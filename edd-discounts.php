@@ -18,7 +18,7 @@
  * @author              Chris Christoff
  * @package             EDD_DP
  */
-if ( !defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 /** Check if Easy Digital Downloads is active */
@@ -69,40 +69,40 @@ class edd_dp {
 		$this->file     = __FILE__;
 		$this->basename = apply_filters( 'edd_edd_dp_plugin_basename', plugin_basename( $this->file ) );
 		// Plugin Name
-		if ( !defined( 'edd_dp_plugin_name' ) ) {
-			define( 'edd_dp_plugin_name', 'Discounts Pro' );
+		if ( ! defined( 'EDD_DP_PLUGIN_NAME' ) ) {
+			define( 'EDD_DP_PLUGIN_NAME', 'Discounts Pro' );
 		}
 		// Plugin Version
-		if ( !defined( 'edd_dp_plugin_version' ) ) {
-			define( 'edd_dp_plugin_version', '1.0' );
+		if ( ! defined( 'EDD_DP_PLUGIN_VERSION' ) ) {
+			define( 'EDD_DP_PLUGIN_VERSION', '1.0' );
 		}
 		// Plugin Root File
-		if ( !defined( 'edd_dp_plugin_file' ) ) {
-			define( 'edd_dp_plugin_file', __FILE__ );
+		if ( ! defined( 'EDD_DP_PLUGIN_FILE' ) ) {
+			define( 'EDD_DP_PLUGIN_FILE', __FILE__ );
 		}
 		// Plugin Folder Path
-		if ( !defined( 'edd_dp_plugin_dir' ) ) {
-			define( 'edd_dp_plugin_dir', WP_PLUGIN_DIR . '/' . basename( dirname( __FILE__ ) ) . '/' );
+		if ( ! defined( 'EDD_DP_PLUGIN_PATH' ) ) {
+			define( 'EDD_DP_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . basename( dirname( __FILE__ ) ) . '/' );
 		}
 		// Plugin Folder URL
-		if ( !defined( 'edd_dp_plugin_url' ) ) {
-			define( 'edd_dp_plugin_url', plugin_dir_url( edd_dp_plugin_file ) );
+		if ( ! defined( 'EDD_DP_PLUGIN_URL' ) ) {
+			define( 'EDD_DP_PLUGIN_URL', plugin_dir_url( EDD_DP_PLUGIN_FILE ) );
 		}
 		// Plugin Assets URL
-		if ( !defined( 'edd_dp_assets_url' ) ) {
-			define( 'edd_dp_assets_url', edd_dp_plugin_url . 'assets/' );
+		if ( ! defined( 'EDD_DP_ASSETS_URL' ) ) {
+			define( 'EDD_DP_ASSETS_URL', EDD_DP_PLUGIN_URL . 'assets/' );
 		}
 		if ( !class_exists( 'EDD_License' ) ) {
-			require_once edd_dp_plugin_dir . 'assets/lib/EDD_License_Handler.php';
+			require_once EDD_DP_PLUGIN_PATH . 'assets/lib/EDD_License_Handler.php';
 		}
-		$license = new EDD_License( __FILE__, edd_dp_plugin_name, edd_dp_plugin_version, 'Chris Christoff' );
+		$license = new EDD_License( __FILE__, EDD_DP_PLUGIN_NAME, EDD_DP_PLUGIN_VERSION, 'Chris Christoff' );
 	}
 
 	public function includes() {
-		require_once edd_dp_plugin_dir . 'classes/class-setup.php';
-		require_once edd_dp_plugin_dir . 'classes/class-forms.php';
-		require_once edd_dp_plugin_dir . 'classes/class-product.php';
-		require_once edd_dp_plugin_dir . 'classes/class-discounts.php';
+		require_once EDD_DP_PLUGIN_PATH . 'classes/class-setup.php';
+		require_once EDD_DP_PLUGIN_PATH . 'classes/class-forms.php';
+		require_once EDD_DP_PLUGIN_PATH . 'classes/class-product.php';
+		require_once EDD_DP_PLUGIN_PATH . 'classes/class-discounts.php';
 	}
 
 }
