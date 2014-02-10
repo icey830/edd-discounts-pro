@@ -663,6 +663,7 @@ class EDD_Discounts {
 		) );
 		
 		foreach ( $discounts as $item ) {
+			
 			$discount             = new stdClass();
 			$discount->id         = $item->ID;
 			$discount->name       = $item->post_title;
@@ -674,9 +675,11 @@ class EDD_Discounts {
 			$discount->categories = get_post_meta( $discount->id, 'categories', true );
 			$discount->groups     = get_post_meta( $discount->id, 'groups', true );
 			$discount->users      = get_post_meta( $discount->id, 'users', true );
+			
 			if ( is_string( $discount->products ) ) {
 				$discount->products = empty( $discount->products ) ? array() : explode( ',', $discount->products );
 			}
+			
 			$this->_discounts[] = $discount;
 		}
 	}
