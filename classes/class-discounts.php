@@ -678,34 +678,46 @@ class EDD_Discounts {
 		}
 	}
 	private function is_applicable( $discount, $product, $customer ) {
+		
 		// Check if discount is applicable to the product
-		if ( !empty( $discount->products ) && !in_array( $product, $discount->products ) ) {
+		if ( ! empty( $discount->products ) && !in_array( $product, $discount->products ) ) {
 			return false;
 		}
+		
 		// Check if product matches quantity discounts
 		switch ( $discount->type ) {
+		
 			case 'cart_quantity':
+				
 				$quantity = 0;
 				$cart     = edd_get_cart_contents();
+				
 				foreach ( $cart as $item ) {
 					$quantity += $item['quantity'];
 				}
+				
 				if ( $quantity < $discount->quantity ) {
 					return false;
 				}
+				
 				break;
 			
 			case 'product_quantity':
+				
 				$quantity = 0;
 				foreach ( edd_cart::get_cart() as $cart_item ) {
+				
 					// Simple products
 					if ( $cart_item['product_id'] == $product->id && ( empty( $discount->products ) || in_array( $cart_item['product_id'], $discount->products ) ) ) {
 						$quantity += $cart_item['quantity'];
 					}
+				
 				}
+				
 				if ( $quantity < $discount->quantity ) {
 					return false;
 				}
+				
 				break;
 		}
 		// Check if it is applicable to current user
