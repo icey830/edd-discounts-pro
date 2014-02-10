@@ -720,20 +720,24 @@ class EDD_Discounts {
 				
 				break;
 		}
+
 		// Check if it is applicable to current user
 		if ( !empty( $discount->users ) && ( !$customer || !in_array( $customer->ID, $discount->users ) ) ) {
 			return false;
 		}
+		
 		// Check if current user is in an applicable group
 		if ( !empty( $discount->groups ) && ( !$customer || array_intersect( $customer->roles, $discount->groups ) == array() ) ) {
 			return false;
 		}
+		
 		// Check if product is in a category of discount
 		if ( !empty( $discount->categories ) && !empty( $product->categories ) ) {
 			if ( array_intersect( $product->categories, $discount->categories ) == array() ) {
 				return false;
 			}
 		}
+		
 		return true;
 	}
 
