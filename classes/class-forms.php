@@ -3,26 +3,29 @@ class EDD_CF_Forms {
 	public static function input( $field ) {
 		global $post;
 		$args = array(
-			 'id' => null,
-			'name' => null,
-			'type' => 'text',
-			'label' => null,
+			'id'         => null,
+			'name'        => null,
+			'type'        => 'text',
+			'label'       => null,
 			'after_label' => null,
-			'class' => 'short',
-			'desc' => false,
-			'tip' => false,
-			'value' => null,
-			'min' => null,
-			'max' => null,
-			'step' => 'any',
+			'class'       => 'short',
+			'desc'        => false,
+			'tip'         => false,
+			'value'       => null,
+			'min'         => null,
+			'max'         => null,
+			'step'        => 'any',
 			'placeholder' => null 
 		);
 		extract( wp_parse_args( $field, $args ) );
-		$value = isset( $value ) ? esc_attr( $value ) : get_post_meta( $post->ID, $id, true );
-		$disc_type =  get_post_meta( $post->ID, 'type', true );
+		
+		$value     = isset( $value ) ? esc_attr( $value ) : get_post_meta( $post->ID, $id, true );
+		$disc_type = get_post_meta( $post->ID, 'type', true );
+		
 		if ($id == 'value' && $disc_type == 'percentage_price'){
 			$value = $value.'%';
 		}
+		
 		$name  = isset( $name ) ? $name : $id;
 		$html  = '';
 		$html .= "<p class='form-field {$id}_field'>";
@@ -45,8 +48,10 @@ class EDD_CF_Forms {
 			$html .= '<span class="description">' . $desc . '</span>';
 		}
 		$html .= "</p>";
+
 		return $html;
 	}
+	
 	public static function select( $field ) {
 		global $post;
 		$args = array(
@@ -108,19 +113,22 @@ class EDD_CF_Forms {
 					</script>';
 		return $html;
 	}
+	
 	public static function checkbox( $field ) {
 		global $post;
 		$args = array(
-			 'id' => null,
-			'name' => null,
-			'label' => null,
+			'id'          => null,
+			'name'        => null,
+			'label'       => null,
 			'after_label' => null,
-			'class' => 'checkbox',
-			'desc' => false,
-			'tip' => false,
-			'value' => false 
+			'class'       => 'checkbox',
+			'desc'        => false,
+			'tip'         => false,
+			'value'       => false 
 		);
+		
 		extract( wp_parse_args( $field, $args ) );
+
 		$name  = isset( $name ) ? $name : $id;
 		$value = ( $value ) ? $value : get_post_meta( $post->ID, $id, true );
 		$desc  = ( $desc ) ? esc_html( $desc ) : false;
@@ -136,6 +144,7 @@ class EDD_CF_Forms {
 			$html .= '<a href="#" tip="' . $tip . '" class="tips" tabindex="99"></a>';
 		}
 		$html .= "</p>";
+		
 		return $html;
 	}
 }
