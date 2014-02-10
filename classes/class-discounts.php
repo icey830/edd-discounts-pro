@@ -654,11 +654,14 @@ class EDD_Discounts {
 		}
 	}
 	private function get_discounts() {
+		
 		$this->_discounts = array();
-		$discounts        = get_posts( array(
-				'numberposts' => -1,
-				'post_type' => 'customer_discount'
-			) );
+		
+		$discounts = get_posts( array(
+			'numberposts' => -1,
+			'post_type'   => 'customer_discount'
+		) );
+		
 		foreach ( $discounts as $item ) {
 			$discount             = new stdClass();
 			$discount->id         = $item->ID;
@@ -680,7 +683,7 @@ class EDD_Discounts {
 	private function is_applicable( $discount, $product, $customer ) {
 		
 		// Check if discount is applicable to the product
-		if ( ! empty( $discount->products ) && !in_array( $product, $discount->products ) ) {
+		if ( ! empty( $discount->products ) && ! in_array( $product, $discount->products ) ) {
 			return false;
 		}
 		
