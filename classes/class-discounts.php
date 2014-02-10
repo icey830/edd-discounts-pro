@@ -117,7 +117,7 @@ class EDD_Discounts {
 		echo EDD_CF_Forms::input( $args );
 		echo '</div>';
 		echo '<div class="options_group">';
-		$selected = implode( ',', (array) get_post_meta( $post->ID, 'download', true ) );
+		$selected = implode( ',', (array) get_post_meta( $post->ID, 'products', true ) );
 		$args     = array(
 			'id'          => 'products',
 			'type'        => 'hidden',
@@ -279,26 +279,30 @@ class EDD_Discounts {
 		} else {
 			$products = array();
 		}
+		
 		if ( isset( $_POST['categories'] ) ) {
 			$categories = $_POST['categories'];
 		} else {
 			$categories = array();
 		}
+		
 		if ( isset( $_POST['users'] ) ) {
 			$users = $_POST['users'];
 		} else {
 			$users = array();
 		}
+		
 		if ( isset( $_POST['groups'] ) ) {
 			$groups = $_POST['groups'];
 		} else {
 			$groups = array();
 		}
+		
 		update_post_meta( $post_id, 'type', $type );
 		update_post_meta( $post_id, 'quantity', $quantity );
 		update_post_meta( $post_id, 'value', $value );
 		update_post_meta( $post_id, 'free_shipping', $free_shipping );
-		update_post_meta( $post_id, 'download', $products );
+		update_post_meta( $post_id, 'products', $products );
 		update_post_meta( $post_id, 'categories', $categories );
 		update_post_meta( $post_id, 'users', $users );
 		update_post_meta( $post_id, 'groups', $groups );
