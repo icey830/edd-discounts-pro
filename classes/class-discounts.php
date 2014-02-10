@@ -243,28 +243,33 @@ class EDD_Discounts {
 	}
 
 	public function save_discount( $post_id ) {
+		
 		if ( empty( $_POST ) ) {
 			return $post_id;
 		}
+		
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return $post_id;
 		}
+		
 		if ( ! isset( $_POST['edd_dp_meta_nonce'] ) || ( isset( $_POST['edd_dp_meta_nonce'] ) && ! wp_verify_nonce( $_POST['edd_dp_meta_nonce'], 'edd_dp_save_meta' ) ) ) {
 			return $post_id;
 		}
+		
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return $post_id;
 		}
+		
 		$type     = strip_tags( stripslashes( trim( $_POST['type'] ) ) );
 		$quantity = strip_tags( stripslashes( trim( $_POST['quantity'] ) ) );
 		$value    = strip_tags( stripslashes( trim( $_POST['value'] ) ) );
-		if ( in_array( $type, array(
-					'fixed_price',
-					'percentage_price'
-				) ) ) {
+		
+		if ( in_array( $type, array( 'fixed_price', 'percentage_price' ) ) ) {
 			$value = (float) rtrim( $value, '%' );
 		}
+		
 		$free_shipping = isset( $_POST['free_shipping'] );
+		
 		if ( isset( $_POST['products'] ) ) {
 			$products = strip_tags( stripslashes( trim( $_POST['products'] ) ) );
 			if ( $products == 'Array' ) {
