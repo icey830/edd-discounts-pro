@@ -23,7 +23,7 @@ class EDD_Discounts {
 		add_action( 'template_redirect', array( $this, 'apply_discounts' ) );
 	}
 
-	public function get_customer_discounts( $download, $customerId = false ) {
+	public function get_customer_discount( $download, $customerId = false ) {
 		if ( ! $customerId ) {
 			$customerId = get_current_user_id();
 		}
@@ -181,22 +181,15 @@ class EDD_Discounts {
 	public function get_discount( $download ) {
 
 		$storeprice = $download['price'];
-		$discounts  = $this->get_customer_discounts( $download );
+		$discount  = $this->get_customer_discount( $download );
 		exit;
-
-
-		if ( ! empty( $discounts ) ) {
+		if ( ! empty( $discount ) ) {
 
 			$discount = array_shift( $discounts );
-			$discount = $this->calculate_new_product_price( $discount, $product, $price );
-			$price    = $discount['price'];
+			$discount_amount = $storeprice - $discount['price'];
 			$title    = get_the_title( $product_id ) . ' - ' . __( 'Discount', 'edd_cfm' );
-			$fee      = ( $storeprice - $price ) * -1;
-			$fee_test = $fee * 500;
-			$fee_test = (int) $fee;
-
-			if ( $fee != 0 ) {
-				EDD()->fees->add_fee( $fee, $title, 'edd_dp_'.$product_id );
+			if ( $discount_amount > 0 ) {
+				EDD()->fees->add_fee( $discount_amount, $title, 'edd_dp_'.$product_id );
 			}
 
 		}
