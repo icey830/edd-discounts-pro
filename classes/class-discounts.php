@@ -8,10 +8,10 @@ if ( !defined( 'ABSPATH' ) ) {
  * get_customer_discounts needs to correctly sort array of discounts
  * is_applicable needs to be rewritten
  * the 3 bottom cases of calculate_new_product_price needs to be rewritten to deal with variable products
- * get_discount needs to be rewritten 
+ * get_discount needs to be rewritten
  * apply_discounts needs some love
  * move to storing everything in one meta key so that there's less queries of get_post_meta
-*/
+ */
 
 
 class EDD_Discounts {
@@ -51,7 +51,7 @@ class EDD_Discounts {
 	}
 
 	public function get_discounts( $download, $customerId ) {
-		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish');
+		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish' );
 		$query = new WP_Query( $args );
 		$result = array();
 		foreach ( $query->posts as $id -> $post ) {
@@ -184,8 +184,6 @@ class EDD_Discounts {
 		$discount  = $this->get_customer_discount( $download );
 		exit;
 		if ( ! empty( $discount ) ) {
-
-			$discount = array_shift( $discounts );
 			$discount_amount = $storeprice - $discount['price'];
 			$title    = get_the_title( $product_id ) . ' - ' . __( 'Discount', 'edd_cfm' );
 			if ( $discount_amount > 0 ) {
