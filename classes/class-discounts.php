@@ -3,17 +3,6 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * Left to do:
- * get_customer_discounts needs to correctly sort array of discounts
- * is_applicable needs to be rewritten
- * the 3 bottom cases of calculate_new_product_price needs to be rewritten to deal with variable products
- * get_discount needs to be rewritten
- * apply_discounts needs some love
- * move to storing everything in one meta key so that there's less queries of get_post_meta
- */
-
-
 class EDD_Discounts {
 
 	public function __construct() {
