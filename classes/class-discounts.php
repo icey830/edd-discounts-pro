@@ -39,6 +39,8 @@ class EDD_Discounts {
 		}
 		array_multisort( $price, SORT_ASC, $discounts );
 
+		// Debugging help: if you var_dump right here, you'll get a nice array with *all* the discounts
+
 		// find the first applicable discount
 		foreach ( $discounts as $discount ) {
 			$is_applicable = is_applicable( $discount, $download, $customerId );
@@ -50,6 +52,7 @@ class EDD_Discounts {
 	}
 
 	public function get_discounts( $download, $customerId ) {
+		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish');
 		$query = new WP_Query( $args );
 		$result = array();
 		foreach ( $query->posts as $id -> $post ) {
