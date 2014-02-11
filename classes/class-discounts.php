@@ -39,6 +39,7 @@ class EDD_Discounts {
 		array_multisort( $price, SORT_ASC, $discounts );
 
 		// Debugging help: if you var_dump right here, you'll get a nice array with *all* the discounts
+		// 				   and how much each customer_discount would discount the item
 
 		// find the first applicable discount
 		foreach ( $discounts as $discount ) {
