@@ -160,7 +160,7 @@ class EDD_Discounts {
 
 		case 'from_x_products':
 			$quantity = 0;
-			$quantity = edd_get_cart_item_quantity( $product->id );
+			$quantity = edd_get_cart_item_quantity( $discount['id'] );
 			if ( $quantity >= $discount['quantity'] ) {
 				if ( strpos( $discount['value'], '%' ) !== false ) {
 					// Percentage value
@@ -175,9 +175,7 @@ class EDD_Discounts {
 			break;
 		}
 		$price = $price < 0 ? 0 : $price;
-		$to_return = array( "discount" => $discount, "price" => $price );
-		var_dump( $to_return );
-		return $to_return;
+		return $price;
 	}
 
 	public function get_discount( $download ) {
