@@ -3,6 +3,16 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Left to do:
+ * get_customer_discounts needs to correctly sort array of discounts
+ * is_applicable needs to be rewritten
+ * the 3 bottom cases of calculate_new_product_price needs to be rewritten to deal with variable products
+ * get_discount needs to be rewritten 
+ * apply_discounts needs some love
+*/
+
+
 class EDD_Discounts {
 
 	private $_discounts;
