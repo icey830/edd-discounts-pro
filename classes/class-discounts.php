@@ -10,6 +10,7 @@ if ( !defined( 'ABSPATH' ) ) {
  * the 3 bottom cases of calculate_new_product_price needs to be rewritten to deal with variable products
  * get_discount needs to be rewritten 
  * apply_discounts needs some love
+ * move to storing everything in one meta key so that there's less queries of get_post_meta
 */
 
 
@@ -186,7 +187,7 @@ class EDD_Discounts {
 		$storeprice = $download['price'];
 		$discounts  = $this->get_customer_discounts( $download );
 		exit;
-		$product    = new EDD_DCF_Product( $product_id, $price );
+
 
 		if ( ! empty( $discounts ) ) {
 

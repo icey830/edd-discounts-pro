@@ -106,7 +106,6 @@ class edd_dp {
 	public function includes() {
 		require_once EDD_DP_PLUGIN_PATH . 'classes/class-setup.php';
 		require_once EDD_DP_PLUGIN_PATH . 'classes/class-admin.php';
-		require_once EDD_DP_PLUGIN_PATH . 'classes/class-product.php';
 		require_once EDD_DP_PLUGIN_PATH . 'classes/class-discounts.php';
 	}
 
