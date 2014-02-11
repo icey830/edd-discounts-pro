@@ -20,21 +20,19 @@ class EDD_Discounts {
 		}
 
 		// get discounts
-		var_dump( $download );
 		$discounts = $this->get_discounts( $download, $customerId );
-		
+
 		// sort discounts
 		$price = array();
-		foreach ($discounts as $key => $row)
-		{
- 			   $price[$key] = $row['price'];
+		foreach ( $discounts as $key => $row ) {
+			$price[$key] = $row['price'];
 		}
-		array_multisort($price, SORT_ASC, $discounts);
-		
+		array_multisort( $price, SORT_ASC, $discounts );
+
 		// find the first applicable discount
-		foreach($discounts as $discount){
-			$is_applicable = is_applicable($discount, $download, $customerId);
-			if ($is_applicable){
+		foreach ( $discounts as $discount ) {
+			$is_applicable = is_applicable( $discount, $download, $customerId );
+			if ( $is_applicable ) {
 				return $discount;
 			}
 		}
@@ -42,25 +40,25 @@ class EDD_Discounts {
 	}
 
 	public function get_discounts( $download, $customerId ) {
-		var_dump( $download );
-			$query = new WP_Query( $args );
-			$result = array();
-			foreach ($query->posts as $id -> $post){
-				$result[$id]['name'] = $post['post_title'];
-				$result[$id]['id'] = $post['ID'];
-				$result[$id]['type'] = get_post_meta( $post['ID'], 'type', false);
-				$result[$id]['quantity'] = (int) get_post_meta( $post['ID'], 'quantity', false) ;
-				$result[$id]['value'] = get_post_meta( $post['ID'], 'value', false) ;
-				$result[$id]['products'] = get_post_meta( $post['ID'], 'products', false) ;
-				$result[$id]['categories'] = get_post_meta( $post['ID'], 'categories', false) ; 
-				$result[$id]['users'] = get_post_meta( $post['ID'], 'users', false) ;
-				$result[$id]['groups'] = get_post_meta( $post['ID'], 'groups', false) ;
-				$result[$id]['amount'] = $this->calculate_new_product_price( $result[$id], $download );
-				if ( is_string( $result[$id]['products'] ) ) {
-					$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
-				}
+		$query = new WP_Query( $args );
+		$result = array();
+		foreach ( $query->posts as $id -> $post ) {
+			$result[$id]['name'] = $post['post_title'];
+			$result[$id]['id'] = $post['ID'];
+			$result[$id]['type'] = get_post_meta( $post['ID'], 'type', false );
+			$result[$id]['quantity'] = (int) get_post_meta( $post['ID'], 'quantity', false ) ;
+			$result[$id]['value'] = get_post_meta( $post['ID'], 'value', false ) ;
+			$result[$id]['products'] = get_post_meta( $post['ID'], 'products', false ) ;
+			$result[$id]['categories'] = get_post_meta( $post['ID'], 'categories', false ) ;
+			$result[$id]['users'] = get_post_meta( $post['ID'], 'users', false ) ;
+			$result[$id]['groups'] = get_post_meta( $post['ID'], 'groups', false ) ;
+			$result[$id]['amount'] = $this->calculate_new_product_price( $result[$id], $download );
+			if ( is_string( $result[$id]['products'] ) ) {
+				$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
 			}
 		}
+		return $result;
+	}
 
 
 	public function calculate_new_product_price( $discount, $product ) {
@@ -107,7 +105,9 @@ class EDD_Discounts {
 			break;
 
 
-		// todo: these cases below all need to be fixed for variable products
+
+
+			// TODO: these cases below all need to be fixed for variable products
 		case 'product_quantity':
 			$incart = false;
 			foreach ( edd_cart::get_cart() as $item ) {
@@ -164,7 +164,7 @@ class EDD_Discounts {
 		}
 		$price = $price < 0 ? 0 : $price;
 		$to_return = array( "discount" => $discount, "price" => $price );
-		var_dump($to_return);
+		var_dump( $to_return );
 		return $to_return;
 	}
 
