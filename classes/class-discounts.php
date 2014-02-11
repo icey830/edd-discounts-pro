@@ -16,8 +16,6 @@ if ( !defined( 'ABSPATH' ) ) {
 
 class EDD_Discounts {
 
-	private $_discounts;
-
 	public function __construct() {
 		if ( is_admin() ) {
 			return;
