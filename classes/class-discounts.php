@@ -15,15 +15,25 @@ class EDD_Discounts {
 	}
 
 	public function get_customer_discounts( $product, $customerId = false ) {
+		if ( ! $customerId ) {
+			$customerId = get_current_user_id();
+		}
+		// this is nuts. Let's make this an array with
+		// name of discount | amount | price | applicable | reason
+		// get discounts
+
+		// sort discounts
+
+		// find the first applicable discount
+
+		// return that
+
+
 
 		if ( $this->_discounts === null ) {
 			$this->get_discounts();
 		}
-		
-		if ( ! $customerId ) {
-			$customerId = get_current_user_id();
-		}
-		
+
 		$product  = new EDD_DCF_Product( $product );
 		$customer = false;
 		
@@ -39,10 +49,10 @@ class EDD_Discounts {
 		}
 		
 		$that = $this;
-		
+
 		create_function( '$a, $b', 'global $that, $product;$aPrice = $that->calculate_new_product_price($a, $product, $product->price);$bPrice = $that->calculate_new_product_price($b, $product, $product->price);return $aPrice == $bPrice ? 0 : ($aPrice > $bPrice ? 1 : -1);' );
 		
-		return $discounts;
+		return $discount;
 	}
 
 	public function calculate_new_product_price( $discount, $product, $price ) {
