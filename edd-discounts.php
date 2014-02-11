@@ -60,7 +60,12 @@ class edd_dp {
 			self::$instance->includes();
 			// Setup class instances
 			self::$instance->setup     = new EDD_DP_Setup;
-			self::$instance->discounts = new EDD_Discounts;
+			if ( is_admin() ){
+				self::$instance->admin = new EDD_Admin;
+			}
+			else{
+				self::$instance->discounts = new EDD_Discounts;
+			}
 		}
 		return self::$instance;
 	}
@@ -100,7 +105,7 @@ class edd_dp {
 
 	public function includes() {
 		require_once EDD_DP_PLUGIN_PATH . 'classes/class-setup.php';
-		require_once EDD_DP_PLUGIN_PATH . 'classes/class-forms.php';
+		require_once EDD_DP_PLUGIN_PATH . 'classes/class-admin.php';
 		require_once EDD_DP_PLUGIN_PATH . 'classes/class-product.php';
 		require_once EDD_DP_PLUGIN_PATH . 'classes/class-discounts.php';
 	}
