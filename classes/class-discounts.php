@@ -31,7 +31,7 @@ class EDD_Discounts {
 		// get discounts
 		$discounts = $this->get_discounts( $download, $customerId );
 
-		// sort discounts
+		// sort discounts so the discount that saves the most is on the top of the array
 		$price = array();
 		foreach ( $discounts as $key => $row ) {
 			$price[$key] = $row['price'];
