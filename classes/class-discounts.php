@@ -23,16 +23,17 @@ class EDD_Discounts {
 		// sort discounts so the discount that saves the most is on the top of the array
 		$price = array();
 		foreach ( $discounts as $key => $row ) {
-			$price[$key] = $row['price'];
+			$price[$key] = $row['amount'];
 		}
 		array_multisort( $price, SORT_ASC, $discounts );
 
 		// Debugging help: if you var_dump right here, you'll get a nice array with *all* the discounts
 		// 				   and how much each customer_discount would discount the item
+		// 		var_dump($discounts);
 
 		// find the first applicable discount
 		foreach ( $discounts as $discount ) {
-			$is_applicable = is_applicable( $discount, $download, $customerId );
+			$is_applicable = $this->is_applicable( $discount, $download, $customerId );
 			if ( $is_applicable ) {
 				return $discount;
 			}
@@ -44,16 +45,16 @@ class EDD_Discounts {
 		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish' );
 		$query = new WP_Query( $args );
 		$result = array();
-		foreach ( $query->posts as $id -> $post ) {
-			$result[$id]['name'] = $post['post_title'];
-			$result[$id]['id'] = $post['ID'];
-			$result[$id]['type'] = get_post_meta( $post['ID'], 'type', false );
-			$result[$id]['quantity'] = (int) get_post_meta( $post['ID'], 'quantity', false ) ;
-			$result[$id]['value'] = get_post_meta( $post['ID'], 'value', false ) ;
-			$result[$id]['products'] = get_post_meta( $post['ID'], 'products', false ) ;
-			$result[$id]['categories'] = get_post_meta( $post['ID'], 'categories', false ) ;
-			$result[$id]['users'] = get_post_meta( $post['ID'], 'users', false ) ;
-			$result[$id]['groups'] = get_post_meta( $post['ID'], 'groups', false ) ;
+		foreach ( $query->posts as $id => $post ) {
+			$result[$id]['name'] = $post->post_title;
+			$result[$id]['id'] = $post->ID;
+			$result[$id]['type'] = get_post_meta( $post->ID, 'type', false );
+			$result[$id]['quantity'] = (int) get_post_meta( $post->ID, 'quantity', false ) ;
+			$result[$id]['value'] = get_post_meta( $post->ID, 'value', false ) ;
+			$result[$id]['products'] = get_post_meta( $post->ID, 'products', false ) ;
+			$result[$id]['categories'] = get_post_meta( $post->ID, 'categories', false ) ;
+			$result[$id]['users'] = get_post_meta( $post->ID, 'users', false ) ;
+			$result[$id]['groups'] = get_post_meta( $post->ID, 'groups', false ) ;
 			$result[$id]['amount'] = $this->calculate_new_product_price( $result[$id], $download );
 			if ( is_string( $result[$id]['products'] ) ) {
 				$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
@@ -172,7 +173,7 @@ class EDD_Discounts {
 
 		$storeprice = $download['price'];
 		$discount  = $this->get_customer_discount( $download );
-		exit;
+
 		if ( ! empty( $discount ) ) {
 			$discount_amount = $storeprice - $discount['price'];
 			$title    = get_the_title( $product_id ) . ' - ' . __( 'Discount', 'edd_cfm' );
@@ -184,6 +185,9 @@ class EDD_Discounts {
 	}
 
 	private function is_applicable( $discount, $product, $customer ) {
+
+		// take id and make WP_User
+		$customer = new WP_User($customer);
 
 		// Check if discount is applicable to the product
 		if ( ! empty( $discount['products'] ) && ! in_array( $product->id, $discount['products'] ) ) {
