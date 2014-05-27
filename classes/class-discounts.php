@@ -25,11 +25,11 @@ class EDD_Discounts {
 		foreach ( $discounts as $key => $row ) {
 			$price[$key] = $row['amount'];
 		}
-		array_multisort( $price, SORT_ASC, $discounts );
+		array_multisort( $price, SORT_DESC, $discounts );
 
 		// Debugging help: if you var_dump right here, you'll get a nice array with *all* the discounts
 		// 				   and how much each customer_discount would discount the item
-		//var_dump($discounts);
+		// var_dump($discounts);
 
 		// find the first applicable discount
 		foreach ( $discounts as $discount ) {
@@ -100,7 +100,7 @@ class EDD_Discounts {
 			break;
 			// Product discounts
 		case 'fixed_price':
-			$price -= (float) $discount['value'] * $download['quantity'];
+			$price = (float) $discount['value'] * $download['quantity'];
 			break;
 
 		case 'percentage_price':
@@ -115,7 +115,7 @@ class EDD_Discounts {
 					$price = ( round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 ) ) * $download['quantity'];
 				} else {
 					// Fixed value
-					$price -= (float) $discount['value'] * $download['quantity'];
+					$price = (float) $discount['value'] * $download['quantity'];
 				}
 			}
 			break;
@@ -123,8 +123,8 @@ class EDD_Discounts {
 		case 'each_x_products':
 			$quantity = $download['quantity'];
 			$count = 1;
-			$subtotal = 0;
-			while ( $count <= $download['quantity'] ){
+			$subtotal = 0.00;
+			while ( $count <= $quantity ){
 				if ( $quantity >= $discount['quantity'] ) {
 					if ( strpos( $discount['value'], '%' ) !== false ) {
 						// Percentage value
@@ -133,10 +133,8 @@ class EDD_Discounts {
 						// Fixed value
 						$discountValue = (float) $discount['value'];
 					}
-					if ( $count % $discount['quantity'] == 0 ) {
-						$subtotal = $subtotal + $download['item_price'] - $discountValue;
-					} else {
-						$subtotal = $subtotal + $download['item_price'];
+					if ( $count % $quantity == 0 ) {
+						$subtotal = $subtotal + $discountValue;
 					}
 				}
 				$count++;
@@ -145,10 +143,9 @@ class EDD_Discounts {
 			break;
 
 		case 'from_x_products':
-			$quantity = 0;
 			$quantity = $download['quantity'];
 			$count = 1;
-			while ( $count <= $download['quantity'] ){
+			while ( $count <= $quantity ){
 				if ( $quantity >= $discount['quantity'] ) {
 					if ( strpos( $discount['value'], '%' ) !== false ) {
 						// Percentage value
@@ -184,9 +181,8 @@ class EDD_Discounts {
 			return;
 		}
 		$discount = $this->get_customer_discount( $download );
-		$amount = $download['subtotal'] - (double) $discount['amount'];
-		if ( ! empty( $amount ) ) {
-			return $amount * -1;
+		if ( ! empty( $discount ) ) {
+			return $discount;
 		}
 	}
 
@@ -287,10 +283,10 @@ class EDD_Discounts {
 			edd_add_to_cart( $val['id'], $val['item_number']['options'] );
 			
 			// Apply the discount (if available)
-			$amount = $this->get_discount( $val );
-			$title    = get_the_title( $item['id'] ) . ' - ' . __( 'Discount', 'edd_cfm' );
+			$discount = $this->get_discount( $val );
+			$amount = -1 * (double) $discount['amount'];
 			if ( $amount < 0 ) {
-				EDD()->fees->add_fee( $amount, $title, 'edd_dp_'.$item['id']);
+				EDD()->fees->add_fee( $amount, $discount['name'], 'edd_dp_'.$val['id']);
 			}
 		}
 	}
