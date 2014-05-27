@@ -29,7 +29,7 @@ class EDD_Discounts {
 
 		// Debugging help: if you var_dump right here, you'll get a nice array with *all* the discounts
 		// 				   and how much each customer_discount would discount the item
-		var_dump($discounts);
+		//var_dump($discounts);
 
 		// find the first applicable discount
 		foreach ( $discounts as $discount ) {
@@ -81,10 +81,10 @@ class EDD_Discounts {
 
 			if ( strpos( $discount['value'], '%' ) !== false ) {
 				// Percentage value
-				$price = round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 );
+				$price = round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 ) * $download['quantity'];
 			} else {
 				// Fixed value
-				$price = $price - (float) $discount['value'];
+				$price = $price - (float) $discount['value'] * $download['quantity'];
 			}
 			break;
 
@@ -92,78 +92,85 @@ class EDD_Discounts {
 			$value = 0.0;
 			if ( strpos( $discount['value'], '%' ) !== false ) {
 				// Percentage value
-				$price = round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 );
+				$price = round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 ) * $download['quantity'];
 			} else {
 				// Fixed value
-				$price = $price - (float) $discount['value'] * $price / $value;
+				$price = ($price - (float) $discount['value'] * $price / $value) * $download['quantity'];
 			}
 			break;
 			// Product discounts
 		case 'fixed_price':
-			$price -= (float) $discount['value'];
+			$price -= (float) $discount['value'] * $download['quantity'];
 			break;
 
 		case 'percentage_price':
-			$price = round( $price * ( 100 - (float) $discount['value'] ) / 100, 2 );
+			$price = round( $price * ( 100 - (float) $discount['value'] ) / 100, 2 ) * $download['quantity'];
 			break;
-
-
-
 
 			// TODO: these cases below all need to be fixed for variable products
 		case 'product_quantity':
-			if ( $this->has_product( $download, $discount ) ) {
+			if ( $this->has_product( $download, $discount, $download['quantity'] ) ) {
 				if ( strpos( $discount['value'], '%' ) !== false ) {
 					// Percentage value
-					$price = round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 );
+					$price = ( round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 ) ) * $download['quantity'];
 				} else {
 					// Fixed value
-					$price -= (float) $discount['value'];
+					$price -= (float) $discount['value'] * $download['quantity'];
 				}
 			}
 			break;
 
 		case 'each_x_products':
-			$quantity = 0;
-			$quantity = edd_get_cart_item_quantity( $download['id'] );
-			$quantity = 2;
-			if ( $quantity >= $discount['quantity'] ) {
-				if ( strpos( $discount['value'], '%' ) !== false ) {
-					// Percentage value
-					$discountValue = round( $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 );
-				} else {
-					// Fixed value
-					$discountValue = (float) $discount['value'];
+			$quantity = $download['quantity'];
+			$count = 1;
+			$subtotal = 0;
+			while ( $count <= $download['quantity'] ){
+				if ( $quantity >= $discount['quantity'] ) {
+					if ( strpos( $discount['value'], '%' ) !== false ) {
+						// Percentage value
+						$discountValue = round( $download['item_price'] * (float) rtrim( $discount['value'], '%' ) / 100, 2 );
+					} else {
+						// Fixed value
+						$discountValue = (float) $discount['value'];
+					}
+					if ( $count % $discount['quantity'] == 0 ) {
+						$subtotal = $subtotal + $download['item_price'] - $discountValue;
+					} else {
+						$subtotal = $subtotal + $download['item_price'];
+					}
 				}
-				if ( $quantity % $discount['quantity'] == 0 ) {
-					$price -= $discountValue / $discount['quantity'];
-				} else {
-					$discounted = (int) ( $quantity / $discount['quantity'] );
-					$price -= $discountValue * $discounted / $quantity;
-				}
+				$count++;
 			}
+			$price = $subtotal;
 			break;
 
 		case 'from_x_products':
 			$quantity = 0;
-			$quantity = edd_get_cart_item_quantity( $discount['id'] );
-			if ( $quantity >= $discount['quantity'] ) {
-				if ( strpos( $discount['value'], '%' ) !== false ) {
-					// Percentage value
-					$discountValue = round( $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 );
-				} else {
-					// Fixed value
-					$discountValue = (float) $discount['value'];
+			$quantity = $download['quantity'];
+			$count = 1;
+			while ( $count <= $download['quantity'] ){
+				if ( $quantity >= $discount['quantity'] ) {
+					if ( strpos( $discount['value'], '%' ) !== false ) {
+						// Percentage value
+						$discountValue = round( $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 );
+					} else {
+						// Fixed value
+						$discountValue = (float) $discount['value'];
+					}
+					$overallPrice = $discount['quantity'] * $price + ( $quantity - $discount['quantity'] ) * ( $price - $discountValue );
+					$price        = $price + ($overallPrice / $quantity );
 				}
-				$overallPrice = $discount['quantity'] * $price + ( $quantity - $discount['quantity'] ) * ( $price - $discountValue );
-				$price        = $overallPrice / $quantity;
+				$count++;
 			}
 			break;
 		}
 		$price = $price < 0 ? 0 : $price;
 		return $price;
 	}
-	private function has_product( $product, $discount ) {
+	private function has_product( $product, $discount, $quantity ) {
+		if (!$quantity){
+			return false;
+		}
 		foreach ( edd_get_cart_contents() as $item ) {
 			if ( $item['id'] == $product['id'] || in_array( $item['id'], $discount['products'] ) ) {
 				return true;
@@ -176,17 +183,10 @@ class EDD_Discounts {
 		if ( !isset($download['price'])){
 			return;
 		}
-		$storeprice = $download['price'];
-		$discount  = $this->get_customer_discount( $download );
-
-		if ( ! empty( $discount ) ) {
-			$discount_amount = $storeprice - (double) $discount['amount'];
-			$discount_amount = $discount_amount * -1;
-			$title    = get_the_title( $download['id'] ) . ' - ' . __( 'Discount', 'edd_cfm' );
-			if ( $discount_amount < 0 ) {
-				EDD()->fees->add_fee( $discount_amount, $title, 'edd_dp_'.$download['id']);
-			}
-
+		$discount = $this->get_customer_discount( $download );
+		$amount = $download['subtotal'] - (double) $discount['amount'];
+		if ( ! empty( $amount ) ) {
+			return $amount * -1;
 		}
 	}
 
@@ -282,18 +282,16 @@ class EDD_Discounts {
 
 		// start praying
 		EDD()->session->set( 'edd_cart', NULL );
-		$counter = 0;
 		foreach ( $cart_details as $item => $val ) {
-			while ( $counter < $val['quantity'] ) {
-				// add to cart
-				edd_add_to_cart( $val['id'], $val['item_number']['options'] );
-
-				// Apply the discount (if available)
-				$this->get_discount( $val );
-
-				$counter++;
+			$val['item_number']['options']['quantity'] = $val['quantity'];
+			edd_add_to_cart( $val['id'], $val['item_number']['options'] );
+			
+			// Apply the discount (if available)
+			$amount = $this->get_discount( $val );
+			$title    = get_the_title( $item['id'] ) . ' - ' . __( 'Discount', 'edd_cfm' );
+			if ( $amount < 0 ) {
+				EDD()->fees->add_fee( $amount, $title, 'edd_dp_'.$item['id']);
 			}
-			$counter = 0;
 		}
 	}
 }
