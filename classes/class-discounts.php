@@ -12,13 +12,22 @@ class EDD_Discounts {
 		add_action( 'template_redirect', array( $this, 'apply_discounts' ) );
 	}
 
-	public function get_customer_discount( $download, $customerId = false ) {
-		if ( ! $customerId ) {
-			$customerId = get_current_user_id();
+	public function get_customer_discount( $download = false, $customer_id = false ) {
+		if ( ! $download ){
+			return null;
+		}
+
+		if ( ! $customer_id ) {
+			$customer_id = get_current_user_id();
 		}
 
 		// get discounts
-		$discounts = $this->get_discounts( $download, $customerId );
+		$discounts = $this->get_discounts( $download, $customer_id );
+
+		// what? no discounts? I'm outta here
+		if ( !$discounts || !is_array( $discounts ) ){
+			return null;
+		}
 
 		// sort discounts so the discount that saves the most is on the top of the array
 		$price = array();
@@ -33,7 +42,7 @@ class EDD_Discounts {
 
 		// find the first applicable discount
 		foreach ( $discounts as $discount ) {
-			$is_applicable = $this->is_applicable( $discount, $download, $customerId );
+			$is_applicable = $this->is_applicable( $discount, $download, $customer_id );
 			if ( $is_applicable ) {
 				return $discount;
 			}
