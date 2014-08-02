@@ -55,14 +55,15 @@ class EDD_Discounts {
 		$query = new WP_Query( $args );
 		$result = array();
 		foreach ( $query->posts as $id => $post ) {
+			$data = get_post_meta( $post->ID, 'frontend', true );
 			$result[$id]['name'] = $post->post_title;
 			$result[$id]['id'] = $post->ID;
-			$result[$id]['type'] = get_post_meta( $post->ID, 'type', true );
-			$result[$id]['quantity'] =  (int) get_post_meta( $post->ID, 'quantity', true ) ;
-			$result[$id]['value'] = get_post_meta( $post->ID, 'value', true ) ;
-			$result[$id]['products'] = get_post_meta( $post->ID, 'products', true ) ;
-			$result[$id]['categories'] = get_post_meta( $post->ID, 'categories', true ) ;
-			$result[$id]['users'] = get_post_meta( $post->ID, 'users', true ) ;
+			$result[$id]['type'] = $data['type'];
+			$result[$id]['quantity'] =  (int) $data['quantity'];
+			$result[$id]['value'] = $data['value'];
+			$result[$id]['products'] = $data['products'];
+			$result[$id]['categories'] = $data['categories'];
+			$result[$id]['users'] = $data['users'];
 			$result[$id]['groups'] = get_post_meta( $post->ID, 'groups', true ) ;
 			$result[$id]['amount'] = $this->calculate_new_product_price( $result[$id], $download );
 			if ( is_string( $result[$id]['products'] ) ) {
@@ -113,7 +114,7 @@ class EDD_Discounts {
 			break;
 
 		case 'percentage_price':
-			$price = round( $price * ( 100 - (float) $discount['value'] ) / 100, 2 ) * $download['quantity'];
+			$price = round( $price * ( (float) $discount['value'] ) / 100, 2 ) * $download['quantity'];
 			break;
 
 			// TODO: these cases below all need to be fixed for variable products

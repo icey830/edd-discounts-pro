@@ -421,8 +421,6 @@ class EDD_Admin {
 			$value = (float) rtrim( $value, '%' );
 		}
 
-		$free_shipping = isset( $_POST['free_shipping'] );
-
 		if ( isset( $_POST['products'] ) ) {
 			$products = strip_tags( stripslashes( trim( $_POST['products'] ) ) );
 			if ( $products == 'Array' ) {
@@ -451,14 +449,24 @@ class EDD_Admin {
 			$groups = array();
 		}
 
+		$meta = array(
+			'type' => $type,
+			'quantity' => $quantity,
+			'value' => $value,
+			'products' => $products,
+			'categories' => $categories,
+			'users' => $users,
+			'groups' => $groups
+		);
+
 		update_post_meta( $post_id, 'type', $type );
 		update_post_meta( $post_id, 'quantity', $quantity );
 		update_post_meta( $post_id, 'value', $value );
-		update_post_meta( $post_id, 'free_shipping', $free_shipping );
 		update_post_meta( $post_id, 'products', $products );
 		update_post_meta( $post_id, 'categories', $categories );
 		update_post_meta( $post_id, 'users', $users );
 		update_post_meta( $post_id, 'groups', $groups );
+		update_post_meta( $post_id, 'frontend', $meta );
 	}
 
 	public function columns( $columns ) {
@@ -493,6 +501,7 @@ class EDD_Admin {
 		case 'users':
 			$ids = get_post_meta( $post_id, 'users', true );
 			if ( empty( $ids ) ) {
+				echo __('All the users', 'edd_cfm');
 				return;
 			}
 			$links = '';
@@ -512,6 +521,7 @@ class EDD_Admin {
 		case 'groups':
 			$groups = get_post_meta( $post_id, 'groups', true );
 			if ( empty( $groups ) ) {
+				echo __('All the roles', 'edd_cfm');
 				return;
 			}
 			$links  = '';
