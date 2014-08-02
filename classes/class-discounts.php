@@ -6,10 +6,8 @@ if ( !defined( 'ABSPATH' ) ) {
 class EDD_Discounts {
 
 	public function __construct() {
-		if ( is_admin() ) {
-			return;
-		}
 		add_action( 'template_redirect', array( $this, 'apply_discounts' ) );
+		add_action( 'init', array( $this, 'apply_discounts' ),11 );
 	}
 
 	public function get_customer_discount( $download = false, $customer_id = false ) {
@@ -134,6 +132,7 @@ class EDD_Discounts {
 			$quantity = $download['quantity'];
 			$count = 1;
 			$subtotal = 0.00;
+			$discountValue = 0;
 			while ( $count <= $quantity ){
 				if ( $quantity >= $discount['quantity'] ) {
 					if ( strpos( $discount['value'], '%' ) !== false ) {
@@ -143,8 +142,8 @@ class EDD_Discounts {
 						// Fixed value
 						$discountValue = (float) $discount['value'];
 					}
-					if ( $count % $quantity == 0 ) {
-						$subtotal = $subtotal + $discountValue;
+					if ( $count % $discount['quantity'] == 0 ) {
+						$subtotal += $discountValue;
 					}
 				}
 				$count++;
@@ -229,7 +228,7 @@ class EDD_Discounts {
 
 			foreach ( $cart as $cart_item ) {
 				// Simple products
-				if ( $cart_item['id'] == $product['id'] && ( empty( $discount['products'] ) || in_array( $cart_item['product_id'], $discount['products']) ) ) {
+				if ( $cart_item['id'] == $product['id'] && ( empty( $discount['products'] ) || in_array( $cart_item['id'], $discount['products']) ) ) {
 					$quantity += $cart_item['quantity'];
 				}
 
@@ -263,14 +262,6 @@ class EDD_Discounts {
 	}
 
 	public function apply_discounts() {
-		global $wpdb;
-		if ( is_admin() ) {
-			return;
-		}
-		if ( ! ( edd_is_checkout() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) ) {
-			return;
-		}
-
 		$cart_items  = edd_get_cart_contents();
 		$cart_details = edd_get_cart_content_details();
 		$fees = edd_get_cart_fees();
