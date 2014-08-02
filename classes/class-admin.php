@@ -667,7 +667,7 @@ class EDD_Admin {
 			'each_x_products' => __( 'Each X products', 'edd_dp' ),
 			'from_x_products' => __( 'From X products', 'edd_dp' ),
 			'cart_quantity' => __( 'Products in cart', 'edd_dp' ),
-			'cart_threshold' => __( 'Cart threshold', 'edd_dp' )
+			//'cart_threshold' => __( 'Cart threshold', 'edd_dp' ) for 1.1
 		);
 	}
 
