@@ -89,10 +89,11 @@ class EDD_Discounts {
 			if ( $download['quantity'] >= $discount['quantity'] ){
 				if ( strpos( $discount['value'], '%' ) !== false ) {
 					// Percentage value
-					$price = round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 ) * ( $download['quantity'] - $discount['quantity'] + 1 );
+					$val = round( ( (float) $discount['value'] ) / 100, 2 );
+					$price = $price * $val;
 				} else {
 					// Fixed value
-					$price = (float) $discount['value'] * ( $download['quantity'] - $discount['quantity'] + 1 );
+					$price = (float) $discount['value'];
 				}
 			}
 			break;
@@ -113,7 +114,8 @@ class EDD_Discounts {
 			break;
 
 		case 'percentage_price':
-			$price = round( $price * ( (float) $discount['value'] ) / 100, 2 ) * $download['quantity'];
+			$val = round( ( (float) $discount['value'] ) / 100, 2 );
+			$price = $price * $val;
 			break;
 
 			// TODO: these cases below all need to be fixed for variable products
@@ -121,7 +123,8 @@ class EDD_Discounts {
 			if ( $this->has_product( $download, $discount, $download['quantity'] ) ) {
 				if ( strpos( $discount['value'], '%' ) !== false ) {
 					// Percentage value
-					$price = ( round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 ) ) * $download['quantity'];
+					$val = round( ( (float) $discount['value'] ) / 100, 2 );
+					$price = $price * $val;
 				} else {
 					// Fixed value
 					$price = (float) $discount['value'] * $download['quantity'];
@@ -138,7 +141,8 @@ class EDD_Discounts {
 				if ( $quantity >= $discount['quantity'] ) {
 					if ( strpos( $discount['value'], '%' ) !== false ) {
 						// Percentage value
-						$discountValue = round( $download['item_price'] * (float) rtrim( $discount['value'], '%' ) / 100, 2 );
+						$val = round( ( (float) $discount['value'] ) / 100, 2 );
+						$price = $price * $val;
 					} else {
 						// Fixed value
 						$discountValue = (float) $discount['value'];
@@ -161,7 +165,8 @@ class EDD_Discounts {
 				if ( $quantity >= $discount['quantity'] ) {
 					if ( strpos( $discount['value'], '%' ) !== false ) {
 						// Percentage value
-						$discountValue = round( $download['item_price'] * (float) rtrim( $discount['value'], '%' ) / 100, 2 );
+						$val = round( ( (float) $discount['value'] ) / 100, 2 );
+						$price = $price * $val;
 					} else {
 						// Fixed value
 						$discountValue = (float) $discount['value'];
