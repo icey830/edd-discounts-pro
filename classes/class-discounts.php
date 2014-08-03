@@ -255,9 +255,19 @@ class EDD_Discounts {
 			return false;
 		}
 
+
+		$product['categories'] = wp_get_post_terms( $product['id'], 'download_category', array(
+			 'fields' => 'ids' 
+		) );
+
 		// Check if product is in a category of discount
-		if ( !empty( $discount['categories'] ) && !empty( $product->categories ) ) {
-			if ( array_intersect( $product->categories, $discount['categories'] ) == array() ) {
+		if ( !empty( $discount['categories'] ) ) {
+			if ( !empty( $product['categories'] )){
+				if ( array_intersect( $product['categories'], $discount['categories'] ) == array() ) {
+					return false;
+				}
+			}
+			else{
 				return false;
 			}
 		}
