@@ -1,8 +1,9 @@
 .quantity_field {
     display: none;
 }
-.select2-container {
+input#quantity, .select2-container {
 	width: 95%;
 	margin-right:5%;
 	clear: both;
+	display: block;
 }
