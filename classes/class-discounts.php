@@ -212,37 +212,37 @@ class EDD_Discounts {
 		$cart     = edd_get_cart_contents();
 		// Check if product matches quantity discounts
 		switch ( $discount['type'] ) {
-		case 'cart_quantity':
+			case 'cart_quantity':
 
-			$quantity = 0;
+				$quantity = 0;
 
-			foreach ( $cart as $item ) {
-				$quantity += $item['quantity'];
-			}
-
-			if ( $quantity < $discount['quantity'] ) {
-				return false;
-			}
-
-			break;
-
-		case 'product_quantity':
-
-			$quantity = 0;
-
-			foreach ( $cart as $cart_item ) {
-				// Simple products
-				if ( $cart_item['id'] == $product['id'] && ( empty( $discount['products'] ) || in_array( $cart_item['id'], $discount['products']) ) ) {
-					$quantity += $cart_item['quantity'];
+				foreach ( $cart as $item ) {
+					$quantity += $item['quantity'];
 				}
 
-			}
+				if ( $quantity < $discount['quantity'] ) {
+					return false;
+				}
 
-			if ( $quantity < $discount['quantity'] ) {
-				return false;
-			}
+				break;
 
-			break;
+			case 'product_quantity':
+
+				$quantity = 0;
+
+				foreach ( $cart as $cart_item ) {
+					// Simple products
+					if ( $cart_item['id'] == $product['id'] && ( empty( $discount['products'] ) || in_array( $cart_item['id'], $discount['products']) ) ) {
+						$quantity += $cart_item['quantity'];
+					}
+
+				}
+
+				if ( $quantity < $discount['quantity'] ) {
+					return false;
+				}
+
+				break;
 		}
 
 		// Check if it is applicable to current user
