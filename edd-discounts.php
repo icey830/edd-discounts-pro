@@ -70,7 +70,7 @@ class edd_dp {
 		return self::$instance;
 	}
 	public function define_globals() {
-		$this->title    = __( 'Discounts Pro', 'edd-discounts-pro' );
+		$this->title    = __( 'Discounts Pro', 'edd-dp' );
 		$this->file     = __FILE__;
 		$this->basename = apply_filters( 'edd_edd_dp_plugin_basename', plugin_basename( $this->file ) );
 		// Plugin Name
@@ -101,12 +101,18 @@ class edd_dp {
 			require_once EDD_DP_PLUGIN_PATH . 'assets/lib/EDD_License_Handler.php';
 		}
 		$license = new EDD_License( __FILE__, EDD_DP_PLUGIN_NAME, EDD_DP_PLUGIN_VERSION, 'Chris Christoff' );
+
+		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 	}
 
 	public function includes() {
 		require_once EDD_DP_PLUGIN_PATH . 'classes/class-setup.php';
 		require_once EDD_DP_PLUGIN_PATH . 'classes/class-admin.php';
 		require_once EDD_DP_PLUGIN_PATH . 'classes/class-discounts.php';
+	}
+
+	public function load_textdomain() {
+		load_plugin_textdomain( 'edd-dp', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 }

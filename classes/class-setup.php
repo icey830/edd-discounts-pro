@@ -8,7 +8,6 @@ class EDD_DP_Setup {
 	
 		add_action( 'admin_init', array( $this, 'is_wp_36_and_edd_activated' ), 1 );
 		add_action( 'init', array( $this, 'register_post_type' ) );
-		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_menu', array( $this, 'discount_submenu' ), 9 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );
@@ -48,7 +47,7 @@ class EDD_DP_Setup {
 	public function edd_notice() {
 ?>
 		<div class="updated">
-			<p><?php printf( __( '<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires Easy Digital Downloads 1.8 or higher in order to function properly.', 'edd_fes' ) ); ?></p>
+			<p><?php printf( __( '<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires Easy Digital Downloads 1.8 or higher in order to function properly.', 'edd-dp' ) ); ?></p>
 		</div>
 <?php
 	}
@@ -56,13 +55,9 @@ class EDD_DP_Setup {
 	public function wp_notice() {
 ?>
 	<div class="updated">
-		<p><?php printf( __( '<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires WordPress 3.6 or higher in order to function properly.', 'edd_fes' ) ); ?></p>
+		<p><?php printf( __( '<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires WordPress 3.6 or higher in order to function properly.', 'edd-dp' ) ); ?></p>
 	</div>
 <?php
-	}
-
-	public function load_textdomain() {
-		load_plugin_textdomain( 'edd-dp', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 	public function admin_enqueue_scripts() {

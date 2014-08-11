@@ -422,16 +422,16 @@ class EDD_Admin {
 	public function form_updated_message( $messages ) {
 		$message = array(
 			0 => '',
-			1 => __( 'Discount Updated!', 'edd_cfm' ),
-			2 => __( 'Discount updated.', 'edd_cfm' ),
-			3 => __( 'Discount deleted.', 'edd_cfm' ),
-			4 => __( 'Discount updated.', 'edd_cfm' ),
-			5 => isset( $_GET['revision'] ) ? sprintf( __( 'Discount restored to revision from %s', 'edd_cfm' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6 => __( 'Discount published.', 'edd_cfm' ),
-			7 => __( 'Discount saved!', 'edd_cfm' ),
-			8 => __( 'Discount submitted.', 'edd_cfm' ),
+			1 => __( 'Discount Updated!', 'edd-dp' ),
+			2 => __( 'Discount updated.', 'edd-dp' ),
+			3 => __( 'Discount deleted.', 'edd-dp' ),
+			4 => __( 'Discount updated.', 'edd-dp' ),
+			5 => isset( $_GET['revision'] ) ? sprintf( __( 'Discount restored to revision from %s', 'edd-dp' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6 => __( 'Discount published.', 'edd-dp' ),
+			7 => __( 'Discount saved!', 'edd-dp' ),
+			8 => __( 'Discount submitted.', 'edd-dp' ),
 			9 => '',
-			10 => __( 'Discount draft updated.', 'edd_cfm' )
+			10 => __( 'Discount draft updated.', 'edd-dp' )
 		);
 
 		$messages['customer_discount'] = $message;
@@ -547,7 +547,7 @@ class EDD_Admin {
 		case 'users':
 			$ids = get_post_meta( $post_id, 'users', true );
 			if ( empty( $ids ) ) {
-				echo __('All the users', 'edd_cfm');
+				echo __('All the users', 'edd-dp');
 				return;
 			}
 			$links = '';
@@ -567,7 +567,7 @@ class EDD_Admin {
 		case 'groups':
 			$groups = get_post_meta( $post_id, 'groups', true );
 			if ( empty( $groups ) ) {
-				echo __('All the roles', 'edd_cfm');
+				echo __('All the roles', 'edd-dp');
 				return;
 			}
 			$links  = '';
