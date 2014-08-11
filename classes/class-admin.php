@@ -393,6 +393,7 @@ class EDD_Admin {
 						};
 					},
 					results: function( data, page ) {
+						console.log( data );
 						return { results: data };
 					}
 				},
@@ -670,31 +671,35 @@ class EDD_Admin {
 		if ( empty( $term ) )
 			die();
 
+		$args = array();
+
 		if ( strpos( $term, ',' ) !== false ) {
 
 			$term = (array) explode( ',', $term );
-			$args = array( 'search' => $term );
-			$users = get_users( $args );
 
-		} elseif ( is_numeric( $term ) ) {
-
-			$args = array( 'search' => $term );
-			$users = get_users( $args );
-
-		} else {
-			$args = array( 'search' => $term );
-			$users = get_users( $args );
 		}
-		$found_users = array();
-		if ( !empty( $users ) ){
-			foreach ( $users as $user_id ) {
-				$user_object = new WP_User($user_id);
+
+		$args['search'] = $term;
+		$args['search_columns'] = array(
+			'ID',
+			'user_login',
+			'nicename',
+			'user_email',
+			'user_url'
+		);
+
+		$users = get_users( $args );
+
+		if ( ! empty( $users ) ){
+			foreach ( $users as $user ) {
+
 				$found_users[] = array(
-					'id' => $user_id,
-					'text' => html_entity_decode( $user_object->display_name , ENT_COMPAT, 'UTF-8' )
+					'id' => $user->ID,
+					'text' => html_entity_decode( $user->display_name , ENT_COMPAT, 'UTF-8' )
 				);
 			}
 		}
+
 		echo json_encode( $found_users );
 		die();
 	}
