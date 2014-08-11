@@ -86,7 +86,11 @@ class EDD_DP_Setup {
 
 		$current_screen = get_current_screen();
 
-		if ( $current_screen->post_type === 'download' ||  $current_screen->post_type === 'customer_discount' ) {
+		if( empty( $current_screen ) ) {
+			return;
+		}
+
+		if ( $current_screen->post_type === 'customer_discount' ) {
 			wp_enqueue_style( 'edd-select2', EDD_DP_ASSETS_URL . 'css/select2.css', '', '2.1', 'screen' );
 			wp_enqueue_style( 'edd_discounts_admin', EDD_DP_ASSETS_URL . 'css/admin.css' );
 		}
