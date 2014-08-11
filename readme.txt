@@ -6,14 +6,14 @@
  * Author URI:          http://www.chriscct7.com
  *
  * Version:             1.0
- * Requires at least:   3.6
- * Tested up to:        3.6
+ * Requires at least:   3.9
+ * Tested up to:        4.0
  *
  * Text Domain:         edd_dp
  * Domain Path:         /edd_dp/languages/
  *
  * @category            Plugin
- * @copyright           Copyright © 2013 Chris Christoff
+ * @copyright           Copyright Â© 2014 Chris Christoff
  * @author              Chris Christoff
  * @package             DP
  */
