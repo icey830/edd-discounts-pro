@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: EDD DP 1.0\n"
-"POT-Creation-Date: 2014-08-11 13:38-0600\n"
-"PO-Revision-Date: 2014-08-11 13:38-0600\n"
+"POT-Creation-Date: 2014-08-11 14:25-0600\n"
+"PO-Revision-Date: 2014-08-11 14:25-0600\n"
 "Last-Translator: Pippin Williamson <pippin@pippinsplugins.com>\n"
 "Language-Team: Easy Digital Downloads\n"
 "Language: English\n"
@@ -77,7 +77,7 @@ msgstr ""
 msgid "Any category"
 msgstr ""
 
-#: ../classes/class-admin.php:288 ../classes/class-admin.php:523
+#: ../classes/class-admin.php:288 ../classes/class-admin.php:520
 msgid "Users"
 msgstr ""
 
@@ -87,7 +87,7 @@ msgid ""
 "ID or username."
 msgstr ""
 
-#: ../classes/class-admin.php:298 ../classes/class-admin.php:524
+#: ../classes/class-admin.php:298 ../classes/class-admin.php:521
 msgid "Roles"
 msgstr ""
 
@@ -132,51 +132,51 @@ msgstr ""
 msgid "Discount draft updated."
 msgstr ""
 
-#: ../classes/class-admin.php:520
+#: ../classes/class-admin.php:517
 msgid "Name"
 msgstr ""
 
-#: ../classes/class-admin.php:521
+#: ../classes/class-admin.php:518
 msgid "Type"
 msgstr ""
 
-#: ../classes/class-admin.php:522
+#: ../classes/class-admin.php:519
 msgid "Value"
 msgstr ""
 
-#: ../classes/class-admin.php:525
+#: ../classes/class-admin.php:522
 msgid "Date"
 msgstr ""
 
-#: ../classes/class-admin.php:550
-msgid "All the users"
+#: ../classes/class-admin.php:547
+msgid "All users"
 msgstr ""
 
-#: ../classes/class-admin.php:570
-msgid "All the roles"
+#: ../classes/class-admin.php:567
+msgid "All user roles"
 msgstr ""
 
-#: ../classes/class-admin.php:760
+#: ../classes/class-admin.php:754
 msgid "Fixed Price"
 msgstr ""
 
-#: ../classes/class-admin.php:761
+#: ../classes/class-admin.php:755
 msgid "Percentage Price"
 msgstr ""
 
-#: ../classes/class-admin.php:762
+#: ../classes/class-admin.php:756
 msgid "Product Quantity"
 msgstr ""
 
-#: ../classes/class-admin.php:763
+#: ../classes/class-admin.php:757
 msgid "Each X products"
 msgstr ""
 
-#: ../classes/class-admin.php:764
+#: ../classes/class-admin.php:758
 msgid "From X products"
 msgstr ""
 
-#: ../classes/class-admin.php:765
+#: ../classes/class-admin.php:759
 msgid "Products in cart"
 msgstr ""
 
