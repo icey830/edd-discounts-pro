@@ -664,8 +664,9 @@ class EDD_Admin {
 
 		$term = (string) urldecode( stripslashes( strip_tags( $_GET['user'] ) ) );
 
-		if ( empty( $term ) )
+		if ( empty( $term ) ){
 			die();
+		}
 
 		$args = array();
 
