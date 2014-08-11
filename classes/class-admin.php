@@ -393,7 +393,6 @@ class EDD_Admin {
 						};
 					},
 					results: function( data, page ) {
-						console.log( data );
 						return { results: data };
 					}
 				},
