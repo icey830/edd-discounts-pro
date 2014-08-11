@@ -251,7 +251,7 @@ class EDD_Discounts {
 		}
 
 		// Check if it is applicable to current user
-		if ( !empty( $discount['users'] ) && ( !$customer || !in_array( $customer->ID, $discount['users'] ) ) ) {
+		if ( !empty( $discount['users'] ) && is_array( $discount['users'] ) && ( !$customer || !in_array( $customer->ID, $discount['users'] ) ) ) {
 			return false;
 		}
 
