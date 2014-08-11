@@ -524,58 +524,66 @@ class EDD_Admin {
 	}
 
 	public function column_value( $column, $post_id ) {
+
 		switch ( $column ) {
-		case 'type':
-			$type = get_post_meta( $post_id, 'type', true );
-			echo count( $type ) == 1 ? $this->get_discount_type( $type ) : '-';
-			break;
+			case 'type':
+				$type = get_post_meta( $post_id, 'type', true );
+				echo count( $type ) == 1 ? $this->get_discount_type( $type ) : '-';
+				break;
 
-		case 'value':
-			$type = get_post_meta( $post_id, 'type', true );
-			if ( $type == 'percentage_price' ) {
-				$value = get_post_meta( $post_id, 'value', true ) . '%';
-			} else {
-				$value = get_post_meta( $post_id, 'value', true );
-			}
+			case 'value':
+				$type = get_post_meta( $post_id, 'type', true );
+				if ( $type == 'percentage_price' ) {
+					$value = get_post_meta( $post_id, 'value', true ) . '%';
+				} else {
+					$value = get_post_meta( $post_id, 'value', true );
+				}
 
-			echo $value ? $value : '-';
-			break;
+				echo $value ? $value : '-';
+				break;
 
-		case 'users':
-			$ids = get_post_meta( $post_id, 'users', true );
-			if ( empty( $ids ) ) {
-				echo __('All users', 'edd-dp');
-				return;
-			}
-			$links = '';
-			$users = get_users( array(
-					'include' => $ids,
-					'fields'  => array(
-						'ID',
-						'display_name'
-					)
-				) );
-			foreach ( $users as $item ) {
-				$links .= '<a href="' . admin_url( "user-edit.php?user_id=$item->ID" ) . '>' . $item->display_name . '</a>, ';
-			}
-			echo rtrim( $links, ', ' );
-			break;
+			case 'users':
+				$ids = get_post_meta( $post_id, 'users', true );
+				if ( empty( $ids ) ) {
+					echo __('All users', 'edd-dp');
+					return;
+				}
+				$links = '';
+				$users = get_users( array(
+						'include' => $ids,
+						'fields'  => array(
+							'ID',
+							'display_name'
+						)
+					) );
+				foreach ( $users as $item ) {
+					$links .= '<a href="' . admin_url( "user-edit.php?user_id=$item->ID" ) . '>' . $item->display_name . '</a>, ';
+				}
+				echo rtrim( $links, ', ' );
+				break;
 
-		case 'groups':
-			$groups = get_post_meta( $post_id, 'groups', true );
-			if ( empty( $groups ) || ! is_array( $groups ) ) {
-				echo __('All user roles', 'edd-dp');
-				return;
-			}
-			$links  = '';
-			$groups = $this->get_roles( array(
-					'include' => $groups
-				) );
-			foreach ( $groups as $role => $name ) {
-				$links .= '<a href="' . admin_url( "user-edit.php?user_id=$role" ) . '>' . $name . '</a>, ';
-			}
-			echo rtrim( $links, ', ' );
-			break;
+			case 'groups':
+				$groups = get_post_meta( $post_id, 'groups', true );
+				if ( empty( $groups ) || ! is_array( $groups ) ) {
+
+					echo __('All user roles', 'edd-dp');
+
+				} else {
+
+					$links  = '';
+					$groups = $this->get_roles( array(
+							'include' => $groups
+						) );
+					foreach ( $groups as $role => $name ) {
+						$links .= '<a href="' . admin_url( "user-edit.php?user_id=$role" ) . '">' . $name . '</a>, ';
+					}
+					echo rtrim( $links, ', ' );
+
+				}
+				break;
+			default :
+				echo $column;
+				break;
 		}
 	}
 
