@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:         Easy Digital Downloads - Discounts PRO
+ * Plugin Name:         Easy Digital Downloads - Discounts Pro
  * Plugin URI:          https://easydigitaldownloads.com/extension/discounts-pro/
  * Description:         Add powerful discounting options to EDD
  * Author:              Chris Christoff
