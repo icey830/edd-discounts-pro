@@ -14,6 +14,8 @@ class EDD_Admin {
 		add_action( 'save_post', array( $this, 'save_discount' ) );
 		add_action( 'wp_ajax_edd_json_search_products', array( $this, 'edd_json_search_products' ) );
 		add_action( 'wp_ajax_edd_json_search_products_and_variations', array( $this, 'ajax_search_product_vars' ) );
+		add_action( 'wp_ajax_edd_json_search_users', array( $this, 'edd_json_search_users' ) );
+		add_action( 'wp_ajax_edd_json_search_users_ajax', array( $this, 'ajax_search_user_vars' ) );
 		add_filter( 'manage_edit-customer_discount_columns', array( $this, 'columns' ) );
 		add_action( 'manage_customer_discount_posts_custom_column', array( $this, 'column_value' ), 10, 2 );
 	}
@@ -276,17 +278,19 @@ class EDD_Admin {
 			'options'     => $categories
 		);
 		echo $this->select( $args );
-		$users = $this->get_users();
-		$args  = array(
+
+		$selected = implode( ',', (array) get_post_meta( $post->ID, 'users', true ) );
+		$args     = array(
 			'id'          => 'users',
+			'type'        => 'hidden',
+			/* use hidden input type for Select2 custom data loading */
+			'class'       => 'long',
 			'label'       => __( 'Users', 'edd_dp' ),
-			'desc'        => __( 'Control which user this discount can apply to.', 'edd_dp' ),
-			'multiple'    => true,
-			'placeholder' => __( 'Any user', 'edd_dp' ),
-			'class'       => 'select long',
-			'options'     => $users
+			'desc'        => __( 'Control which user this discount can apply to. Search by email address, URL, ID or username.', 'edd_dp' ),
+			'value'       => $selected
 		);
-		echo $this->select( $args );
+		echo $this->input( $args );
+
 		// Roles (we'll call them groups in core so we don't get confusion when EDD finally integrates w/groups plugin)
 		$groups = $this->get_roles();
 		$args   = array(
@@ -357,6 +361,45 @@ class EDD_Admin {
 					var stuff = {
 						action:     'edd_json_search_products_and_variations',
 						security:   '<?php echo wp_create_nonce( "search-products" ); ?>',
+						term:       element.val()
+					};
+					var data = [];
+					jQuery.ajax({
+						type:     'GET',
+						url:      "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
+						dataType: "json",
+						data:     stuff,
+						success: 	function( result ) {
+							callback( result );
+						}
+					});
+				}
+			});
+			// allow searching of users to use on a discount
+			jQuery("#users").select2({
+				minimumInputLength: 3,
+				multiple: true,
+				closeOnSelect: true,
+				placeholder: "<?php _e( 'Any user', 'edd_dp' ); ?>",
+				ajax: {
+					url: "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
+					dataType: 'json',
+					quietMillis: 100,
+					data: function(term, page) {
+						return {
+							user:       term,
+							action:     'edd_json_search_users_ajax',
+							security:   '<?php echo wp_create_nonce( "search-users" ); ?>'
+						};
+					},
+					results: function( data, page ) {
+						return { results: data };
+					}
+				},
+				initSelection: function( element, callback ) {
+					var stuff = {
+						action:     'edd_json_search_users_ajax',
+						security:   '<?php echo wp_create_nonce( "search-users" ); ?>',
 						term:       element.val()
 					};
 					var data = [];
@@ -614,6 +657,51 @@ class EDD_Admin {
 	public function ajax_search_product_vars() {
 		$this->edd_json_search_products( '', array( 'download' ) );
 	}
+
+	public function edd_json_search_users( $x = '' ) {
+
+		check_ajax_referer( 'search-users', 'security' );
+
+		$term = (string) urldecode( stripslashes( strip_tags( $_GET['user'] ) ) );
+
+		if ( empty( $term ) )
+			die();
+
+		if ( strpos( $term, ',' ) !== false ) {
+
+			$term = (array) explode( ',', $term );
+			$args = array( 'search' => $term );
+			$users = get_users( $args );
+
+		} elseif ( is_numeric( $term ) ) {
+
+			$args = array( 'search' => $term );
+			$users = get_users( $args );
+
+		} else {
+			$args = array( 'search' => $term );
+			$users = get_users( $args );
+		}
+		$found_users = array();
+		if ( !empty( $users ) ){
+			foreach ( $users as $user_id ) {
+				$user_object = new WP_User($user_id);
+				$found_users[] = array(
+					'id' => $user_id,
+					'text' => html_entity_decode( $user_object->display_name , ENT_COMPAT, 'UTF-8' )
+				);
+			}
+		}
+		echo json_encode( $found_users );
+		die();
+	}
+
+	public function ajax_search_user_vars() {
+		$this->edd_json_search_users( '' );
+	}
+
+
+
 
 	public function get_roles( $args = array() ) {
 
