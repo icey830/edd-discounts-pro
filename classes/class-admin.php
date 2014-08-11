@@ -544,7 +544,7 @@ class EDD_Admin {
 		case 'users':
 			$ids = get_post_meta( $post_id, 'users', true );
 			if ( empty( $ids ) ) {
-				echo __('All the users', 'edd-dp');
+				echo __('All users', 'edd-dp');
 				return;
 			}
 			$links = '';
