@@ -684,9 +684,10 @@ class EDD_Admin {
 			'user_login',
 			'display_name',
 			'user_email',
-			'user_url'
+			'user_url',
+			'display_name'
 		);
-
+		$found_users = array();
 		$users = get_users( $args );
 
 		if ( ! empty( $users ) ){
