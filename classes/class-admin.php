@@ -678,7 +678,7 @@ class EDD_Admin {
 
 		}
 
-		$args['search'] = $term;
+		$args['search'] = '*' . $term . '*';
 		$args['search_columns'] = array(
 			'ID',
 			'user_login',
