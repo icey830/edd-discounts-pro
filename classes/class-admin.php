@@ -491,7 +491,10 @@ class EDD_Admin {
 		} else {
 			$groups = array();
 		}
-
+		$groups = sanitize_text_field($groups);
+		$categories = sanitize_text_field($categories);
+		$users = sanitize_text_field($users);
+		$products = sanitize_text_field($products);
 		$meta = array(
 			'type' => $type,
 			'quantity' => $quantity,
