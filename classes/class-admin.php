@@ -682,7 +682,7 @@ class EDD_Admin {
 		$args['search_columns'] = array(
 			'ID',
 			'user_login',
-			'nicename',
+			'display_name',
 			'user_email',
 			'user_url'
 		);
