@@ -475,34 +475,31 @@ class EDD_Admin {
 		}
 
 		if ( isset( $_POST['categories'] ) ) {
-			$categories = $_POST['categories'];
+			$categories = array_map( 'absint', $_POST['categories'] );
 		} else {
 			$categories = array();
 		}
 
 		if ( isset( $_POST['users'] ) ) {
-			$users = $_POST['users'];
+			$users = sanitize_text_field( $_POST['users'] );
 		} else {
-			$users = array();
+			$users = '';
 		}
 
 		if ( isset( $_POST['groups'] ) ) {
-			$groups = $_POST['groups'];
+			$groups = array_map( 'sanitize_text_field', $_POST['groups'] );
 		} else {
 			$groups = array();
 		}
-		$groups = sanitize_text_field($groups);
-		$categories = sanitize_text_field($categories);
-		$users = sanitize_text_field($users);
-		$products = sanitize_text_field($products);
+
 		$meta = array(
-			'type' => $type,
-			'quantity' => $quantity,
-			'value' => $value,
-			'products' => $products,
+			'type'       => $type,
+			'quantity'   => $quantity,
+			'value'      => $value,
+			'products'   => $products,
 			'categories' => $categories,
-			'users' => $users,
-			'groups' => $groups
+			'users'      => $users,
+			'groups'     => $groups
 		);
 
 		update_post_meta( $post_id, 'type', $type );
@@ -566,8 +563,8 @@ class EDD_Admin {
 
 		case 'groups':
 			$groups = get_post_meta( $post_id, 'groups', true );
-			if ( empty( $groups ) ) {
-				echo __('All the roles', 'edd-dp');
+			if ( empty( $groups ) || ! is_array( $groups ) ) {
+				echo __('All user roles', 'edd-dp');
 				return;
 			}
 			$links  = '';
