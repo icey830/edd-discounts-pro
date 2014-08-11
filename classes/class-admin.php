@@ -681,8 +681,7 @@ class EDD_Admin {
 			'user_login',
 			'display_name',
 			'user_email',
-			'user_url',
-			'display_name'
+			'user_url'
 		);
 		$found_users = array();
 		$users = get_users( $args );
@@ -704,9 +703,6 @@ class EDD_Admin {
 	public function ajax_search_user_vars() {
 		$this->edd_json_search_users( '' );
 	}
-
-
-
 
 	public function get_roles( $args = array() ) {
 
