@@ -1,2 +1,5 @@
+1.0.1: 8/21/2014
+* Fixes issue with product quantity
+
 1.0: 8/11/2014
  * Initial release
