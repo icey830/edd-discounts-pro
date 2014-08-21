@@ -10,17 +10,17 @@ class EDD_Discounts {
 		add_action( 'init', array( $this, 'apply_discounts' ),11 );
 	}
 
-	public function get_customer_discount( $download = false, $customer_id = false ) {
+	public function get_customer_discount( $download = false, $cart, $quantity ) {
 		if ( ! $download ){
 			return null;
 		}
 
-		if ( ! $customer_id ) {
+		//if ( ! $customer_id ) {
 			$customer_id = get_current_user_id();
-		}
+		//}
 
 		// get discounts
-		$discounts = $this->get_discounts( $download, $customer_id );
+		$discounts = $this->get_discounts( $download, $customer_id,$cart, $quantity );
 
 		// what? no discounts? I'm outta here
 		if ( !$discounts || !is_array( $discounts ) ){
@@ -40,7 +40,7 @@ class EDD_Discounts {
 
 		// find the first applicable discount
 		foreach ( $discounts as $discount ) {
-			$is_applicable = $this->is_applicable( $discount, $download, $customer_id );
+			$is_applicable = $this->is_applicable( $discount, $download, $customer_id,$cart, $quantity );
 			if ( $is_applicable ) {
 				return $discount;
 			}
@@ -48,7 +48,7 @@ class EDD_Discounts {
 		return null;
 	}
 
-	public function get_discounts( $download, $customerId ) {
+	public function get_discounts( $download, $customerId,$cart, $quantity ) {
 		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish' );
 		$query = new WP_Query( $args );
 		$result = array();
@@ -63,7 +63,7 @@ class EDD_Discounts {
 			$result[$id]['categories'] = $data['categories'];
 			$result[$id]['users'] = $data['users'];
 			$result[$id]['groups'] = get_post_meta( $post->ID, 'groups', true ) ;
-			$result[$id]['amount'] = $this->calculate_new_product_price( $result[$id], $download );
+			$result[$id]['amount'] = $this->calculate_new_product_price( $result[$id], $download,$cart, $quantity );
 			if ( is_string( $result[$id]['products'] ) ) {
 				$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
 			}
@@ -72,7 +72,7 @@ class EDD_Discounts {
 	}
 
 
-	public function calculate_new_product_price( $discount, $download ) {
+	public function calculate_new_product_price( $discount, $download,$cart, $quantity ) {
 		$price = (float) $download['price'];
 		$is_var = false;
 		$var_id = 0;
@@ -86,16 +86,14 @@ class EDD_Discounts {
 
 			// Cart discounts
 		case 'cart_quantity':
-			if ( $download['quantity'] >= $discount['quantity'] ){
 				if ( strpos( $discount['value'], '%' ) !== false ) {
 					// Percentage value
 					$val = round( ( (float) $discount['value'] ) / 100, 2 );
 					$price = $price * $val;
 				} else {
 					// Fixed value
-					$price = (float) $discount['value'];
+					$price = (float) $discount['value'] * $download['quantity'];
 				}
-			}
 			break;
 
 		case 'cart_threshold':
@@ -178,6 +176,7 @@ class EDD_Discounts {
 				$count++;
 			}
 			$price = $subtotal;
+			break;
 		}
 		$price = $price < 0 ? 0 : $price;
 		return $price;
@@ -194,17 +193,17 @@ class EDD_Discounts {
 		return false;
 	}
 
-	public function get_discount( $download ) {
+	public function get_discount( $download, $cart, $quantity ) {
 		if ( !isset($download['price'])){
 			return;
 		}
-		$discount = $this->get_customer_discount( $download );
+		$discount = $this->get_customer_discount( $download,$cart, $quantity );
 		if ( ! empty( $discount ) ) {
 			return $discount;
 		}
 	}
 
-	private function is_applicable( $discount, $product, $customer ) {
+	private function is_applicable( $discount, $product, $customer,$cart, $quantity ) {
 
 		// take id and make WP_User
 		$customer = new WP_User($customer);
@@ -214,16 +213,12 @@ class EDD_Discounts {
 			return false;
 		}
 
-		$cart     = edd_get_cart_contents();
+		//$cart     = edd_get_cart_contents();
 		// Check if product matches quantity discounts
 		switch ( $discount['type'] ) {
 			case 'cart_quantity':
 
-				$quantity = 0;
-
-				foreach ( $cart as $item ) {
-					$quantity += $item['quantity'];
-				}
+				//$quantity = edd_get_cart_quantity();
 
 				if ( $quantity < $discount['quantity'] ) {
 					return false;
@@ -297,13 +292,15 @@ class EDD_Discounts {
 		}
 
 		// start praying
+		$quantity = edd_get_cart_quantity();
+		$cart = edd_get_cart_contents();
 		EDD()->session->set( 'edd_cart', NULL );
 		foreach ( $cart_details as $item => $val ) {
 			$val['item_number']['options']['quantity'] = $val['quantity'];
 			edd_add_to_cart( $val['id'], $val['item_number']['options'] );
 			
 			// Apply the discount (if available)
-			$discount = $this->get_discount( $val );
+			$discount = $this->get_discount( $val, $cart, $quantity );
 			$amount = -1 * (double) $discount['amount'];
 			if ( $amount < 0 ) {
 				EDD()->fees->add_fee( $amount, $discount['name'], 'edd_dp_'.$val['id']);
