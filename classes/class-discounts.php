@@ -84,99 +84,99 @@ class EDD_Discounts {
 
 		switch ( $discount['type'] ) {
 
-			// Cart discounts
-		case 'cart_quantity':
-				if ( strpos( $discount['value'], '%' ) !== false ) {
-					// Percentage value
-					$val = round( ( (float) $discount['value'] ) / 100, 2 );
-					$price = $price * $val;
-				} else {
-					// Fixed value
-					$price = (float) $discount['value'] * $download['quantity'];
-				}
-			break;
-
-		case 'cart_threshold':
-			$value = 0.0;
-			if ( strpos( $discount['value'], '%' ) !== false ) {
-				// Percentage value
-				$price = round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 ) * $download['quantity'];
-			} else {
-				// Fixed value
-				$price = ($price - (float) $discount['value'] * $price / $value) * $download['quantity'];
-			}
-			break;
-			// Product discounts
-		case 'fixed_price':
-			$price = (float) $discount['value'] * $download['quantity'];
-			break;
-
-		case 'percentage_price':
-			$val = round( ( (float) $discount['value'] ) / 100, 2 );
-			$price = $price * $val;
-			break;
-
-			// TODO: these cases below all need to be fixed for variable products
-		case 'product_quantity':
-			if ( $this->has_product( $download, $discount, $download['quantity'] ) ) {
-				if ( strpos( $discount['value'], '%' ) !== false ) {
-					// Percentage value
-					$val = round( ( (float) $discount['value'] ) / 100, 2 );
-					$price = $price * $val;
-				} else {
-					// Fixed value
-					$price = (float) $discount['value'] * $download['quantity'];
-				}
-			}
-			break;
-
-		case 'each_x_products':
-			$quantity = $download['quantity'];
-			$count = 1;
-			$subtotal = 0.00;
-			$discountValue = 0;
-			while ( $count <= $quantity ){
-				if ( $quantity >= $discount['quantity'] ) {
+				// Cart discounts
+			case 'cart_quantity':
 					if ( strpos( $discount['value'], '%' ) !== false ) {
 						// Percentage value
 						$val = round( ( (float) $discount['value'] ) / 100, 2 );
 						$price = $price * $val;
 					} else {
 						// Fixed value
-						$discountValue = (float) $discount['value'];
+						$price = (float) $discount['value'] * $download['quantity'];
 					}
-					if ( $count % $discount['quantity'] == 0 ) {
-						$subtotal += $discountValue;
-					}
-				}
-				$count++;
-			}
-			$price = $subtotal;
-			break;
+				break;
 
-		case 'from_x_products':
-			$quantity = $download['quantity'];
-			$count = 1;
-			$subtotal = 0.00;
-			$discountValue = 0;
-			while ( $count <= $quantity ){
-				if ( $quantity >= $discount['quantity'] ) {
+			case 'cart_threshold':
+				$value = 0.0;
+				if ( strpos( $discount['value'], '%' ) !== false ) {
+					// Percentage value
+					$price = round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 ) * $download['quantity'];
+				} else {
+					// Fixed value
+					$price = ($price - (float) $discount['value'] * $price / $value) * $download['quantity'];
+				}
+				break;
+				// Product discounts
+			case 'fixed_price':
+				$price = (float) $discount['value'] * $download['quantity'];
+				break;
+
+			case 'percentage_price':
+				$val = round( ( (float) $discount['value'] ) / 100, 2 );
+				$price = $price * $val;
+				break;
+
+				// TODO: these cases below all need to be fixed for variable products
+			case 'product_quantity':
+				if ( $this->has_product( $download, $discount, $download['quantity'] ) ) {
 					if ( strpos( $discount['value'], '%' ) !== false ) {
 						// Percentage value
 						$val = round( ( (float) $discount['value'] ) / 100, 2 );
 						$price = $price * $val;
 					} else {
 						// Fixed value
-						$discountValue = (float) $discount['value'];
-					}
-					if ( $count >= $discount['quantity'] ) {
-						$subtotal += $discountValue;
+						$price = (float) $discount['value'] * $download['quantity'];
 					}
 				}
-				$count++;
-			}
-			$price = $subtotal;
-			break;
+				break;
+
+			case 'each_x_products':
+				$quantity = $download['quantity'];
+				$count = 1;
+				$subtotal = 0.00;
+				$discountValue = 0;
+				while ( $count <= $quantity ){
+					if ( $quantity >= $discount['quantity'] ) {
+						if ( strpos( $discount['value'], '%' ) !== false ) {
+							// Percentage value
+							$val = round( ( (float) $discount['value'] ) / 100, 2 );
+							$price = $price * $val;
+						} else {
+							// Fixed value
+							$discountValue = (float) $discount['value'];
+						}
+						if ( $count % $discount['quantity'] == 0 ) {
+							$subtotal += $discountValue;
+						}
+					}
+					$count++;
+				}
+				$price = $subtotal;
+				break;
+
+			case 'from_x_products':
+				$quantity = $download['quantity'];
+				$count = 1;
+				$subtotal = 0.00;
+				$discountValue = 0;
+				while ( $count <= $quantity ){
+					if ( $quantity >= $discount['quantity'] ) {
+						if ( strpos( $discount['value'], '%' ) !== false ) {
+							// Percentage value
+							$val = round( ( (float) $discount['value'] ) / 100, 2 );
+							$price = $price * $val;
+						} else {
+							// Fixed value
+							$discountValue = (float) $discount['value'];
+						}
+						if ( $count >= $discount['quantity'] ) {
+							$subtotal += $discountValue;
+						}
+					}
+					$count++;
+				}
+				$price = $subtotal;
+				break;
 		}
 		$price = $price < 0 ? 0 : $price;
 		return $price;
