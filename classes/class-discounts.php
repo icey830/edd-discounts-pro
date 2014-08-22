@@ -62,7 +62,7 @@ class EDD_Discounts {
 			$result[$id]['groups']     = isset( $data['groups'] )     ? $data['groups']           : array()       ;
 			$result[$id]['start']      = isset( $data['start'] )      ? $data['start']            : false         ;
 			$result[$id]['end']        = isset( $data['end'] )        ? $data['end']              : false         ;
-			$result[$id]['cust']       = isset( $data['cust'] )       ? $data['cust']             : 'all'         ;
+			$result[$id]['cust']       = isset( $data['cust'] )       ? $data['cust']             : false         ;
 			$result[$id]['amount']     = $this->calculate_discount( $result[$id], $cart, $customer_id );
 			if ( is_string( $result[$id]['products'] ) ) {
 				$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
@@ -231,7 +231,15 @@ class EDD_Discounts {
 		}
 
 		// todo: check start and end dates
-		// todo: check cust
+
+
+		// if discount is only for previous customers and customer does not have any previous purchases
+		if ( $discount['cust'] ){
+			if ( !edd_has_purchases( $customer_id ) ){
+				return 0;
+			}
+		}
+		
 		// good to go for discount
 		$amount = 0;
 		if ( strpos( $discount['value'], '%' ) !== false ) {
@@ -243,21 +251,6 @@ class EDD_Discounts {
 			$amount = (float) $discount['value'] * $quantity;
 		}
 		return $amount;
-	}
-
-	private function customer_applicability( $rule, $customer = false ){
-		if ( $rule == 'all'){
-			return true;
-		}
-		else if ( $rule == 'new' ){
-
-		}
-		else if ( $rule == 'returning' ){
-
-		}
-		else{
-			return true;
-		}
 	}
 
 	private function is_applicable( $discount, $customer, $cart, $product = false ) {
@@ -349,6 +342,13 @@ class EDD_Discounts {
 			}
 		}
 		// todo: check start and end dates
+
+		// if discount is only for previous customers and customer does not have any previous purchases
+		if ( $discount['cust'] ){
+			if ( !edd_has_purchases( $customer_id ) ){
+				return 0;
+			}
+		}
 
 		return true;
 	}

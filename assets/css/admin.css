@@ -13,3 +13,7 @@ input#quantity, .select2-container {
 .form-field input{
 	margin-right: 5%;
 }
+input#cust {
+	width: 1%;
+	margin-right: 99%;
+}

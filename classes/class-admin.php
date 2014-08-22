@@ -447,6 +447,15 @@ class EDD_Admin {
 		});
 	</script>
 	<?php
+	$args = array(
+		'id'          => 'cust',
+		'label'       => __( 'Apply for previous customers only', 'edd_dp' ),
+		'type'        => 'checkbox',
+		'desc'        => __( 'When checked, only previous customers will be eligible for this discount', 'edd_dp' ),
+		'placeholder' => '0',
+		'min'         => 0
+	);
+	echo $this->input( $args );
 	}
 
 	public function form_updated_message( $messages ) {
@@ -535,9 +544,9 @@ class EDD_Admin {
 		}
 
 		if ( isset( $_POST['cust'] ) ) {
-			$cust = sanitize_text_field( $_POST['cust'] );
+			$cust = true;
 		} else {
-			$cust = '';
+			$cust = false;
 		}
 
 		if ( isset( $_POST['groups'] ) ) {
