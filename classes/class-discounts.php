@@ -231,11 +231,11 @@ class EDD_Discounts {
 		}
 
 		// check start and end dates
-		if ( strtotime( $discount['start'] ) > $strtotime("now") && $discount['start'] !== '' ){
+		if ( $discount['start'] !== '' && strtotime( $discount['start'] ) > strtotime("now") ){
 			return 0;
 		}
 
-		if ( strtotime( $discount['end'] ) < $strtotime("now") && $discount['end'] !== '' ){
+		if ( $discount['end'] !== '' && strtotime( $discount['end'] ) < strtotime("now") ){
 			return 0;
 		}
 
@@ -348,11 +348,11 @@ class EDD_Discounts {
 			}
 		}
 		// check start and end dates	
-		if ( strtotime( $discount['start'] ) > $strtotime("now") && $discount['start'] !== '' ){
+		if ( $discount['start'] !== '' && strtotime( $discount['start'] ) > strtotime("now") ){
 			return 0;
 		}
 
-		if ( strtotime( $discount['end'] ) < $strtotime("now") && $discount['end'] !== '' ){
+		if ( $discount['end'] !== '' && strtotime( $discount['end'] ) < strtotime("now") ){
 			return 0;
 		}
 

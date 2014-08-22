@@ -531,14 +531,14 @@ class EDD_Admin {
 			$users = '';
 		}
 
-		if ( isset( $_POST['start'] ) ) {
-			$start = sanitize_text_field( $_POST['start'] );
+		if ( isset( $_POST['dp-date-start'] ) ) {
+			$start = sanitize_text_field( $_POST['dp-date-start'] );
 		} else {
 			$start = '';
 		}
 
-		if ( isset( $_POST['end'] ) ) {
-			$end = sanitize_text_field( $_POST['end'] );
+		if ( isset( $_POST['dp-date-end'] ) ) {
+			$end = sanitize_text_field( $_POST['dp-date-end'] );
 		} else {
 			$end = '';
 		}
@@ -588,6 +588,7 @@ class EDD_Admin {
 		$new_columns['title']  = __( 'Name', 'edd_dp' );
 		$new_columns['type']   = __( 'Type', 'edd_dp' );
 		$new_columns['value']  = __( 'Value', 'edd_dp' );
+		$new_columns['status']  = __( 'Status', 'edd_dp' );
 		$new_columns['users']  = __( 'Users', 'edd_dp' );
 		$new_columns['groups'] = __( 'Roles', 'edd_dp' );
 		$new_columns['date']   = __( 'Date', 'edd_dp' );
@@ -651,6 +652,27 @@ class EDD_Admin {
 					echo rtrim( $links, ', ' );
 
 				}
+				break;
+
+			case 'status':
+				$start = get_post_meta( $post_id, 'start', true );
+				$end   = get_post_meta( $post_id, 'end', true );
+				if ( $start === '' && $end === '' ){
+					_e('N/A','edd_dp');
+					return;
+				}
+
+				if ( $start !== '' && strtotime( $start ) > strtotime("now") ){
+					_e('Waiting to Begin','edd_dp');
+					return;
+				}
+
+				if ( $end !== '' && strtotime( $end ) < strtotime("now") ){
+					_e('Finished','edd_dp');
+					return;
+				}
+				_e('In progress','edd_dp');
+				return;
 				break;
 			default :
 				echo $column;
