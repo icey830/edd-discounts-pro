@@ -36,7 +36,7 @@ class EDD_Discounts {
 		if ( isset( $discounts[0] ) ){
 			return $discounts[0];
 		}
-		return 0;
+		return false;
 	}
 
 	public function get_discounts( $discount, $customer_id, $cart ) {
