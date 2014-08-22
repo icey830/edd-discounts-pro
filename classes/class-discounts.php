@@ -104,16 +104,6 @@ class EDD_Discounts {
 						}
 				}
 				break;
-			// simple flat rate or percentage off product(s)
-			case 'fixed_price':
-			case 'percentage_price':
-				foreach( $cart_items as $key => $item ) {
-					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
-					$quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
-					$product_id = $item['id'];
-					$amount += $this->simple_discount_amount( $discount, $customer_id, $cart, $product_id, $quantity, $item_price );
-				}
-				break;
 			// discount for quantities of a product
 			case 'product_quantity':
 				foreach( $cart_items as $key => $item ) {
@@ -170,6 +160,17 @@ class EDD_Discounts {
 						}
 					}
 					$cart_quantity += $quantity;
+				}
+				break;
+			// simple flat rate or percentage off product(s)
+			case 'fixed_price':
+			case 'percentage_price':
+			default:
+				foreach( $cart_items as $key => $item ) {
+					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+					$quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$product_id = $item['id'];
+					$amount += $this->simple_discount_amount( $discount, $customer_id, $cart, $product_id, $quantity, $item_price );
 				}
 				break;
 		}
