@@ -451,7 +451,7 @@ class EDD_Admin {
 		'id'          => 'cust',
 		'label'       => __( 'Apply for previous customers only', 'edd_dp' ),
 		'type'        => 'checkbox',
-		'desc'        => __( 'When checked, only previous customers will be eligible for this discount', 'edd_dp' ),
+		'desc'        => __( 'When checked, only customers who have previously made purchases will be eligible for this discount', 'edd_dp' ),
 		'placeholder' => '0',
 		'min'         => 0
 	);
