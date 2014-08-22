@@ -135,27 +135,22 @@ class EDD_Discounts {
 				break;
 
 			case 'each_x_products':
-				$quantity = $download['quantity'];
 				$count = 1;
-				$subtotal = 0.00;
-				$discountValue = 0;
-				while ( $count <= $quantity ){
-					if ( $quantity >= $discount['quantity'] ) {
-						if ( strpos( $discount['value'], '%' ) !== false ) {
-							// Percentage value
-							$val = round( ( (float) $discount['value'] ) / 100, 2 );
-							$price = $price * $val;
-						} else {
-							// Fixed value
-							$discountValue = (float) $discount['value'];
+				foreach( $cart_items as $key => $item ) {
+					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$product_id = $item['id'];
+					$disc = $this->simple_discount_amount( $discount, $customer_id, $cart, $product_id, $cart_quantity, $item_price );
+					if ( $disc > 0 ){
+						if ( $count == $discount['quantity'] ){
+							$amount += $disc;
+							$count = 1;
 						}
-						if ( $count % $discount['quantity'] == 0 ) {
-							$subtotal += $discountValue;
+						else{
+							$count++;
 						}
 					}
-					$count++;
 				}
-				$price = $subtotal;
 				break;
 
 			case 'from_x_products':
