@@ -279,6 +279,21 @@ class EDD_Admin {
 		);
 		echo $this->select( $args );
 
+		$tags = array();
+		foreach ( get_terms( 'download_tag', array( 'hide_empty' => false ) ) as $tag ) {
+			$tags[ $tag->term_id ] = $tag->name;
+		}
+		$args = array(
+			'id'          => 'tags',
+			'label'       => __( 'Tags', 'edd_dp' ),
+			'desc'        => __( 'Control which product tags this discount can apply to.', 'edd_dp' ),
+			'multiple'    => true,
+			'placeholder' => __( 'Any tag', 'edd_dp' ),
+			'class'       => 'select long',
+			'options'     => $tags
+		);
+		echo $this->select( $args );
+
 		$selected = implode( ',', (array) get_post_meta( $post->ID, 'users', true ) );
 		$args     = array(
 			'id'          => 'users',
