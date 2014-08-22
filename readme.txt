@@ -5,7 +5,7 @@
  * Author:              Chris Christoff
  * Author URI:          http://www.chriscct7.com
  *
- * Version:             1.0
+ * Version:             1.1
  * Requires at least:   3.9
  * Tested up to:        4.0
  *

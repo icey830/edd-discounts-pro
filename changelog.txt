@@ -1,3 +1,16 @@
+1.1: 8/25/2014
+* Fixes issue where discount used might not have always been greatest discount
+* Rewrote how discounts pro calculates prices to go from calculating on each add to cart to 1 overall calculation.
+	This removes the need to clear the cart on each call, removes alot of logic from the program, and overall
+	simplifies how Discounts Pro works. This also significantly speeds up the plugin on the frontend.
+* Added frontend display option
+* Added ability to add start and end dates to discounts
+* Added ability to filter discounts by tags
+* Added cart threshold discount type
+* Added indication of what matched in user search on the edit discount page
+* Added ability to filter discounts by previous customer
+* Cleaner backend UI
+
 1.0.1: 8/21/2014
 * Fixes issue with product quantity
 
