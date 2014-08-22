@@ -153,7 +153,7 @@ class EDD_Discounts {
 				$result[$id]['start']      = isset( $data['start'] )      ? $data['start']            : false         ;
 				$result[$id]['end']        = isset( $data['end'] )        ? $data['end']              : false         ;
 				$result[$id]['cust']       = isset( $data['cust'] )       ? $data['cust']             : false         ;
-				$result[$id]['amount']     = $this->simple_discount_amount( $discount, $customer_id, $download_id, 1, $item_price );
+				$result[$id]['amount']     = $this->simple_discount_amount( $result[$id], $customer_id, $download_id, 1, $item_price );
 				if ( is_string( $result[$id]['products'] ) ) {
 					$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
 				}
