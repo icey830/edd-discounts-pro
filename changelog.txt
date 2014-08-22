@@ -7,9 +7,7 @@
 * Added ability to add start and end dates to discounts
 * Added ability to filter discounts by tags
 * Added cart threshold discount type
-* Added indication of what matched in user search on the edit discount page
 * Added ability to filter discounts by previous customer
-* Cleaner backend UI
 
 1.0.1: 8/21/2014
 * Fixes issue with product quantity
