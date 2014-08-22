@@ -18,8 +18,42 @@ class EDD_Admin {
 		add_action( 'wp_ajax_edd_json_search_users_ajax', array( $this, 'ajax_search_user_vars' ) );
 		add_filter( 'manage_edit-customer_discount_columns', array( $this, 'columns' ) );
 		add_action( 'manage_customer_discount_posts_custom_column', array( $this, 'column_value' ), 10, 2 );
+		if ( version_compare( EDD_VERSION, '2.1' ) >= 0 ){
+			add_filter( 'edd_settings_extensions', array( $this, 'settings' ), -1 );
+		}
 	}
 
+    public function settings( $settings ) {
+        $new_settings = array(
+            array(
+                'id'    => 'edd_dp_settings',
+                'name'  => '<strong>' . __( 'Discount Pro Settings', 'edd-dp' ) . '</strong>',
+                'desc'  => __( 'Configure Discount Pro Settings', 'edd-dp' ),
+                'type'  => 'header',
+            ),
+			array(
+				'id' => 'edd_dp_frontend_output_toggle',
+				'name' => __( 'Display Discounted Price on Products', 'edd_sl' ),
+				'desc' => __( 'Check this box if you want Discounts Pro to show', 'edd_sl' ),
+				'type' => 'checkbox'
+			),
+			array(
+				'id' => 'edd_dp_frontend_output_content',
+				'name' => __( 'Frontend Price Display', 'edd_sl' ),
+				'type' => 'textarea',
+				'desc' => __( 'Enter how you want product prices to show. Use template tags below to customize.', 'edd_dp' ) . '<br/>' .
+							'{oldprice} - ' . __( 'The old price (formatted)', 'edd_dp' ) . '<br/>' .
+							'{newprice} - ' . __( 'The new price (formatted)', 'edd_dp' ) . '<br/>' .
+							'{savings}  - ' . __( 'The amount saved', 'edd_dp' ) . '<br/>' .
+							'{download_id}  - ' . __( 'The id of the download', 'edd_dp' ) . '<br/>' .
+							'{discount_title} - ' . __( 'The name of the discount', 'edd_dp' ),
+				'std' => '<span class="edd_price" id="edd_price_{download_id}">{oldprice}</span>'
+			)
+        );
+
+        return array_merge( $settings, $new_settings );
+    }
+	
 	public static function input( $field ) {
 		global $post;
 		$args = array(
