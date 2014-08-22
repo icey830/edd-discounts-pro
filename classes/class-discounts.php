@@ -33,15 +33,10 @@ class EDD_Discounts {
 		// Debugging help: if you var_dump right here, you'll get a nice array with *all* the discounts
 		// 				   and how much each customer_discount would discount the item
 		// var_dump($discounts);
-
-		// find the first applicable discount
-		foreach ( $discounts as $discount ) {
-			$is_applicable = $this->is_applicable( $discount, $customer_id, $cart );
-			if ( $is_applicable ) {
-				return $discount;
-			}
+		if ( isset( $discounts[0] ) ){
+			return $discounts[0];
 		}
-		return false;
+		return 0;
 	}
 
 	public function get_discounts( $discount, $customer_id, $cart ) {
@@ -257,113 +252,6 @@ class EDD_Discounts {
 			$amount = (float) $discount['value'] * $quantity;
 		}
 		return $amount;
-	}
-
-	private function is_applicable( $discount, $customer, $cart, $product = false ) {
-		// if discount type is percentage or flat rate return true since validation is done during that function
-		if ( $discount['type'] == 'percentage' || $discount['type'] == 'fixed_price' ){
-			return true;
-		}
-
-		// take id and make WP_User
-		$customer = new WP_User($customer);
-
-		// Check if discount is applicable to the product
-		if ( ! empty( $discount['products']) && !in_array( $product['id'], $discount['products'] ) ) {
-			return false;
-		}
-
-		//$cart     = edd_get_cart_contents();
-		// Check if product matches quantity discounts
-		switch ( $discount['type'] ) {
-			case 'cart_quantity':
-
-				//$quantity = edd_get_cart_quantity();
-
-				if ( $quantity < $discount['quantity'] ) {
-					return false;
-				}
-
-				break;
-
-			case 'product_quantity':
-
-				$quantity = 0;
-
-				foreach ( $cart as $cart_item ) {
-					// Simple products
-					if ( $cart_item['id'] == $product['id'] && ( empty( $discount['products'] ) || in_array( $cart_item['id'], $discount['products']) ) ) {
-						$quantity += $cart_item['quantity'];
-					}
-
-				}
-
-				if ( $quantity < $discount['quantity'] ) {
-					return false;
-				}
-
-				break;
-		}
-
-		// Check if it is applicable to current user
-		if ( !empty( $discount['users'] ) && is_array( $discount['users'] ) && ( !$customer || !in_array( $customer->ID, $discount['users'] ) ) ) {
-			return false;
-		}
-
-		// Check if current user is in an applicable group
-		if ( !empty( $discount['groups'] ) && ( !$customer || array_intersect( $customer->roles, $discount['groups'] ) == array() ) ) {
-			return false;
-		}
-
-
-		$product['categories'] = wp_get_post_terms( $product['id'], 'download_category', array(
-			 'fields' => 'ids' 
-		) );
-
-		$product['tags'] = wp_get_post_terms( $product['id'], 'download_tag', array(
-			 'fields' => 'ids' 
-		) );
-
-		// Check if product is in a category of discount
-		if ( !empty( $discount['categories'] ) ) {
-			if ( !empty( $product['categories'] )){
-				if ( array_intersect( $product['categories'], $discount['categories'] ) == array() ) {
-					return false;
-				}
-			}
-			else{
-				return false;
-			}
-		}
-
-		// Check if product is in a category of discount
-		if ( !empty( $discount['tags'] ) ) {
-			if ( !empty( $product['tags'] )){
-				if ( array_intersect( $product['tags'], $discount['tags'] ) == array() ) {
-					return 0;
-				}
-			}
-			else{
-				return 0;
-			}
-		}
-		// check start and end dates	
-		if ( $discount['start'] !== '' && strtotime( $discount['start'] ) > strtotime("now") ){
-			return 0;
-		}
-
-		if ( $discount['end'] !== '' && strtotime( $discount['end'] ) < strtotime("now") ){
-			return 0;
-		}
-
-		// if discount is only for previous customers and customer does not have any previous purchases
-		if ( $discount['cust'] ){
-			if ( !edd_has_purchases( $customer_id ) ){
-				return 0;
-			}
-		}
-
-		return true;
 	}
 
 	public function apply_discount() {
