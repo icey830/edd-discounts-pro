@@ -6,21 +6,89 @@ if ( !defined( 'ABSPATH' ) ) {
 class EDD_Discounts {
 
 	public function __construct() {
-		add_action( 'template_redirect', array( $this, 'apply_discounts' ) );
-		add_action( 'init', array( $this, 'apply_discounts' ),11 );
+		add_action( 'template_redirect', array( $this, 'apply_discount' ) );
+		add_action( 'init', array( $this, 'apply_discount' ),11 );
+		if ( version_compare( EDD_VERSION, '2.1' ) >= 0 ){
+			add_filter( 'edd_download_price_after_html', array($this, 'edd_price' ), 10, 3 );
+		}
 	}
 
-	public function get_customer_discount( $download = false, $cart, $quantity ) {
-		if ( ! $download ){
-			return null;
+	public function edd_price( $formatted_price, $download_id, $price ){
+		$custom = edd_get_option( 'edd_dp_frontend_output_toggle', false );
+		if ( !$custom ){
+			return $formatted_price;
+		}
+		else{
+			$output   = edd_get_option( 'edd_dp_frontend_output_content', '<span class="edd_price" id="edd_price_{download_id}">{oldprice}</span>' );
+			$discount = $this->get_simple_discount( $download_id );
+			if ( !$discount ){
+				return $formatted_price;
+			}
+			$savings = '';
+			if ( strpos( $discount['value'], '%' ) !== false ) {
+				// Percentage value
+				$savings = $discount['value']. ' ' . __('off', 'edd_dp');
+				$savings = apply_filters( 'edd_dp_edd_price_savings_percent', $savings, $discount, $download_id, $price );
+			} else {
+				// Fixed value
+				$savings = edd_currency_filter( edd_format_amount( $discount['value'] ) ) . ' ' . __('off', 'edd_dp');
+				$savings = apply_filters( 'edd_dp_edd_price_savings_percent', $savings, $discount, $download_id, $price );
+			}
+			$oldprice = 0;
+			if ( edd_has_variable_prices( $download_id ) ) {
+				$prices = edd_get_variable_prices( $download_id );
+				// Return the lowest price
+				$price_float = 0;
+				foreach ( $prices as $key => $value ) {
+					if ( ( ( (float)$prices[ $key ]['amount'] ) < $price_float ) or ( $price_float == 0 ) ) {
+						$price_float = (float)$prices[ $key ]['amount'];
+					}
+					$oldprice = edd_sanitize_amount( $price_float );
+					}
+				} else {
+				$oldprice = edd_get_download_price( $download_id );
+			}
+			global $output_vars;
+			$newprice = $oldprice - $discount['amount'];
+			$output   = str_replace( '{oldprice}', edd_currency_filter( edd_format_amount( $oldprice ) ) , $output );
+			$output   = str_replace( '{newprice}', edd_currency_filter( edd_format_amount( $newprice ) ) , $output );
+			$output   = str_replace( '{savings}', $savings , $output );
+			$output   = str_replace( '{download_id}', $download_id , $output );
+			$output   = str_replace( '{discount_title}', $discount['name'], $output );
+			$output_vars = array(
+				'newprice' => $newprice,
+				'oldprice' => $oldprice,
+				'savings' => $savings,
+				'download_id' => $download_id,
+				'download_title' => $download_title
+			);
+			$custom = edd_get_option( 'edd_dp_frontend_output_override', false );
+			if ( $custom ){
+				add_filter( 'edd_get_download_price', array( $this, 'download_price' ) );
+				//add_filter( 'edd_purchase_variable_prices', array($this, 'download_price_variable') );
+			}
+		
+			return $output;
+		}
+	}
+
+	public function download_price_variable(){
+		global $output_vars;
+		return apply_filters( 'edd_dp_download_price_variable', $output_vars['newprice'], $output_vars );
+	}
+
+	public function download_price(){
+		global $output_vars;
+		return apply_filters( 'edd_dp_download_price',$output_vars['newprice'], $output_vars );
+	}
+
+	public function get_discount( $cart = array(), $customer_id = false  ) {
+		if ( ! $customer_id ) {
+			$customer_id = get_current_user_id();
 		}
 
-		//if ( ! $customer_id ) {
-			$customer_id = get_current_user_id();
-		//}
-
 		// get discounts
-		$discounts = $this->get_discounts( $download, $customer_id,$cart, $quantity );
+		$discounts = $this->get_discounts( $customer_id, $cart );
 
 		// what? no discounts? I'm outta here
 		if ( !$discounts || !is_array( $discounts ) ){
@@ -30,233 +98,264 @@ class EDD_Discounts {
 		// sort discounts so the discount that saves the most is on the top of the array
 		$price = array();
 		foreach ( $discounts as $key => $row ) {
-			$price[$key] = $row['amount'];
+			$discount[$key] = $row['amount'];
 		}
-		array_multisort( $price, SORT_DESC, $discounts );
+		array_multisort( $discount, SORT_DESC, $discounts );
 
 		// Debugging help: if you var_dump right here, you'll get a nice array with *all* the discounts
 		// 				   and how much each customer_discount would discount the item
 		// var_dump($discounts);
-
-		// find the first applicable discount
-		foreach ( $discounts as $discount ) {
-			$is_applicable = $this->is_applicable( $discount, $download, $customer_id,$cart, $quantity );
-			if ( $is_applicable ) {
-				return $discount;
-			}
+		if ( isset( $discounts[0] ) ){
+			return $discounts[0];
 		}
-		return null;
+		return false;
 	}
 
-	public function get_discounts( $download, $customerId,$cart, $quantity ) {
+	public function get_discounts( $discount, $customer_id, $cart ) {
 		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish' );
 		$query = new WP_Query( $args );
 		$result = array();
 		foreach ( $query->posts as $id => $post ) {
 			$data = get_post_meta( $post->ID, 'frontend', true );
-			$result[$id]['name'] = $post->post_title;
-			$result[$id]['id'] = $post->ID;
-			$result[$id]['type'] = $data['type'];
-			$result[$id]['quantity'] =  (int) $data['quantity'];
-			$result[$id]['value'] = $data['value'];
-			$result[$id]['products'] = $data['products'];
-			$result[$id]['categories'] = $data['categories'];
-			$result[$id]['users'] = $data['users'];
-			$result[$id]['groups'] = get_post_meta( $post->ID, 'groups', true ) ;
-			$result[$id]['amount'] = $this->calculate_new_product_price( $result[$id], $download,$cart, $quantity );
+			$result[$id]['name']       = isset( $post->title )        ? $post->title              : 'Discount'    ;
+			$result[$id]['id']         = isset( $post->ID )           ? $post->ID                 : false         ;
+			$result[$id]['type']       = isset( $data['type'] )       ? $data['type']             : 'fixed_price' ;
+			$result[$id]['quantity']   = isset( $data['quantity'] )   ? (int) $data['quantity']   : 0             ;
+			$result[$id]['value']      = isset( $data['value'] )      ? (int) $data['value']      : 0             ;
+			$result[$id]['products']   = isset( $data['products'] )   ? $data['products']         : array()       ;
 			if ( is_string( $result[$id]['products'] ) ) {
 				$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
 			}
+			$result[$id]['categories'] = isset( $data['categories'] ) ? $data['categories']       : array()       ;
+			$result[$id]['tags']       = isset( $data['tags'] )       ? $data['tags']             : array()       ;
+			$result[$id]['users']      = isset( $data['users'] )      ? $data['users']            : array()       ;
+			$result[$id]['groups']     = isset( $data['groups'] )     ? $data['groups']           : array()       ;
+			$result[$id]['start']      = isset( $data['start'] )      ? $data['start']            : false         ;
+			$result[$id]['end']        = isset( $data['end'] )        ? $data['end']              : false         ;
+			$result[$id]['cust']       = isset( $data['cust'] )       ? $data['cust']             : false         ;
+			$result[$id]['amount']     = $this->calculate_discount( $result[$id], $cart, $customer_id );
 		}
 		return $result;
 	}
 
+	public function get_simple_discount( $download_id ){
+		$customer_id = get_current_user_id();
+		$item_price = 0;
+		if ( edd_has_variable_prices( $download_id ) ) {
+			$prices = edd_get_variable_prices( $download_id );
+			// Return the lowest price
+			$price_float = 0;
+			foreach ( $prices as $key => $value ) {
+				if ( ( ( (float)$prices[ $key ]['amount'] ) < $price_float ) or ( $price_float == 0 ) ) {
+					$price_float = (float)$prices[ $key ]['amount'];
+				}
+				$item_price = edd_sanitize_amount( $price_float );
+				}
+			} else {
+			$item_price = edd_get_download_price( $download_id );
+		}
+		
+		// get discounts
+		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish' );
+		$query = new WP_Query( $args );
+		$result = array();
+		foreach ( $query->posts as $id => $post ) {
+			$data = get_post_meta( $post->ID, 'frontend', true );
+			if ( isset( $data['type'] ) && ( $data['type'] === 'fixed_price' || $data['type'] === 'percentage_price ') ){
+				$result[$id]['name']       = isset( $post->title )        ? $post->title              : 'Discount'    ;
+				$result[$id]['id']         = isset( $post->ID )           ? $post->ID                 : false         ;
+				$result[$id]['type']       = isset( $data['type'] )       ? $data['type']             : 'fixed_price' ;
+				$result[$id]['quantity']   = isset( $data['quantity'] )   ? (int) $data['quantity']   : 0             ;
+				$result[$id]['value']      = isset( $data['value'] )      ? (int) $data['value']      : 0             ;
+				$result[$id]['products']   = isset( $data['products'] )   ? $data['products']         : array()       ;
+				if ( is_string( $result[$id]['products'] ) ) {
+					$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
+				}
+				$result[$id]['categories'] = isset( $data['categories'] ) ? $data['categories']       : array()       ;
+				$result[$id]['tags']       = isset( $data['tags'] )       ? $data['tags']             : array()       ;
+				$result[$id]['users']      = isset( $data['users'] )      ? $data['users']            : array()       ;
+				$result[$id]['groups']     = isset( $data['groups'] )     ? $data['groups']           : array()       ;
+				$result[$id]['start']      = isset( $data['start'] )      ? $data['start']            : false         ;
+				$result[$id]['end']        = isset( $data['end'] )        ? $data['end']              : false         ;
+				$result[$id]['cust']       = isset( $data['cust'] )       ? $data['cust']             : false         ;
+				$result[$id]['amount']     = $this->simple_discount_amount( $result[$id], $customer_id, $download_id, 1, $item_price );
+			}
+		}
+		$discounts = $result;
 
-	public function calculate_new_product_price( $discount, $download,$cart, $quantity ) {
-		$price = (float) $download['price'];
-		$is_var = false;
-		$var_id = 0;
-		if ( isset( $download['item_number']['options']['price_id'] ) && $download['item_number']['options']['price_id'] !== null ) {
-			// product is variable
-			$is_var = true;
-			$var_id = $download['item_number']['options']['price_id'];
+		// what? no discounts? I'm outta here
+		if ( !$discounts || !is_array( $discounts ) ){
+			return null;
 		}
 
-		switch ( $discount['type'] ) {
+		// sort discounts so the discount that saves the most is on the top of the array
+		$price = array();
+		foreach ( $discounts as $key => $row ) {
+			$discount[$key] = $row['amount'];
+		}
+		array_multisort( $discount, SORT_DESC, $discounts );
 
-				// Cart discounts
+		// Debugging help: if you var_dump right here, you'll get a nice array with *all* the discounts
+		// 				   and how much each customer_discount would discount the item
+		// var_dump($discounts);
+		if ( isset( $discounts[0] ) ){
+			return $discounts[0];
+		}
+		return false;
+	}
+
+
+	public function calculate_discount( $discount, $cart, $customer_id ) {
+		$amount       = 0;
+		$subtotal     = edd_get_cart_subtotal();
+		$quantity     = edd_get_cart_quantity();
+		$cart_details = edd_get_cart_content_details();
+		switch ( $discount['type'] ) {
+			// discount based on number of products in cart
 			case 'cart_quantity':
+				$discount2 = $discount;
+				$discount2['type'] = 'percentage_price';
+				$discount2['value'] = '100%';
+				$quantity = 0;
+				foreach( $cart_items as $key => $item ) {
+					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$product_id = $item['id'];
+					$disc = $this->simple_discount_amount( $discount2, $customer_id, $product_id, $cart_quantity, $item_price );
+					if ( $disc > 0 ){
+						$quantity += $cart_quantity;
+					}
+				}
+				if ( $quantity >= $discount['quantity'] ){
 					if ( strpos( $discount['value'], '%' ) !== false ) {
 						// Percentage value
 						$val = round( ( (float) $discount['value'] ) / 100, 2 );
-						$price = $price * $val;
+						$amount = $subtotal * $val;
 					} else {
 						// Fixed value
-						$price = (float) $discount['value'] * $download['quantity'];
+						$amount = (float) $discount['value'];
 					}
-				break;
-
-			case 'cart_threshold':
-				$value = 0.0;
-				if ( strpos( $discount['value'], '%' ) !== false ) {
-					// Percentage value
-					$price = round( $price - $price * (float) rtrim( $discount['value'], '%' ) / 100, 2 ) * $download['quantity'];
-				} else {
-					// Fixed value
-					$price = ($price - (float) $discount['value'] * $price / $value) * $download['quantity'];
 				}
 				break;
-				// Product discounts
-			case 'fixed_price':
-				$price = (float) $discount['value'] * $download['quantity'];
+			// discount based on cart price
+			case 'cart_threshold':
+				$total = 0; // amount of applicable cart value
+				$discount2 = $discount;
+				$discount2['type'] = 'percentage_price';
+				$discount2['value'] = '100%'; 
+				foreach( $cart_items as $key => $item ) {
+					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$product_id = $item['id'];
+					$total += $this->simple_discount_amount( $discount2, $customer_id, $product_id, $cart_quantity, $item_price );
+				}
+				if ( $total >= $discount['quantity'] ){
+						if ( strpos( $discount['value'], '%' ) !== false ) {
+							// Percentage value
+							$val = round( ( (float) $discount['value'] ) / 100, 2 );
+							$amount = $subtotal * $val;
+						} else {
+							// Fixed value
+							$amount = (float) $discount['value'];
+						}
+				}
 				break;
-
-			case 'percentage_price':
-				$val = round( ( (float) $discount['value'] ) / 100, 2 );
-				$price = $price * $val;
-				break;
-
-				// TODO: these cases below all need to be fixed for variable products
+			// discount for quantities of a product
 			case 'product_quantity':
-				if ( $this->has_product( $download, $discount, $download['quantity'] ) ) {
-					if ( strpos( $discount['value'], '%' ) !== false ) {
-						// Percentage value
-						$val = round( ( (float) $discount['value'] ) / 100, 2 );
-						$price = $price * $val;
-					} else {
-						// Fixed value
-						$price = (float) $discount['value'] * $download['quantity'];
+				foreach( $cart_items as $key => $item ) {
+					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$product_id = $item['id'];
+					if ( $cart_quantity >= $discount['quantity'] ){
+						$amount += $this->simple_discount_amount( $discount, $customer_id, $product_id, $cart_quantity, $item_price );
 					}
 				}
 				break;
 
 			case 'each_x_products':
-				$quantity = $download['quantity'];
 				$count = 1;
-				$subtotal = 0.00;
-				$discountValue = 0;
-				while ( $count <= $quantity ){
-					if ( $quantity >= $discount['quantity'] ) {
-						if ( strpos( $discount['value'], '%' ) !== false ) {
-							// Percentage value
-							$val = round( ( (float) $discount['value'] ) / 100, 2 );
-							$price = $price * $val;
-						} else {
-							// Fixed value
-							$discountValue = (float) $discount['value'];
+				foreach( $cart_items as $key => $item ) {
+					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$product_id = $item['id'];
+					$disc = $this->simple_discount_amount( $discount, $customer_id, $product_id, $cart_quantity, $item_price );
+					if ( $disc > 0 ){
+						if ( $count == $discount['quantity'] ){
+							$amount += $disc;
+							$count = 1;
 						}
-						if ( $count % $discount['quantity'] == 0 ) {
-							$subtotal += $discountValue;
+						else{
+							$count++;
 						}
 					}
-					$count++;
 				}
-				$price = $subtotal;
 				break;
 
 			case 'from_x_products':
-				$quantity = $download['quantity'];
-				$count = 1;
-				$subtotal = 0.00;
-				$discountValue = 0;
-				while ( $count <= $quantity ){
-					if ( $quantity >= $discount['quantity'] ) {
-						if ( strpos( $discount['value'], '%' ) !== false ) {
-							// Percentage value
-							$val = round( ( (float) $discount['value'] ) / 100, 2 );
-							$price = $price * $val;
-						} else {
-							// Fixed value
-							$discountValue = (float) $discount['value'];
+				$cart_quantity =  0 ;
+				foreach( $cart_items as $key => $item ) {
+					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+					$item_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$product_id = $item['id'];
+					// if the cart quantity plus the next download's quantity is over the threshold
+					if ( $cart_quantity + $item_quantity >= $discount['quantity'] ){
+						// if cart_quantity passes discount quantity with a product's quantity, only discount the ones over the limit
+						if ( $discount['quantity'] > $cart_quantity ){
+							$subtract_from_quantity = $discount['quantity'] - $cart_quantity;
+							$item_quantity = $item_quantity - $subtract_from_quantity;
 						}
-						if ( $count >= $discount['quantity'] ) {
-							$subtotal += $discountValue;
+						$amount += $this->simple_discount_amount( $discount, $customer_id, $product_id, $item_quantity, $item_price );
+
+						if ( $discount['quantity'] > $cart_quantity ){
+							$item_quantity = $item_quantity + $subtract_from_quantity;
 						}
 					}
-					$count++;
+					$cart_quantity += $quantity;
 				}
-				$price = $subtotal;
+				break;
+			// simple flat rate or percentage off product(s)
+			case 'fixed_price':
+			case 'percentage_price':
+			default:
+				foreach( $cart_items as $key => $item ) {
+					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+					$item_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$product_id = $item['id'];
+					$amount += $this->simple_discount_amount( $discount, $customer_id, $product_id, $item_quantity, $item_price );
+				}
 				break;
 		}
-		$price = $price < 0 ? 0 : $price;
-		return $price;
-	}
-	private function has_product( $product, $discount, $quantity ) {
-		if (!$quantity){
-			return false;
-		}
-		foreach ( edd_get_cart_contents() as $item ) {
-			if ( $item['id'] == $product['id'] || in_array( $item['id'], $discount['products'] ) ) {
-				return true;
-			}
-		}
-		return false;
+		$amount = $amount < 0 ? 0 : $amount;
+		return $amount;
 	}
 
-	public function get_discount( $download, $cart, $quantity ) {
-		if ( !isset($download['price'])){
-			return;
-		}
-		$discount = $this->get_customer_discount( $download,$cart, $quantity );
-		if ( ! empty( $discount ) ) {
-			return $discount;
-		}
-	}
-
-	private function is_applicable( $discount, $product, $customer,$cart, $quantity ) {
+	private function simple_discount_amount( $discount, $customer, $download_id = false, $quantity = false, $item_price = false   ){
 
 		// take id and make WP_User
 		$customer = new WP_User($customer);
 
+		$product['id'] = $download_id;
+
 		// Check if discount is applicable to the product
 		if ( ! empty( $discount['products']) && !in_array( $product['id'], $discount['products'] ) ) {
-			return false;
-		}
-
-		//$cart     = edd_get_cart_contents();
-		// Check if product matches quantity discounts
-		switch ( $discount['type'] ) {
-			case 'cart_quantity':
-
-				//$quantity = edd_get_cart_quantity();
-
-				if ( $quantity < $discount['quantity'] ) {
-					return false;
-				}
-
-				break;
-
-			case 'product_quantity':
-
-				$quantity = 0;
-
-				foreach ( $cart as $cart_item ) {
-					// Simple products
-					if ( $cart_item['id'] == $product['id'] && ( empty( $discount['products'] ) || in_array( $cart_item['id'], $discount['products']) ) ) {
-						$quantity += $cart_item['quantity'];
-					}
-
-				}
-
-				if ( $quantity < $discount['quantity'] ) {
-					return false;
-				}
-
-				break;
+			return 0;
 		}
 
 		// Check if it is applicable to current user
 		if ( !empty( $discount['users'] ) && is_array( $discount['users'] ) && ( !$customer || !in_array( $customer->ID, $discount['users'] ) ) ) {
-			return false;
+			return 0;
 		}
 
 		// Check if current user is in an applicable group
 		if ( !empty( $discount['groups'] ) && ( !$customer || array_intersect( $customer->roles, $discount['groups'] ) == array() ) ) {
-			return false;
+			return 0;
 		}
 
-
 		$product['categories'] = wp_get_post_terms( $product['id'], 'download_category', array(
+			 'fields' => 'ids' 
+		) );
+
+		$product['tags'] = wp_get_post_terms( $product['id'], 'download_tag', array(
 			 'fields' => 'ids' 
 		) );
 
@@ -264,47 +363,68 @@ class EDD_Discounts {
 		if ( !empty( $discount['categories'] ) ) {
 			if ( !empty( $product['categories'] )){
 				if ( array_intersect( $product['categories'], $discount['categories'] ) == array() ) {
-					return false;
+					return 0;
 				}
 			}
 			else{
-				return false;
+				return 0;
 			}
 		}
 
-		return true;
+		// Check if product is in a category of discount
+		if ( !empty( $discount['tags'] ) ) {
+			if ( !empty( $product['tags'] )){
+				if ( array_intersect( $product['tags'], $discount['tags'] ) == array() ) {
+					return 0;
+				}
+			}
+			else{
+				return 0;
+			}
+		}
+
+		// check start and end dates
+		if ( $discount['start'] !== '' && strtotime( $discount['start'] ) > strtotime("now") ){
+			return 0;
+		}
+
+		if ( $discount['end'] !== '' && strtotime( $discount['end'] ) < strtotime("now") ){
+			return 0;
+		}
+
+		// if discount is only for previous customers and customer does not have any previous purchases
+		if ( $discount['cust'] ){
+			if ( !edd_has_purchases( $customer_id ) ){
+				return 0;
+			}
+		}
+
+		// good to go for discount
+		$amount = 0;
+		if ( strpos( $discount['value'], '%' ) !== false ) {
+			// Percentage value
+			$val = round( ( (float) $discount['value'] ) / 100, 2 );
+			$amount = $quantity * $item_price * $val;
+		} else {
+			// Fixed value
+			$amount = (float) $discount['value'] * $quantity;
+		}
+		return $amount;
 	}
 
-	public function apply_discounts() {
+	public function apply_discount() {
 		$cart_items  = edd_get_cart_contents();
-		$cart_details = edd_get_cart_content_details();
-		$fees = edd_get_cart_fees();
-
 		// for some reason removing the first cart item makes the contents empty
 		if ( empty( $cart_items ) ) {
 			return;
 		}
-
-		foreach ( $fees as $fee => $val ) {
-			if ( substr( $fee, 0, 7 ) === 'edd_dp_' ) {
-				EDD()->fees->remove_fee( $fee );
-			}
-		}
-
-		// start praying
-		$quantity = edd_get_cart_quantity();
-		$cart = edd_get_cart_contents();
-		EDD()->session->set( 'edd_cart', NULL );
-		foreach ( $cart_details as $item => $val ) {
-			$val['item_number']['options']['quantity'] = $val['quantity'];
-			edd_add_to_cart( $val['id'], $val['item_number']['options'] );
-			
-			// Apply the discount (if available)
-			$discount = $this->get_discount( $val, $cart, $quantity );
-			$amount = -1 * (double) $discount['amount'];
-			if ( $amount < 0 ) {
-				EDD()->fees->add_fee( $amount, $discount['name'], 'edd_dp_'.$val['id']);
-			}
+		// remove old discount
+		EDD()->fees->remove_fee( 'edd_discounts_pro' );
+		// get new discount
+		$discount = $this->get_discount( $cart_items );
+		// add new discount
+		if ( $discount ){
+			EDD()->fees->add_fee( $discount['amount'], $discount['name'], 'edd_discounts_pro');
 		}
 	}
 }

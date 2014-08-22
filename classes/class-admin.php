@@ -18,8 +18,48 @@ class EDD_Admin {
 		add_action( 'wp_ajax_edd_json_search_users_ajax', array( $this, 'ajax_search_user_vars' ) );
 		add_filter( 'manage_edit-customer_discount_columns', array( $this, 'columns' ) );
 		add_action( 'manage_customer_discount_posts_custom_column', array( $this, 'column_value' ), 10, 2 );
+		if ( version_compare( EDD_VERSION, '2.1' ) >= 0 ){
+			add_filter( 'edd_settings_extensions', array( $this, 'settings' ), -1 );
+		}
 	}
 
+    public function settings( $settings ) {
+        $new_settings = array(
+            array(
+                'id'    => 'edd_dp_settings',
+                'name'  => '<strong>' . __( 'Discount Pro Settings', 'edd-dp' ) . '</strong>',
+                'desc'  => __( 'Configure Discount Pro Settings', 'edd-dp' ),
+                'type'  => 'header',
+            ),
+			array(
+				'id' => 'edd_dp_frontend_output_toggle',
+				'name' => __( 'Display Discounted Price on Products', 'edd_sl' ),
+				'desc' => __( 'Check this box if you want Discounts Pro to show', 'edd_sl' ),
+				'type' => 'checkbox'
+			),
+			array(
+				'id' => 'edd_dp_frontend_output_override',
+				'name' => __( 'Override price on add to cart buttons', 'edd_sl' ),
+				'desc' => __( 'Check this box if you want Discounts Pro to change the price on non-variable add to cart buttons', 'edd_sl' ),
+				'type' => 'checkbox'
+			),
+			array(
+				'id' => 'edd_dp_frontend_output_content',
+				'name' => __( 'Frontend Price Display', 'edd_sl' ),
+				'type' => 'textarea',
+				'desc' => __( 'Enter how you want product prices to show. Use template tags below to customize.', 'edd_dp' ) . '<br/>' .
+							'{oldprice} - ' . __( 'The old price (formatted)', 'edd_dp' ) . '<br/>' .
+							'{newprice} - ' . __( 'The new price (formatted)', 'edd_dp' ) . '<br/>' .
+							'{savings}  - ' . __( 'The amount saved', 'edd_dp' ) . '<br/>' .
+							'{download_id}  - ' . __( 'The id of the download', 'edd_dp' ) . '<br/>' .
+							'{discount_title} - ' . __( 'The name of the discount', 'edd_dp' ),
+				'std' => '<span class="edd_price" id="edd_price_{download_id}">{oldprice}</span>'
+			)
+        );
+
+        return array_merge( $settings, $new_settings );
+    }
+	
 	public static function input( $field ) {
 		global $post;
 		$args = array(
@@ -279,6 +319,21 @@ class EDD_Admin {
 		);
 		echo $this->select( $args );
 
+		$tags = array();
+		foreach ( get_terms( 'download_tag', array( 'hide_empty' => false ) ) as $tag ) {
+			$tags[ $tag->term_id ] = $tag->name;
+		}
+		$args = array(
+			'id'          => 'tags',
+			'label'       => __( 'Tags', 'edd_dp' ),
+			'desc'        => __( 'Control which product tags this discount can apply to.', 'edd_dp' ),
+			'multiple'    => true,
+			'placeholder' => __( 'Any tag', 'edd_dp' ),
+			'class'       => 'select long',
+			'options'     => $tags
+		);
+		echo $this->select( $args );
+
 		$selected = implode( ',', (array) get_post_meta( $post->ID, 'users', true ) );
 		$args     = array(
 			'id'          => 'users',
@@ -303,7 +358,22 @@ class EDD_Admin {
 			'options'     => $groups
 		);
 		echo $this->select( $args );
-?>
+		$date_format = $this->dateStringToDatepickerFormat(get_option( 'date_format' ));
+		$string = $date_format;
+?>		<p class="form-field dp-date-start"><label for="dp-date-start">Start Date</label>
+        <input id="dp-date-start" type="text" class="datepicker" data-type="text" name="dp-date-start" value="<?php echo get_post_meta( $post->ID, 'start', true ); ?>" size="30" />
+        <span class="description">Select date when this discount may start being used. Leave blank for always on.</span>
+        </p>
+        <p class="form-field dp-date-end"><label for="dp-date-end">End Date</label>
+        <input id="dp-date-end" type="text" class="datepicker" data-type="text" name="dp-date-end" value="<?php echo get_post_meta( $post->ID, 'end', true ); ?>" size="30" />
+        <span class="description">Select end date when this discount may no longer used. Leave blank for always on.</span>
+        </p>
+        <script type="text/javascript">
+            jQuery(function($) {
+				$("#dp-date-start").datepicker({ dateFormat: '<?php echo $string; ?>' });
+				$("#dp-date-end").datepicker({ dateFormat: '<?php echo $string; ?>' });
+            });
+        </script>
 		</div>
 		<script type="text/javascript">
 		var quantity_help = {
@@ -417,6 +487,15 @@ class EDD_Admin {
 		});
 	</script>
 	<?php
+	$args = array(
+		'id'          => 'cust',
+		'label'       => __( 'Apply for previous customers only', 'edd_dp' ),
+		'type'        => 'checkbox',
+		'desc'        => __( 'When checked, only customers who have previously made purchases will be eligible for this discount', 'edd_dp' ),
+		'placeholder' => '0',
+		'min'         => 0
+	);
+	echo $this->checkbox( $args );
 	}
 
 	public function form_updated_message( $messages ) {
@@ -480,10 +559,34 @@ class EDD_Admin {
 			$categories = array();
 		}
 
+		if ( isset( $_POST['tags'] ) ) {
+			$tags = array_map( 'absint', $_POST['tags'] );
+		} else {
+			$tags = array();
+		}
+
 		if ( isset( $_POST['users'] ) ) {
 			$users = sanitize_text_field( $_POST['users'] );
 		} else {
 			$users = '';
+		}
+
+		if ( isset( $_POST['dp-date-start'] ) ) {
+			$start = sanitize_text_field( $_POST['dp-date-start'] );
+		} else {
+			$start = '';
+		}
+
+		if ( isset( $_POST['dp-date-end'] ) ) {
+			$end = sanitize_text_field( $_POST['dp-date-end'] );
+		} else {
+			$end = '';
+		}
+
+		if ( isset( $_POST['cust'] ) ) {
+			$cust = true;
+		} else {
+			$cust = false;
 		}
 
 		if ( isset( $_POST['groups'] ) ) {
@@ -498,18 +601,26 @@ class EDD_Admin {
 			'value'      => $value,
 			'products'   => $products,
 			'categories' => $categories,
+			'tags'       => $tags,
 			'users'      => $users,
-			'groups'     => $groups
+			'groups'     => $groups,
+			'start'      => $start,
+			'end'        => $end,
+			'cust'       => $cust,
 		);
 
-		update_post_meta( $post_id, 'type', $type );
-		update_post_meta( $post_id, 'quantity', $quantity );
-		update_post_meta( $post_id, 'value', $value );
-		update_post_meta( $post_id, 'products', $products );
+		update_post_meta( $post_id, 'type',       $type       );
+		update_post_meta( $post_id, 'quantity',   $quantity   );
+		update_post_meta( $post_id, 'value',      $value      );
+		update_post_meta( $post_id, 'products',   $products   );
 		update_post_meta( $post_id, 'categories', $categories );
-		update_post_meta( $post_id, 'users', $users );
-		update_post_meta( $post_id, 'groups', $groups );
-		update_post_meta( $post_id, 'frontend', $meta );
+		update_post_meta( $post_id, 'tags',       $tags       );
+		update_post_meta( $post_id, 'users',      $users      );
+		update_post_meta( $post_id, 'groups',     $groups     );
+		update_post_meta( $post_id, 'start',      $start      );
+		update_post_meta( $post_id, 'end',        $end        );
+		update_post_meta( $post_id, 'cust',       $cust       );		
+		update_post_meta( $post_id, 'frontend',   $meta       );
 	}
 
 	public function columns( $columns ) {
@@ -517,6 +628,7 @@ class EDD_Admin {
 		$new_columns['title']  = __( 'Name', 'edd_dp' );
 		$new_columns['type']   = __( 'Type', 'edd_dp' );
 		$new_columns['value']  = __( 'Value', 'edd_dp' );
+		$new_columns['status'] = __( 'Status', 'edd_dp' );
 		$new_columns['users']  = __( 'Users', 'edd_dp' );
 		$new_columns['groups'] = __( 'Roles', 'edd_dp' );
 		$new_columns['date']   = __( 'Date', 'edd_dp' );
@@ -580,6 +692,27 @@ class EDD_Admin {
 					echo rtrim( $links, ', ' );
 
 				}
+				break;
+
+			case 'status':
+				$start = get_post_meta( $post_id, 'start', true );
+				$end   = get_post_meta( $post_id, 'end', true );
+				if ( $start === '' && $end === '' ){
+					_e('N/A','edd_dp');
+					return;
+				}
+
+				if ( $start !== '' && strtotime( $start ) > strtotime("now") ){
+					_e('Waiting to Begin','edd_dp');
+					return;
+				}
+
+				if ( $end !== '' && strtotime( $end ) < strtotime("now") ){
+					_e('Finished','edd_dp');
+					return;
+				}
+				_e('In progress','edd_dp');
+				return;
 				break;
 			default :
 				echo $column;
@@ -759,18 +892,47 @@ class EDD_Admin {
 
 	public function get_discount_types() {
 		return array(
-			'fixed_price' => __( 'Fixed Price', 'edd_dp' ),
+			'fixed_price'      => __( 'Fixed Price', 'edd_dp' ),
 			'percentage_price' => __( 'Percentage Price', 'edd_dp' ),
 			'product_quantity' => __( 'Product Quantity', 'edd_dp' ),
-			'each_x_products' => __( 'Each X products', 'edd_dp' ),
-			'from_x_products' => __( 'From X products', 'edd_dp' ),
-			'cart_quantity' => __( 'Products in cart', 'edd_dp' ),
-			//'cart_threshold' => __( 'Cart threshold', 'edd_dp' ) for 1.1
+			'each_x_products'  => __( 'Each X products', 'edd_dp' ),
+			'from_x_products'  => __( 'From X products', 'edd_dp' ),
+			'cart_quantity'    => __( 'Products in cart', 'edd_dp' ),
+			'cart_threshold'   => __( 'Cart threshold', 'edd_dp' )
 		);
 	}
 
 	public function get_discount_type( $key ) {
 		$discount_types = $this->get_discount_types();
 		return isset( $discount_types[$key] ) ? $discount_types[$key] : null;
+	}
+	public function dateStringToDatepickerFormat($dateString){
+		$pattern = array(
+			
+			//day
+			'd',		//day of the month
+			'j',		//3 letter name of the day
+			'l',		//full name of the day
+			'z',		//day of the year
+			
+			//month
+			'F',		//Month name full
+			'M',		//Month name short
+			'n',		//numeric month no leading zeros
+			'm',		//numeric month leading zeros
+			
+			//year
+			'Y', 		//full numeric year
+			'y'		//numeric year: 2 digit
+		);
+		$replace = array(
+			'dd','d','DD','o',
+			'MM','M','m','mm',
+			'yy','y'
+		);
+		foreach($pattern as &$p){
+			$p = '/'.$p.'/';
+		}
+		return preg_replace($pattern,$replace,$dateString);
 	}
 }
