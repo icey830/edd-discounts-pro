@@ -28,11 +28,11 @@ class EDD_Discounts {
 			if ( strpos( $discount['value'], '%' ) !== false ) {
 				// Percentage value
 				$savings = $discount['value']. ' ' . __('off', 'edd_dp');
-				$savings = apply_filters( 'edd_dp_edd_price_savings_percent', $savings, $discount, $download_id, $price )
+				$savings = apply_filters( 'edd_dp_edd_price_savings_percent', $savings, $discount, $download_id, $price );
 			} else {
 				// Fixed value
 				$savings = edd_currency_filter( edd_format_amount( $discount['value'] ) ) . ' ' . __('off', 'edd_dp');
-				$savings = apply_filters( 'edd_dp_edd_price_savings_percent', $savings, $discount, $download_id, $price )
+				$savings = apply_filters( 'edd_dp_edd_price_savings_percent', $savings, $discount, $download_id, $price );
 			}
 			$oldprice = 0;
 			if ( edd_has_variable_prices( $download_id ) ) {
