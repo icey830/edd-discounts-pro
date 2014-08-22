@@ -230,8 +230,10 @@ class EDD_Discounts {
 			}
 		}
 
-		// todo: check start and end dates
-
+		// check start and end dates
+		if ( strtotime( $discount['start'] ) > $strtotime("now")  ||   strtotime( $discount['end'] ) < $strtotime("now") ){
+			return 0;
+		}
 
 		// if discount is only for previous customers and customer does not have any previous purchases
 		if ( $discount['cust'] ){
@@ -239,7 +241,7 @@ class EDD_Discounts {
 				return 0;
 			}
 		}
-		
+
 		// good to go for discount
 		$amount = 0;
 		if ( strpos( $discount['value'], '%' ) !== false ) {
@@ -341,7 +343,10 @@ class EDD_Discounts {
 				return 0;
 			}
 		}
-		// todo: check start and end dates
+		// check start and end dates
+		if ( strtotime( $discount['start'] ) > $strtotime("now")  ||   strtotime( $discount['end'] ) < $strtotime("now") ){
+			return 0;
+		}
 
 		// if discount is only for previous customers and customer does not have any previous purchases
 		if ( $discount['cust'] ){
