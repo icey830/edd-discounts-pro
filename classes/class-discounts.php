@@ -75,20 +75,43 @@ class EDD_Discounts {
 		switch ( $discount['type'] ) {
 			// discount based on number of products in cart
 			case 'cart_quantity':
-					if ( $quantity >= $discount['quantity'] ){
-						if ( strpos( $discount['value'], '%' ) !== false ) {
-							// Percentage value
-							$val = round( ( (float) $discount['value'] ) / 100, 2 );
-							$amount = $subtotal * $val;
-						} else {
-							// Fixed value
-							$amount = (float) $discount['value'];
-						}
+				$discount2 = $discount;
+				$discount2['type'] = 'percentage_price';
+				$discount2['value'] = '100%';
+				$quantity = 0;
+				foreach( $cart_items as $key => $item ) {
+					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$product_id = $item['id'];
+					$disc = $this->simple_discount_amount( $discount2, $customer_id, $cart, $product_id, $cart_quantity, $item_price );
+					if ( $disc > 0 ){
+						$quantity += $cart_quantity;
 					}
+				}
+				if ( $quantity >= $discount['quantity'] ){
+					if ( strpos( $discount['value'], '%' ) !== false ) {
+						// Percentage value
+						$val = round( ( (float) $discount['value'] ) / 100, 2 );
+						$amount = $subtotal * $val;
+					} else {
+						// Fixed value
+						$amount = (float) $discount['value'];
+					}
+				}
 				break;
 			// discount based on cart price
 			case 'cart_threshold':
-				if ( $subtotal >= $discount['quantity'] ){
+				$total = 0; // amount of applicable cart value
+				$discount2 = $discount;
+				$discount2['type'] = 'percentage_price';
+				$discount2['value'] = '100%'; 
+				foreach( $cart_items as $key => $item ) {
+					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$product_id = $item['id'];
+					$total += $this->simple_discount_amount( $discount2, $customer_id, $cart, $product_id, $cart_quantity, $item_price );
+				}
+				if ( $total >= $discount['quantity'] ){
 						if ( strpos( $discount['value'], '%' ) !== false ) {
 							// Percentage value
 							$val = round( ( (float) $discount['value'] ) / 100, 2 );
