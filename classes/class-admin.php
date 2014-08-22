@@ -480,12 +480,36 @@ class EDD_Admin {
 			$categories = array();
 		}
 
+		if ( isset( $_POST['tags'] ) ) {
+			$tags = array_map( 'absint', $_POST['tags'] );
+		} else {
+			$tags = array();
+		}
+
 		if ( isset( $_POST['users'] ) ) {
 			$users = sanitize_text_field( $_POST['users'] );
 		} else {
 			$users = '';
 		}
 
+		if ( isset( $_POST['start'] ) ) {
+			$start = sanitize_text_field( $_POST['start'] );
+		} else {
+			$start = '';
+		}
+
+		if ( isset( $_POST['end'] ) ) {
+			$end = sanitize_text_field( $_POST['end'] );
+		} else {
+			$end = '';
+		}
+
+		if ( isset( $_POST['cust'] ) ) {
+			$cust = sanitize_text_field( $_POST['cust'] );
+		} else {
+			$cust = '';
+		}
+		
 		if ( isset( $_POST['groups'] ) ) {
 			$groups = array_map( 'sanitize_text_field', $_POST['groups'] );
 		} else {
@@ -498,18 +522,26 @@ class EDD_Admin {
 			'value'      => $value,
 			'products'   => $products,
 			'categories' => $categories,
+			'tags'       => $tags,
 			'users'      => $users,
-			'groups'     => $groups
+			'groups'     => $groups,
+			'start'      => $start,
+			'end'        => $end,
+			'cust'       => $cust,
 		);
 
-		update_post_meta( $post_id, 'type', $type );
-		update_post_meta( $post_id, 'quantity', $quantity );
-		update_post_meta( $post_id, 'value', $value );
-		update_post_meta( $post_id, 'products', $products );
+		update_post_meta( $post_id, 'type',       $type       );
+		update_post_meta( $post_id, 'quantity',   $quantity   );
+		update_post_meta( $post_id, 'value',      $value      );
+		update_post_meta( $post_id, 'products',   $products   );
 		update_post_meta( $post_id, 'categories', $categories );
-		update_post_meta( $post_id, 'users', $users );
-		update_post_meta( $post_id, 'groups', $groups );
-		update_post_meta( $post_id, 'frontend', $meta );
+		update_post_meta( $post_id, 'tags',       $tags       );
+		update_post_meta( $post_id, 'users',      $users      );
+		update_post_meta( $post_id, 'groups',     $groups     );
+		update_post_meta( $post_id, 'start',      $start      );
+		update_post_meta( $post_id, 'end',        $end        );
+		update_post_meta( $post_id, 'cust',       $cust       );		
+		update_post_meta( $post_id, 'frontend',   $meta       );
 	}
 
 	public function columns( $columns ) {
