@@ -455,7 +455,7 @@ class EDD_Admin {
 		'placeholder' => '0',
 		'min'         => 0
 	);
-	echo $this->input( $args );
+	echo $this->checkbox( $args );
 	}
 
 	public function form_updated_message( $messages ) {
