@@ -303,7 +303,22 @@ class EDD_Admin {
 			'options'     => $groups
 		);
 		echo $this->select( $args );
-?>
+		$date_format = $this->dateStringToDatepickerFormat(get_option( 'date_format' ));
+		$string = $date_format;
+?>		<p class="form-field dp-date-start"><label for="dp-date-start">Start Date</label>
+        <input id="dp-date-start" type="text" class="datepicker" data-type="text" name="dp-date-start" value="<?php echo get_post_meta( $post->ID, 'start', true ); ?>" size="30" />
+        <span class="description">Select date when this discount may start being used. Leave blank for always on.</span>
+        </p>
+        <p class="form-field dp-date-end"><label for="dp-date-end">End Date</label>
+        <input id="dp-date-end" type="text" class="datepicker" data-type="text" name="dp-date-end" value="<?php echo get_post_meta( $post->ID, 'end', true ); ?>" size="30" />
+        <span class="description">Select end date when this discount may no longer used. Leave blank for always on.</span>
+        </p>
+        <script type="text/javascript">
+            jQuery(function($) {
+				$("#dp-date-start").datepicker({ dateFormat: '<?php echo $string; ?>' });
+				$("#dp-date-end").datepicker({ dateFormat: '<?php echo $string; ?>' });
+            });
+        </script>
 		</div>
 		<script type="text/javascript">
 		var quantity_help = {
@@ -509,7 +524,7 @@ class EDD_Admin {
 		} else {
 			$cust = '';
 		}
-		
+
 		if ( isset( $_POST['groups'] ) ) {
 			$groups = array_map( 'sanitize_text_field', $_POST['groups'] );
 		} else {
@@ -797,12 +812,42 @@ class EDD_Admin {
 			'each_x_products' => __( 'Each X products', 'edd_dp' ),
 			'from_x_products' => __( 'From X products', 'edd_dp' ),
 			'cart_quantity' => __( 'Products in cart', 'edd_dp' ),
-			'cart_threshold' => __( 'Cart threshold', 'edd_dp' ) for 1.1
+			'cart_threshold' => __( 'Cart threshold', 'edd_dp' )
 		);
 	}
 
 	public function get_discount_type( $key ) {
 		$discount_types = $this->get_discount_types();
 		return isset( $discount_types[$key] ) ? $discount_types[$key] : null;
+	}
+	public function dateStringToDatepickerFormat($dateString){
+		$pattern = array(
+			
+			//day
+			'd',		//day of the month
+			'j',		//3 letter name of the day
+			'l',		//full name of the day
+			'z',		//day of the year
+			
+			//month
+			'F',		//Month name full
+			'M',		//Month name short
+			'n',		//numeric month no leading zeros
+			'm',		//numeric month leading zeros
+			
+			//year
+			'Y', 		//full numeric year
+			'y'		//numeric year: 2 digit
+		);
+		$replace = array(
+			'dd','d','DD','o',
+			'MM','M','m','mm',
+			'yy','y'
+		);
+		foreach($pattern as &$p)
+		{
+			$p = '/'.$p.'/';
+		}
+		return preg_replace($pattern,$replace,$dateString);
 	}
 }

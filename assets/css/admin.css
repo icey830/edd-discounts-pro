@@ -10,3 +10,6 @@ input#quantity, .select2-container {
 	clear: both;
 	display: block;
 }
+.form-field input{
+	margin-right: 5%;
+}
