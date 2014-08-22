@@ -108,10 +108,10 @@ class EDD_Discounts {
 			case 'product_quantity':
 				foreach( $cart_items as $key => $item ) {
 					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
-					$quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 					$product_id = $item['id'];
-					if ( $quantity >= $discount['quantity'] ){
-						$amount += $this->simple_discount_amount( $discount, $customer_id, $cart, $product_id, $quantity, $item_price );
+					if ( $cart_quantity >= $discount['quantity'] ){
+						$amount += $this->simple_discount_amount( $discount, $customer_id, $cart, $product_id, $cart_quantity, $item_price );
 					}
 				}
 				break;
@@ -144,19 +144,19 @@ class EDD_Discounts {
 				$cart_quantity =  0 ;
 				foreach( $cart_items as $key => $item ) {
 					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
-					$quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$item_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 					$product_id = $item['id'];
 					// if the cart quantity plus the next download's quantity is over the threshold
-					if ( $cart_quantity + $quantity >= $discount['quantity'] ){
+					if ( $cart_quantity + $item_quantity >= $discount['quantity'] ){
 						// if cart_quantity passes discount quantity with a product's quantity, only discount the ones over the limit
 						if ( $discount['quantity'] > $cart_quantity ){
 							$subtract_from_quantity = $discount['quantity'] - $cart_quantity;
-							$quantity = $quantity - $subtract_from_quantity;
+							$item_quantity = $item_quantity - $subtract_from_quantity;
 						}
-						$amount += $this->simple_discount_amount( $discount, $customer_id, $cart, $product_id, $quantity, $item_price );
+						$amount += $this->simple_discount_amount( $discount, $customer_id, $cart, $product_id, $item_quantity, $item_price );
 
 						if ( $discount['quantity'] > $cart_quantity ){
-							$quantity = $quantity + $subtract_from_quantity;
+							$item_quantity = $item_quantity + $subtract_from_quantity;
 						}
 					}
 					$cart_quantity += $quantity;
@@ -168,9 +168,9 @@ class EDD_Discounts {
 			default:
 				foreach( $cart_items as $key => $item ) {
 					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
-					$quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+					$item_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 					$product_id = $item['id'];
-					$amount += $this->simple_discount_amount( $discount, $customer_id, $cart, $product_id, $quantity, $item_price );
+					$amount += $this->simple_discount_amount( $discount, $customer_id, $cart, $product_id, $item_quantity, $item_price );
 				}
 				break;
 		}

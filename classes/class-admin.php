@@ -588,7 +588,7 @@ class EDD_Admin {
 		$new_columns['title']  = __( 'Name', 'edd_dp' );
 		$new_columns['type']   = __( 'Type', 'edd_dp' );
 		$new_columns['value']  = __( 'Value', 'edd_dp' );
-		$new_columns['status']  = __( 'Status', 'edd_dp' );
+		$new_columns['status'] = __( 'Status', 'edd_dp' );
 		$new_columns['users']  = __( 'Users', 'edd_dp' );
 		$new_columns['groups'] = __( 'Roles', 'edd_dp' );
 		$new_columns['date']   = __( 'Date', 'edd_dp' );
@@ -852,13 +852,13 @@ class EDD_Admin {
 
 	public function get_discount_types() {
 		return array(
-			'fixed_price' => __( 'Fixed Price', 'edd_dp' ),
+			'fixed_price'      => __( 'Fixed Price', 'edd_dp' ),
 			'percentage_price' => __( 'Percentage Price', 'edd_dp' ),
 			'product_quantity' => __( 'Product Quantity', 'edd_dp' ),
-			'each_x_products' => __( 'Each X products', 'edd_dp' ),
-			'from_x_products' => __( 'From X products', 'edd_dp' ),
-			'cart_quantity' => __( 'Products in cart', 'edd_dp' ),
-			'cart_threshold' => __( 'Cart threshold', 'edd_dp' )
+			'each_x_products'  => __( 'Each X products', 'edd_dp' ),
+			'from_x_products'  => __( 'From X products', 'edd_dp' ),
+			'cart_quantity'    => __( 'Products in cart', 'edd_dp' ),
+			'cart_threshold'   => __( 'Cart threshold', 'edd_dp' )
 		);
 	}
 
@@ -890,8 +890,7 @@ class EDD_Admin {
 			'MM','M','m','mm',
 			'yy','y'
 		);
-		foreach($pattern as &$p)
-		{
+		foreach($pattern as &$p){
 			$p = '/'.$p.'/';
 		}
 		return preg_replace($pattern,$replace,$dateString);
