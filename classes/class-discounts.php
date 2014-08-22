@@ -48,16 +48,38 @@ class EDD_Discounts {
 				} else {
 				$oldprice = edd_get_download_price( $download_id );
 			}
-
+			global $output_vars;
 			$newprice = $oldprice - $discount['amount'];
 			$output   = str_replace( '{oldprice}', edd_currency_filter( edd_format_amount( $oldprice ) ) , $output );
 			$output   = str_replace( '{newprice}', edd_currency_filter( edd_format_amount( $newprice ) ) , $output );
 			$output   = str_replace( '{savings}', $savings , $output );
 			$output   = str_replace( '{download_id}', $download_id , $output );
 			$output   = str_replace( '{discount_title}', $discount['name'], $output );
-
+			$output_vars = array(
+				'newprice' => $newprice,
+				'oldprice' => $oldprice,
+				'savings' => $savings,
+				'download_id' => $download_id,
+				'download_title' => $download_title
+			);
+			$custom = edd_get_option( 'edd_dp_frontend_output_override', false );
+			if ( $custom ){
+				add_filter( 'edd_get_download_price', array( $this, 'download_price' ) );
+				//add_filter( 'edd_purchase_variable_prices', array($this, 'download_price_variable') );
+			}
+		
 			return $output;
 		}
+	}
+
+	public function download_price_variable(){
+		global $output_vars;
+		return apply_filters( 'edd_dp_download_price_variable', $output_vars['newprice'], $output_vars );
+	}
+
+	public function download_price(){
+		global $output_vars;
+		return apply_filters( 'edd_dp_download_price',$output_vars['newprice'], $output_vars );
 	}
 
 	public function get_discount( $cart = array(), $customer_id = false  ) {
@@ -101,6 +123,9 @@ class EDD_Discounts {
 			$result[$id]['quantity']   = isset( $data['quantity'] )   ? (int) $data['quantity']   : 0             ;
 			$result[$id]['value']      = isset( $data['value'] )      ? (int) $data['value']      : 0             ;
 			$result[$id]['products']   = isset( $data['products'] )   ? $data['products']         : array()       ;
+			if ( is_string( $result[$id]['products'] ) ) {
+				$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
+			}
 			$result[$id]['categories'] = isset( $data['categories'] ) ? $data['categories']       : array()       ;
 			$result[$id]['tags']       = isset( $data['tags'] )       ? $data['tags']             : array()       ;
 			$result[$id]['users']      = isset( $data['users'] )      ? $data['users']            : array()       ;
@@ -109,9 +134,6 @@ class EDD_Discounts {
 			$result[$id]['end']        = isset( $data['end'] )        ? $data['end']              : false         ;
 			$result[$id]['cust']       = isset( $data['cust'] )       ? $data['cust']             : false         ;
 			$result[$id]['amount']     = $this->calculate_discount( $result[$id], $cart, $customer_id );
-			if ( is_string( $result[$id]['products'] ) ) {
-				$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
-			}
 		}
 		return $result;
 	}
@@ -146,6 +168,9 @@ class EDD_Discounts {
 				$result[$id]['quantity']   = isset( $data['quantity'] )   ? (int) $data['quantity']   : 0             ;
 				$result[$id]['value']      = isset( $data['value'] )      ? (int) $data['value']      : 0             ;
 				$result[$id]['products']   = isset( $data['products'] )   ? $data['products']         : array()       ;
+				if ( is_string( $result[$id]['products'] ) ) {
+					$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
+				}
 				$result[$id]['categories'] = isset( $data['categories'] ) ? $data['categories']       : array()       ;
 				$result[$id]['tags']       = isset( $data['tags'] )       ? $data['tags']             : array()       ;
 				$result[$id]['users']      = isset( $data['users'] )      ? $data['users']            : array()       ;
@@ -154,9 +179,6 @@ class EDD_Discounts {
 				$result[$id]['end']        = isset( $data['end'] )        ? $data['end']              : false         ;
 				$result[$id]['cust']       = isset( $data['cust'] )       ? $data['cust']             : false         ;
 				$result[$id]['amount']     = $this->simple_discount_amount( $result[$id], $customer_id, $download_id, 1, $item_price );
-				if ( is_string( $result[$id]['products'] ) ) {
-					$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
-				}
 			}
 		}
 		$discounts = $result;
@@ -307,10 +329,12 @@ class EDD_Discounts {
 		return $amount;
 	}
 
-	private function simple_discount_amount( $discount, $customer, $product = false, $quantity = false, $item_price = false   ){
+	private function simple_discount_amount( $discount, $customer, $download_id = false, $quantity = false, $item_price = false   ){
 
 		// take id and make WP_User
 		$customer = new WP_User($customer);
+
+		$product['id'] = $download_id;
 
 		// Check if discount is applicable to the product
 		if ( ! empty( $discount['products']) && !in_array( $product['id'], $discount['products'] ) ) {

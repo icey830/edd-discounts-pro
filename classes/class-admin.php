@@ -38,6 +38,12 @@ class EDD_Admin {
 				'type' => 'checkbox'
 			),
 			array(
+				'id' => 'edd_dp_frontend_output_override',
+				'name' => __( 'Override price on add to cart buttons', 'edd_sl' ),
+				'desc' => __( 'Check this box if you want Discounts Pro to change the price on non-variable add to cart buttons', 'edd_sl' ),
+				'type' => 'checkbox'
+			),
+			array(
 				'id' => 'edd_dp_frontend_output_content',
 				'name' => __( 'Frontend Price Display', 'edd_sl' ),
 				'type' => 'textarea',
