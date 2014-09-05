@@ -484,17 +484,13 @@ disabled look for disabled choices in the results dropdown
     padding: 0;
     position: relative;
 
-    border: 1px solid #aaa;
+    border: 1px solid #ddd;
     cursor: text;
     overflow: hidden;
-
-    background-color: #fff;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(1%, #eeeeee), color-stop(15%, #ffffff));
-    background-image: -webkit-linear-gradient(top, #eeeeee 1%, #ffffff 15%);
-    background-image: -moz-linear-gradient(top, #eeeeee 1%, #ffffff 15%);
-    background-image: -o-linear-gradient(top, #eeeeee 1%, #ffffff 15%);
-    background-image: -ms-linear-gradient(top, #eeeeee 1%, #ffffff 15%);
-    background-image: linear-gradient(top, #eeeeee 1%, #ffffff 15%);
+    
+    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
+       -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
 }
 
 .select2-locked {
@@ -525,7 +521,7 @@ disabled look for disabled choices in the results dropdown
 
 .select2-container-multi .select2-choices .select2-search-field input {
     padding: 5px;
-    margin: 1px 0;
+    margin: 0;
 
     font-family: sans-serif;
     font-size: 100%;
