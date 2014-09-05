@@ -203,7 +203,7 @@ class EDD_Discounts {
 		}
 	}
 
-	private function is_applicable( $discount, $product, $customer,$cart, $quantity ) {
+	private function is_applicable( $discount, $product, $customer, $cart, $quantity ) {
 
 		// take id and make WP_User
 		$customer = new WP_User($customer);
@@ -261,13 +261,12 @@ class EDD_Discounts {
 		) );
 
 		// Check if product is in a category of discount
-		if ( !empty( $discount['categories'] ) ) {
-			if ( !empty( $product['categories'] )){
+		if ( ! empty( $discount['categories'] ) ) {
+			if ( ! empty( $product['categories'] )){
 				if ( array_intersect( $product['categories'], $discount['categories'] ) == array() ) {
 					return false;
 				}
-			}
-			else{
+			} else {
 				return false;
 			}
 		}
