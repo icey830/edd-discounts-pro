@@ -421,7 +421,7 @@ class EDD_Discounts {
 		$discount = $this->get_discount( $cart_items );
 		// add new discount
 		if ( isset( $discount['amount'] ) && $discount['amount'] > 0 ){
-			EDD()->fees->add_fee( $discount['amount'], $discount['name'], 'edd_discounts_pro');
+			EDD()->fees->add_fee( -1 * $discount['amount'], $discount['name'], 'edd_discounts_pro');
 		}
 	}
 }
