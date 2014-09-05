@@ -82,10 +82,6 @@ class EDD_Admin {
 		$value     = isset( $value ) ? esc_attr( $value ) : get_post_meta( $post->ID, $id, true );
 		$disc_type = get_post_meta( $post->ID, 'type', true );
 
-		if ( $id == 'value' && $disc_type == 'percentage_price' ) {
-			$value = $value.'%';
-		}
-
 		$name  = isset( $name ) ? $name : $id;
 		$html  = '';
 		$html .= "<p class='form-field {$id}_field'>";
@@ -287,7 +283,7 @@ class EDD_Admin {
 			'id'          => 'value',
 			'label'       => __( 'Discount Value', 'edd_dp' ),
 			'type'        => 'text',
-			'desc'        => __( '<br />Enter a value, i.e. 9.99 or 20%.', 'edd_dp' ) . ( ' ' . __( 'For free please enter 100%.', 'edd_dp' ) ),
+			'desc'        => __( '<br />Enter a value, i.e. 9.99 or 20%.', 'edd_dp' ) .' '. __( 'For free please enter 100%.', 'edd_dp' ),
 			'placeholder' => '0.00'
 		);
 		echo $this->input( $args );
@@ -539,10 +535,6 @@ class EDD_Admin {
 		$quantity = strip_tags( stripslashes( trim( $_POST['quantity'] ) ) );
 		$value    = strip_tags( stripslashes( trim( $_POST['value'] ) ) );
 
-		if ( in_array( $type, array( 'fixed_price', 'percentage_price' ) ) ) {
-			$value = (float) rtrim( $value, '%' );
-		}
-
 		if ( isset( $_POST['products'] ) ) {
 			$products = strip_tags( stripslashes( trim( $_POST['products'] ) ) );
 			if ( $products == 'Array' ) {
@@ -645,12 +637,7 @@ class EDD_Admin {
 
 			case 'value':
 				$type = get_post_meta( $post_id, 'type', true );
-				if ( $type == 'percentage_price' ) {
-					$value = get_post_meta( $post_id, 'value', true ) . '%';
-				} else {
-					$value = get_post_meta( $post_id, 'value', true );
-				}
-
+				$value = get_post_meta( $post_id, 'value', true );
 				echo $value ? $value : '-';
 				break;
 
