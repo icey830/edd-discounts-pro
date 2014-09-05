@@ -115,6 +115,9 @@ class EDD_Discounts {
 		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish' );
 		$query = new WP_Query( $args );
 		$result = array();
+		if ( empty( $query->posts ) ) {
+			return array();
+		}
 		foreach ( $query->posts as $id => $post ) {
 			$data = get_post_meta( $post->ID, 'frontend', true );
 			$result[$id]['name']       = isset( $post->title )        ? $post->title              : 'Discount'    ;
@@ -209,7 +212,7 @@ class EDD_Discounts {
 		$amount       = 0;
 		$subtotal     = edd_get_cart_subtotal();
 		$quantity     = edd_get_cart_quantity();
-		$cart_details = edd_get_cart_content_details();
+		$cart_items   = edd_get_cart_contents();
 		switch ( $discount['type'] ) {
 			// discount based on number of products in cart
 			case 'cart_quantity':
@@ -401,13 +404,13 @@ class EDD_Discounts {
 
 		// good to go for discount
 		$amount = 0;
-		if ( strpos( $discount['value'], '%' ) !== false ) {
+		if ( strpos( $discount['value'], '%' ) !== false || $discount['type'] == 'percentage_price' ) {
 			// Percentage value
 			$val = round( ( (float) $discount['value'] ) / 100, 2 );
-			$amount = $quantity * $item_price * $val;
+			$amount = $item_price * $val;
 		} else {
 			// Fixed value
-			$amount = (float) $discount['value'] * $quantity;
+			$amount = (float) $discount['value'];
 		}
 		return $amount;
 	}
@@ -423,7 +426,7 @@ class EDD_Discounts {
 		// get new discount
 		$discount = $this->get_discount( $cart_items );
 		// add new discount
-		if ( $discount ){
+		if ( isset( $discount['amount'] ) && $discount['amount'] > 0 ){
 			EDD()->fees->add_fee( $discount['amount'], $discount['name'], 'edd_discounts_pro');
 		}
 	}

@@ -540,7 +540,7 @@ class EDD_Admin {
 		$value    = strip_tags( stripslashes( trim( $_POST['value'] ) ) );
 
 		if ( in_array( $type, array( 'fixed_price', 'percentage_price' ) ) ) {
-			$value = (float) rtrim( $value, '%' );
+			$value = (float) rtrim( $value);
 		}
 
 		if ( isset( $_POST['products'] ) ) {
