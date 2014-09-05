@@ -124,7 +124,7 @@ class EDD_Discounts {
 			$result[$id]['id']         = isset( $post->ID )           ? $post->ID                 : false         ;
 			$result[$id]['type']       = isset( $data['type'] )       ? $data['type']             : 'fixed_price' ;
 			$result[$id]['quantity']   = isset( $data['quantity'] )   ? (int) $data['quantity']   : 0             ;
-			$result[$id]['value']      = isset( $data['value'] )      ? (int) $data['value']      : 0             ;
+			$result[$id]['value']      = isset( $data['value'] )      ? $data['value']            : 0             ;
 			$result[$id]['products']   = isset( $data['products'] )   ? $data['products']         : array()       ;
 			if ( is_string( $result[$id]['products'] ) ) {
 				$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
@@ -169,7 +169,7 @@ class EDD_Discounts {
 				$result[$id]['id']         = isset( $post->ID )           ? $post->ID                 : false         ;
 				$result[$id]['type']       = isset( $data['type'] )       ? $data['type']             : 'fixed_price' ;
 				$result[$id]['quantity']   = isset( $data['quantity'] )   ? (int) $data['quantity']   : 0             ;
-				$result[$id]['value']      = isset( $data['value'] )      ? (int) $data['value']      : 0             ;
+				$result[$id]['value']      = isset( $data['value'] )      ? $data['value']            : 0             ;
 				$result[$id]['products']   = isset( $data['products'] )   ? $data['products']         : array()       ;
 				if ( is_string( $result[$id]['products'] ) ) {
 					$result[$id]['products'] = empty( $result[$id]['products'] ) ? array() : explode( ',', $result[$id]['products'] );
