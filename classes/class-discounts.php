@@ -111,7 +111,7 @@ class EDD_Discounts {
 		return false;
 	}
 
-	public function get_discounts( $discount, $customer_id, $cart ) {
+	public function get_discounts( $customer_id, $cart ) {
 		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish' );
 		$query = new WP_Query( $args );
 		$result = array();
