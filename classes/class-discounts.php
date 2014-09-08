@@ -390,8 +390,8 @@ class EDD_Discounts {
 		}
 
 		// if discount is only for previous customers and customer does not have any previous purchases
-		if ( $discount['cust'] ){
-			if ( !edd_has_purchases( $customer_id ) ){
+		if ( $discount['cust'] && $customer ) {
+			if ( !edd_has_purchases( $customer->ID ) ){
 				return 0;
 			}
 		}
