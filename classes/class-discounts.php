@@ -357,8 +357,8 @@ class EDD_Discounts {
 		) );
 
 		// Check if product is in a category of discount
-		if ( !empty( $discount['categories'] ) ) {
-			if ( !empty( $product['categories'] )){
+		if ( ! empty( $discount['categories'] ) ) {
+			if ( ! empty( $product['categories'] )){
 				if ( array_intersect( $product['categories'], $discount['categories'] ) == array() ) {
 					return 0;
 				}
