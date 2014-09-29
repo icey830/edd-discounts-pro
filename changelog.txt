@@ -1,3 +1,6 @@
+1.1.1: 9/29/2014
+* Fixed an issue with the discount title not showing up in the cart
+
 1.1: 9/5/2014
 * Fixes issue where discount used might not have always been greatest discount
 * Rewrote how discounts pro calculates prices to go from calculating on each add to cart to 1 overall calculation.
