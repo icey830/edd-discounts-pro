@@ -120,7 +120,7 @@ class EDD_Discounts {
 		}
 		foreach ( $query->posts as $id => $post ) {
 			$data = get_post_meta( $post->ID, 'frontend', true );
-			$result[$id]['name']       = isset( $post->title )        ? $post->title              : 'Discount'    ;
+			$result[$id]['name']       = isset( $post->post_title )   ? $post->post_title         : 'Discount'    ;
 			$result[$id]['id']         = isset( $post->ID )           ? $post->ID                 : false         ;
 			$result[$id]['type']       = isset( $data['type'] )       ? $data['type']             : 'fixed_price' ;
 			$result[$id]['quantity']   = isset( $data['quantity'] )   ? (int) $data['quantity']   : 0             ;
