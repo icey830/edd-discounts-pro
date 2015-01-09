@@ -793,13 +793,15 @@ class EDD_Admin {
 		$term = (string) urldecode( stripslashes( strip_tags( $_GET['user'] ) ) );
 
 		if ( empty( $term ) ){
-		//	die();
+			die();
 		}
 
 		$args = array();
 
 		if ( strpos( $term, ',' ) !== false ) {
+
 			$term = (array) explode( ',', $term );
+
 		}
 
 		$args['search'] = '*' . $term . '*';
