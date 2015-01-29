@@ -104,7 +104,7 @@ class EDD_Discounts {
 
 		// Debugging help: if you var_dump right here, you'll get a nice array with *all* the discounts
 		// 				   and how much each customer_discount would discount the item
-		 var_dump($discounts);
+		// var_dump($discounts);
 		if ( isset( $discounts[0] ) ){
 			return $discounts[0];
 		}
