@@ -104,7 +104,7 @@ class EDD_Discounts {
 
 		// Debugging help: if you var_dump right here, you'll get a nice array with *all* the discounts
 		// 				   and how much each customer_discount would discount the item
-		// var_dump($discounts);
+		 var_dump($discounts);
 		if ( isset( $discounts[0] ) ){
 			return $discounts[0];
 		}
@@ -315,6 +315,9 @@ class EDD_Discounts {
 			case 'percentage_price':
 			default:
 				foreach( $cart_items as $key => $item ) {
+					if ( isset( $item['options']) && isset($item['options']['price_id'])){
+						$item['id'] = $item['id'] .'_'.$item['options']['price_id'];
+					}
 					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
 					$item_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 					$product_id = $item['id'];
