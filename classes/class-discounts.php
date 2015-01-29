@@ -221,6 +221,9 @@ class EDD_Discounts {
 				$discount2['value'] = '100%';
 				$quantity = 0;
 				foreach( $cart_items as $key => $item ) {
+					if ( isset( $item['options']) && isset($item['options']['price_id'])){
+						$item['id'] = $item['id'] .'_'.$item['options']['price_id'];
+					}
 					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
 					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 					$product_id = $item['id'];
@@ -247,6 +250,9 @@ class EDD_Discounts {
 				$discount2['type'] = 'percentage_price';
 				$discount2['value'] = '100%'; 
 				foreach( $cart_items as $key => $item ) {
+					if ( isset( $item['options']) && isset($item['options']['price_id'])){
+						$item['id'] = $item['id'] .'_'.$item['options']['price_id'];
+					}
 					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
 					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 					$product_id = $item['id'];
@@ -266,6 +272,9 @@ class EDD_Discounts {
 			// discount for quantities of a product
 			case 'product_quantity':
 				foreach( $cart_items as $key => $item ) {
+					if ( isset( $item['options']) && isset($item['options']['price_id'])){
+						$item['id'] = $item['id'] .'_'.$item['options']['price_id'];
+					}
 					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
 					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 					$product_id = $item['id'];
@@ -278,6 +287,9 @@ class EDD_Discounts {
 			case 'each_x_products':
 				$count = 1;
 				foreach( $cart_items as $key => $item ) {
+					if ( isset( $item['options']) && isset($item['options']['price_id'])){
+						$item['id'] = $item['id'] .'_'.$item['options']['price_id'];
+					}
 					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
 					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 					$product_id = $item['id'];
@@ -297,6 +309,9 @@ class EDD_Discounts {
 			case 'from_x_products':
 				$count = 1;
 				foreach( $cart_items as $key => $item ) {
+					if ( isset( $item['options']) && isset($item['options']['price_id'])){
+						$item['id'] = $item['id'] .'_'.$item['options']['price_id'];
+					}
 					$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
 					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 					$product_id = $item['id'];
