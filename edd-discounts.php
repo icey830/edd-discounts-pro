@@ -63,9 +63,7 @@ class edd_dp {
 			if ( is_admin() ){
 				self::$instance->admin = new EDD_Admin;
 			}
-			else{
-				self::$instance->discounts = new EDD_Discounts;
-			}
+			self::$instance->discounts = new EDD_Discounts;
 		}
 		return self::$instance;
 	}
@@ -132,4 +130,6 @@ class edd_dp {
 function EDD_DP() {
 	return edd_dp::instance();
 }
-EDD_DP();
+if ( class_exists( 'Easy_Digital_Downloads' ) ){
+	EDD_DP();
+}

@@ -8,78 +8,189 @@ class EDD_Discounts {
 	public function __construct() {
 		add_action( 'template_redirect', array( $this, 'apply_discount' ) );
 		add_action( 'init', array( $this, 'apply_discount' ),11 );
-		if ( version_compare( EDD_VERSION, '2.1' ) >= 0 ){
-			add_filter( 'edd_download_price_after_html', array($this, 'edd_price' ), 10, 3 );
+
+		$custom = edd_get_option( 'edd_dp_frontend_output_toggle', false );
+
+		if ( version_compare( EDD_VERSION, '2.1' ) >= 0 && $custom ){
+			// Purchase link
+				// Top ( Old Price)
+					add_action( 'edd_purchase_link_top', array( $this, 'edd_purchase_link_top' ), 10, 1 );
+					add_action( 'edd_after_price_option', array( $this, 'edd_purchase_link_variable' ), 10, 3 );
+
+				// Show new price on button
+					add_filter( 'edd_purchase_link_args', array( $this, 'edd_purchase_link_args' ), 10, 1 );
+					add_filter( 'edd_purchase_variable_prices', array( $this, 'edd_purchase_variable_prices' ), 10, 2 );
 		}
+
+		// pending #3043
+		if ( version_compare( EDD_VERSION, '2.3' ) >= 0 && $custom ){
+			// edd_price
+				// Top ( Old Price)
+				add_filter( 'edd_download_price_after_html', array($this, 'edd_price_top' ), 10, 3 );
+
+				// Show new price on button
+				add_filter( 'edd_download_price', array($this, 'edd_price' ), 10, 3 );
+		}
+
+
 	}
 
-	public function edd_price( $formatted_price, $download_id, $price ){
-		$custom = edd_get_option( 'edd_dp_frontend_output_toggle', false );
-		if ( !$custom ){
-			return $formatted_price;
+	public function edd_purchase_link_top( $download_id ){
+		$variable_pricing = edd_has_variable_prices( $download_id );
+
+		if ( $variable_pricing ){
+			return;
+		}
+
+		$old_price = edd_get_download_price( $download_id );
+
+		$discount = $this->get_simple_discount( $download_id, $old_price );
+
+		if ( !$discount ){
+			return;
+		}
+
+		$line = __( 'Old Price: ', 'edd_dp') . '<s>' . $old_price. '</s>';
+
+		$line = apply_filters( 'edd_dp_purchase_link_top', $line, $download_id );
+
+		echo $line;
+	}
+
+
+	public function edd_purchase_link_variable( $key, $old_price, $download_id ){
+		$variable_pricing = edd_has_variable_prices( $download_id );
+
+		if ( !$variable_pricing ){
+			return;
+
+		}
+
+		$discount = $this->get_simple_discount( $download_id . '_' . $key , $old_price );
+
+		if ( !$discount ){
+			return;
+		}
+
+		$prices = edd_get_variable_prices( $download_id );
+
+		$line = '<br / >' . __( 'Old Price: ', 'edd_dp') . '<s>' . $prices[ $key ]['amount'] . '</s>';
+
+		$line = apply_filters( 'edd_dp_purchase_link_variable', $line, $key, $prices[ $key ]['amount'], $download_id );
+		
+		echo $line;
+	}
+
+
+	public function edd_purchase_link_args( $args ){
+		if ( !isset( $args['download_id'] ) ){
+			return $args;
+		} 
+
+
+		$download = new EDD_Download( $args['download_id'] ); 
+
+		$variable_pricing = $download->has_variable_prices();
+
+		if  ( $variable_pricing ){
+			return $args;
+		}
+
+		$price = $download->price;
+		$discount = $this->get_simple_discount( $args['download_id'], $price );
+
+
+		if ( !$discount ){
+			return $args;
+		}
+
+		$newprice = $oldprice - $discount['amount'];
+
+		$args[ 'price' ] = $newprice;
+
+		return $args;
+	}
+
+	public function edd_purchase_variable_prices( $prices, $download_id ){
+		if ( !is_array( $prices ) ){
+			return $prices;
+		}
+
+		foreach ( $prices as $key => $test ){
+			$discount = $this->get_simple_discount( $download_id . '_' . $key, $prices[ $key ][ 'amount' ] );
+			if ( $discount ){
+				$new_price = $test[ 'amount' ] - $discount['amount'];
+				$prices[ $key ][ 'amount' ] = $new_price;
+			}
+		}
+		return $prices;
+	}
+
+	public function edd_price_top( $price, $download_id, $key ){	
+		if ( !$key ){
+			$variable_pricing = edd_has_variable_prices( $download_id );
+
+			if ( $variable_pricing ){
+				return $price;
+			}
+
+			$discount = $this->get_simple_discount( $download_id . '_' . $key, $price );
+
+			if ( !$discount ){
+				return $price;
+			}
+
+
+			$prices = edd_get_variable_prices( $download_id );
+
+			$line = __( 'Old Price: ', 'edd_dp') . '<s>' . $prices[ $key ]['amount'] . '</s><br / >';
+
+			$line = apply_filters( 'edd_dp_edd_price_top', $line, $key, $prices[ $key ]['amount'], $download_id );
+
+			return $line . $price;
 		}
 		else{
-			$output   = edd_get_option( 'edd_dp_frontend_output_content', '<span class="edd_price" id="edd_price_{download_id}">{oldprice}</span>' );
-			$discount = $this->get_simple_discount( $download_id );
+			$discount = $this->get_simple_discount( $download_id, $price );
+
 			if ( !$discount ){
-				return $formatted_price;
+				return $price;
 			}
-			$savings = '';
-			if ( strpos( $discount['value'], '%' ) !== false ) {
-				// Percentage value
-				$savings = $discount['value']. ' ' . __('off', 'edd_dp');
-				$savings = apply_filters( 'edd_dp_edd_price_savings_percent', $savings, $discount, $download_id, $price );
-			} else {
-				// Fixed value
-				$savings = edd_currency_filter( edd_format_amount( $discount['value'] ) ) . ' ' . __('off', 'edd_dp');
-				$savings = apply_filters( 'edd_dp_edd_price_savings_percent', $savings, $discount, $download_id, $price );
-			}
-			$oldprice = 0;
-			if ( edd_has_variable_prices( $download_id ) ) {
-				$prices = edd_get_variable_prices( $download_id );
-				// Return the lowest price
-				$price_float = 0;
-				foreach ( $prices as $key => $value ) {
-					if ( ( ( (float)$prices[ $key ]['amount'] ) < $price_float ) or ( $price_float == 0 ) ) {
-						$price_float = (float)$prices[ $key ]['amount'];
-					}
-					$oldprice = edd_sanitize_amount( $price_float );
-					}
-				} else {
-				$oldprice = edd_get_download_price( $download_id );
-			}
-			global $output_vars;
-			$newprice = $oldprice - $discount['amount'];
-			$output   = str_replace( '{oldprice}', edd_currency_filter( edd_format_amount( $oldprice ) ) , $output );
-			$output   = str_replace( '{newprice}', edd_currency_filter( edd_format_amount( $newprice ) ) , $output );
-			$output   = str_replace( '{savings}', $savings , $output );
-			$output   = str_replace( '{download_id}', $download_id , $output );
-			$output   = str_replace( '{discount_title}', $discount['name'], $output );
-			$output_vars = array(
-				'newprice' => $newprice,
-				'oldprice' => $oldprice,
-				'savings' => $savings,
-				'download_id' => $download_id,
-				'download_title' => $download_title
-			);
-			$custom = edd_get_option( 'edd_dp_frontend_output_override', false );
-			if ( $custom ){
-				add_filter( 'edd_get_download_price', array( $this, 'download_price' ) );
-				//add_filter( 'edd_purchase_variable_prices', array($this, 'download_price_variable') );
-			}
-		
-			return $output;
+
+			$prices = edd_get_download_price( $download_id );
+
+			$line = __( 'Old Price: ', 'edd_dp') . '<s>' . $prices . '</s><br / >';
+
+			$line = apply_filters( 'edd_dp_edd_price_top', $line, $key, $prices, $download_id );
+
+			return $line . $price;		
 		}
 	}
 
-	public function download_price_variable(){
-		global $output_vars;
-		return apply_filters( 'edd_dp_download_price_variable', $output_vars['newprice'], $output_vars );
-	}
+	public function edd_price( $price, $download_id, $key = false ){
+		if ( !$key ){
+			$variable_pricing = edd_has_variable_prices( $download_id );
 
-	public function download_price(){
-		global $output_vars;
-		return apply_filters( 'edd_dp_download_price',$output_vars['newprice'], $output_vars );
+			if ( $variable_pricing ){
+				return $price;
+			}
+
+			$discount = $this->get_simple_discount( $download_id . '_' . $key, $price );
+
+			if ( !$discount ){
+				return $price;
+			}
+			return $price - $discount['amount'];
+		}
+		else{
+			$discount = $this->get_simple_discount( $download_id, $price );
+
+			if ( !$discount ){
+				return $price;
+			}
+
+			return $price - $discount['amount'];		
+		}
+
 	}
 
 	public function get_discount( $cart = array(), $customer_id = false  ) {
@@ -141,30 +252,16 @@ class EDD_Discounts {
 		return $result;
 	}
 
-	public function get_simple_discount( $download_id ){
+	public function get_simple_discount( $download_id, $item_price ){
 		$customer_id = get_current_user_id();
-		$item_price = 0;
-		if ( edd_has_variable_prices( $download_id ) ) {
-			$prices = edd_get_variable_prices( $download_id );
-			// Return the lowest price
-			$price_float = 0;
-			foreach ( $prices as $key => $value ) {
-				if ( ( ( (float)$prices[ $key ]['amount'] ) < $price_float ) or ( $price_float == 0 ) ) {
-					$price_float = (float)$prices[ $key ]['amount'];
-				}
-				$item_price = edd_sanitize_amount( $price_float );
-				}
-			} else {
-			$item_price = edd_get_download_price( $download_id );
-		}
-		
+
 		// get discounts
 		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish' );
 		$query = new WP_Query( $args );
 		$result = array();
 		foreach ( $query->posts as $id => $post ) {
 			$data = get_post_meta( $post->ID, 'frontend', true );
-			if ( isset( $data['type'] ) && ( $data['type'] === 'fixed_price' || $data['type'] === 'percentage_price ') ){
+			if ( isset( $data['type'] ) && ( $data['type'] === 'fixed_price' || $data['type'] === 'percentage_price') ){
 				$result[$id]['name']       = isset( $post->title )        ? $post->title              : 'Discount'    ;
 				$result[$id]['id']         = isset( $post->ID )           ? $post->ID                 : false         ;
 				$result[$id]['type']       = isset( $data['type'] )       ? $data['type']             : 'fixed_price' ;
