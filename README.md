@@ -1,4 +1,4 @@
-# EDD Discounts PRO (v 1.1) #
+# EDD Discounts PRO (v 1.2) #
 
 ## Who this README file is for ##
 This readme file is to share information to plugin & theme developers.

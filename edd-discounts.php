@@ -6,7 +6,7 @@
  * Author:              Chris Christoff
  * Author URI:          http://www.chriscct7.com
  *
- * Version:             1.1.1
+ * Version:             1.2
  * Requires at least:   3.9
  * Tested up to:        4.0
  *
@@ -63,9 +63,7 @@ class edd_dp {
 			if ( is_admin() ){
 				self::$instance->admin = new EDD_Admin;
 			}
-			else{
-				self::$instance->discounts = new EDD_Discounts;
-			}
+			self::$instance->discounts = new EDD_Discounts;
 		}
 		return self::$instance;
 	}
@@ -79,7 +77,7 @@ class edd_dp {
 		}
 		// Plugin Version
 		if ( ! defined( 'EDD_DP_PLUGIN_VERSION' ) ) {
-			define( 'EDD_DP_PLUGIN_VERSION', '1.1.1' );
+			define( 'EDD_DP_PLUGIN_VERSION', '1.2' );
 		}
 		// Plugin Root File
 		if ( ! defined( 'EDD_DP_PLUGIN_FILE' ) ) {
@@ -132,4 +130,6 @@ class edd_dp {
 function EDD_DP() {
 	return edd_dp::instance();
 }
-EDD_DP();
+if ( class_exists( 'Easy_Digital_Downloads' ) ){
+	EDD_DP();
+}

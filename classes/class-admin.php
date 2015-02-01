@@ -33,28 +33,16 @@ class EDD_Admin {
             ),
 			array(
 				'id' => 'edd_dp_frontend_output_toggle',
-				'name' => __( 'Display Discounted Price on Products', 'edd_sl' ),
-				'desc' => __( 'Check this box if you want Discounts Pro to show', 'edd_sl' ),
+				'name' => __( 'Display Discounted Price on Product Pages and Add to Cart Buttons', 'edd-dp' ),
 				'type' => 'checkbox'
 			),
 			array(
-				'id' => 'edd_dp_frontend_output_override',
-				'name' => __( 'Override price on add to cart buttons', 'edd_sl' ),
-				'desc' => __( 'Check this box if you want Discounts Pro to change the price on non-variable add to cart buttons', 'edd_sl' ),
-				'type' => 'checkbox'
+				'id' => 'edd_dp_old_price_text',
+				'name' => __( 'Old Price Text', 'edd-dp' ),
+				'type' => 'text',
+				'desc' => __( 'Enter the label for the Old Price: display', 'edd_dp' ),
+				'std' => 'Old Price:'
 			),
-			array(
-				'id' => 'edd_dp_frontend_output_content',
-				'name' => __( 'Frontend Price Display', 'edd_sl' ),
-				'type' => 'textarea',
-				'desc' => __( 'Enter how you want product prices to show. Use template tags below to customize.', 'edd_dp' ) . '<br/>' .
-							'{oldprice} - ' . __( 'The old price (formatted)', 'edd_dp' ) . '<br/>' .
-							'{newprice} - ' . __( 'The new price (formatted)', 'edd_dp' ) . '<br/>' .
-							'{savings}  - ' . __( 'The amount saved', 'edd_dp' ) . '<br/>' .
-							'{download_id}  - ' . __( 'The id of the download', 'edd_dp' ) . '<br/>' .
-							'{discount_title} - ' . __( 'The name of the discount', 'edd_dp' ),
-				'std' => '<span class="edd_price" id="edd_price_{download_id}">{oldprice}</span>'
-			)
         );
 
         return array_merge( $settings, $new_settings );
