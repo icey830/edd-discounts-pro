@@ -33,8 +33,15 @@ class EDD_Admin {
             ),
 			array(
 				'id' => 'edd_dp_frontend_output_toggle',
-				'name' => __( 'Display Discounted Price on Product Pages and Add to Cart Buttons', 'edd_sl' ),
+				'name' => __( 'Display Discounted Price on Product Pages and Add to Cart Buttons', 'edd-dp' ),
 				'type' => 'checkbox'
+			),
+			array(
+				'id' => 'edd_dp_old_price_text',
+				'name' => __( 'Old Price Text', 'edd-dp' ),
+				'type' => 'text',
+				'desc' => __( 'Enter the label for the Old Price: display', 'edd_dp' ),
+				'std' => 'Old Price:'
 			),
         );
 

@@ -1,3 +1,11 @@
+1.2: 2/1/2015
+* Added ability to show old price on purchase_link shortcode and output
+* Added ability to show new price on purchase_link shortcode and output
+* Fixed the old/new price options on edd_price outputs
+* Refactored the settings for edd_price outputs
+* Fixed variable pricing discounts
+* Fixed EDD detection before running
+
 1.1.1: 9/29/2014
 * Fixed an issue with the discount title not showing up in the cart
 
