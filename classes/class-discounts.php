@@ -110,7 +110,7 @@ class EDD_Discounts {
 
 		$newprice = $price - $discount['amount'];
 
-		$args[ 'text' ] = edd_currency_filter( edd_format_amount( $newprice ) );
+		$args[ 'text' ] = str_replace(  edd_currency_filter( edd_format_amount( $price ) ), edd_currency_filter( edd_format_amount( $newprice ) ), $args[ 'text' ] );
 
 		return $args;
 	}
