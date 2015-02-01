@@ -108,7 +108,7 @@ class EDD_Discounts {
 			return $args;
 		}
 
-		$newprice = $oldprice - $discount['amount'];
+		$newprice = $price - $discount['amount'];
 
 		$args[ 'price' ] = $newprice;
 
