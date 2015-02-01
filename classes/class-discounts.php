@@ -68,7 +68,7 @@ class EDD_Discounts {
 
 		}
 
-		$discount = $this->get_simple_discount( $download_id . '_' . $key , $old_price );
+		$discount = $this->get_simple_discount( $download_id . '_' . $key , $old_price['amount'] );
 
 		if ( !$discount ){
 			return;
