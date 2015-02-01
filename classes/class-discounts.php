@@ -46,7 +46,7 @@ class EDD_Discounts {
 
 		$discount = $this->get_simple_discount( $download_id, $old_price );
 
-		if ( !$discount ){
+		if ( !$discount || !$discount['amount'] ){
 			return;
 		}
 
@@ -70,7 +70,7 @@ class EDD_Discounts {
 
 		$discount = $this->get_simple_discount( $download_id . '_' . $key , $old_price['amount'] );
 
-		if ( !$discount ){
+		if ( !$discount || !$discount['amount'] ){
 			return;
 		}
 
@@ -104,7 +104,7 @@ class EDD_Discounts {
 		$discount = $this->get_simple_discount( $args['download_id'], $price );
 
 
-		if ( !$discount ){
+		if ( !$discount || !$discount['amount'] ){
 			return $args;
 		}
 
@@ -140,7 +140,7 @@ class EDD_Discounts {
 
 			$discount = $this->get_simple_discount( $download_id . '_' . $key, $price );
 
-			if ( !$discount ){
+			if ( !$discount || !$discount['amount'] ){
 				return $price;
 			}
 
@@ -158,7 +158,7 @@ class EDD_Discounts {
 		else{
 			$discount = $this->get_simple_discount( $download_id, $price );
 
-			if ( !$discount ){
+			if ( !$discount || !$discount['amount'] ){
 				return $price;
 			}
 
@@ -184,7 +184,7 @@ class EDD_Discounts {
 
 			$discount = $this->get_simple_discount( $download_id . '_' . $key, $price );
 
-			if ( !$discount ){
+			if ( !$discount || !$discount['amount'] ){
 				return $price;
 			}
 			return $price - $discount['amount'];
@@ -192,7 +192,7 @@ class EDD_Discounts {
 		else{
 			$discount = $this->get_simple_discount( $download_id, $price );
 
-			if ( !$discount ){
+			if ( !$discount || !$discount['amount'] ){
 				return $price;
 			}
 
