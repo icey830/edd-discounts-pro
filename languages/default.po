@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: EDD DP 1.0\n"
-"POT-Creation-Date: 2015-02-01 11:03-0500\n"
-"PO-Revision-Date: 2015-02-01 11:03-0500\n"
+"POT-Creation-Date: 2015-02-09 10:57-0500\n"
+"PO-Revision-Date: 2015-02-09 10:57-0500\n"
 "Last-Translator: Chris Christoff <hello@chriscct7.com>\n"
 "Language-Team: Easy Digital Downloads\n"
 "Language: en\n"
@@ -34,195 +34,200 @@ msgid "Configure Discount Pro Settings"
 msgstr ""
 
 #: ../classes/class-admin.php:36
-msgid "Display Discounted Price on Product Pages and Add to Cart Buttons"
+msgid "Show discounted price?"
 msgstr ""
 
-#: ../classes/class-admin.php:41
+#: ../classes/class-admin.php:37
+msgid ""
+"If enabled, the discounted price and original price will automatically appear"
+msgstr ""
+
+#: ../classes/class-admin.php:42
 msgid "Old Price Text"
 msgstr ""
 
-#: ../classes/class-admin.php:43
+#: ../classes/class-admin.php:44
 msgid "Enter the label for the Old Price: display"
 msgstr ""
 
-#: ../classes/class-admin.php:242
+#: ../classes/class-admin.php:243
 msgid "Discount Data"
 msgstr ""
 
-#: ../classes/class-admin.php:257
+#: ../classes/class-admin.php:258
 msgid "Discount Type"
 msgstr ""
 
-#: ../classes/class-admin.php:263
+#: ../classes/class-admin.php:264
 msgid "Quantity"
 msgstr ""
 
-#: ../classes/class-admin.php:265
+#: ../classes/class-admin.php:266
 msgid "Enter a value, i.e. 20"
 msgstr ""
 
-#: ../classes/class-admin.php:272
+#: ../classes/class-admin.php:273
 msgid "Discount Value"
 msgstr ""
 
-#: ../classes/class-admin.php:274
+#: ../classes/class-admin.php:275
 msgid "<br />Enter a value, i.e. 9.99 or 20%."
 msgstr ""
 
-#: ../classes/class-admin.php:274
+#: ../classes/class-admin.php:275
 msgid "For free please enter 100%."
 msgstr ""
 
-#: ../classes/class-admin.php:286
+#: ../classes/class-admin.php:287
 msgid "Products"
 msgstr ""
 
-#: ../classes/class-admin.php:287
+#: ../classes/class-admin.php:288
 msgid "Control which products this coupon can apply to."
 msgstr ""
 
-#: ../classes/class-admin.php:297
+#: ../classes/class-admin.php:298
 msgid "Categories"
 msgstr ""
 
-#: ../classes/class-admin.php:298
+#: ../classes/class-admin.php:299
 msgid "Control which product categories this discount can apply to."
 msgstr ""
 
-#: ../classes/class-admin.php:300
+#: ../classes/class-admin.php:301
 msgid "Any category"
 msgstr ""
 
-#: ../classes/class-admin.php:312
+#: ../classes/class-admin.php:313
 msgid "Tags"
 msgstr ""
 
-#: ../classes/class-admin.php:313
+#: ../classes/class-admin.php:314
 msgid "Control which product tags this discount can apply to."
 msgstr ""
 
-#: ../classes/class-admin.php:315
+#: ../classes/class-admin.php:316
 msgid "Any tag"
 msgstr ""
 
-#: ../classes/class-admin.php:327 ../classes/class-admin.php:612
+#: ../classes/class-admin.php:328 ../classes/class-admin.php:613
 msgid "Users"
 msgstr ""
 
-#: ../classes/class-admin.php:328
+#: ../classes/class-admin.php:329
 msgid ""
 "Control which user this discount can apply to. Search by email address, URL, "
 "ID or username."
 msgstr ""
 
-#: ../classes/class-admin.php:337 ../classes/class-admin.php:613
+#: ../classes/class-admin.php:338 ../classes/class-admin.php:614
 msgid "Roles"
 msgstr ""
 
-#: ../classes/class-admin.php:338
+#: ../classes/class-admin.php:339
 msgid "Control which roles this discount can apply to."
 msgstr ""
 
-#: ../classes/class-admin.php:340
+#: ../classes/class-admin.php:341
 msgid "Any roles"
 msgstr ""
 
-#: ../classes/class-admin.php:476
+#: ../classes/class-admin.php:477
 msgid "Apply for previous customers only"
 msgstr ""
 
-#: ../classes/class-admin.php:478
+#: ../classes/class-admin.php:479
 msgid ""
 "When checked, only customers who have previously made purchases will be "
 "eligible for this discount"
 msgstr ""
 
-#: ../classes/class-admin.php:488
+#: ../classes/class-admin.php:489
 msgid "Discount Updated!"
 msgstr ""
 
-#: ../classes/class-admin.php:489 ../classes/class-admin.php:491
+#: ../classes/class-admin.php:490 ../classes/class-admin.php:492
 msgid "Discount updated."
 msgstr ""
 
-#: ../classes/class-admin.php:490
+#: ../classes/class-admin.php:491
 msgid "Discount deleted."
 msgstr ""
 
-#: ../classes/class-admin.php:492
+#: ../classes/class-admin.php:493
 #, php-format
 msgid "Discount restored to revision from %s"
 msgstr ""
 
-#: ../classes/class-admin.php:493
+#: ../classes/class-admin.php:494
 msgid "Discount published."
 msgstr ""
 
-#: ../classes/class-admin.php:494
+#: ../classes/class-admin.php:495
 msgid "Discount saved!"
 msgstr ""
 
-#: ../classes/class-admin.php:495
+#: ../classes/class-admin.php:496
 msgid "Discount submitted."
 msgstr ""
 
-#: ../classes/class-admin.php:497
+#: ../classes/class-admin.php:498
 msgid "Discount draft updated."
 msgstr ""
 
-#: ../classes/class-admin.php:608
+#: ../classes/class-admin.php:609
 msgid "Name"
 msgstr ""
 
-#: ../classes/class-admin.php:609
+#: ../classes/class-admin.php:610
 msgid "Type"
 msgstr ""
 
-#: ../classes/class-admin.php:610
+#: ../classes/class-admin.php:611
 msgid "Value"
 msgstr ""
 
-#: ../classes/class-admin.php:611
+#: ../classes/class-admin.php:612
 msgid "Status"
 msgstr ""
 
-#: ../classes/class-admin.php:614
+#: ../classes/class-admin.php:615
 msgid "Date"
 msgstr ""
 
-#: ../classes/class-admin.php:635
+#: ../classes/class-admin.php:636
 msgid "All users"
 msgstr ""
 
-#: ../classes/class-admin.php:656
+#: ../classes/class-admin.php:657
 msgid "All user roles"
 msgstr ""
 
-#: ../classes/class-admin.php:870
+#: ../classes/class-admin.php:871
 msgid "Fixed Price"
 msgstr ""
 
-#: ../classes/class-admin.php:871
+#: ../classes/class-admin.php:872
 msgid "Percentage Price"
 msgstr ""
 
-#: ../classes/class-admin.php:872
+#: ../classes/class-admin.php:873
 msgid "Product Quantity"
 msgstr ""
 
-#: ../classes/class-admin.php:873
+#: ../classes/class-admin.php:874
 msgid "Each X products"
 msgstr ""
 
-#: ../classes/class-admin.php:874
+#: ../classes/class-admin.php:875
 msgid "From X products"
 msgstr ""
 
-#: ../classes/class-admin.php:875
+#: ../classes/class-admin.php:876
 msgid "Products in cart"
 msgstr ""
 
-#: ../classes/class-admin.php:876
+#: ../classes/class-admin.php:877
 msgid "Cart threshold"
 msgstr ""
 
