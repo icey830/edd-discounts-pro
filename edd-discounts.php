@@ -68,7 +68,7 @@ class edd_dp {
 		return self::$instance;
 	}
 	public function define_globals() {
-		$this->title    = __( 'Discounts Pro', 'edd-dp' );
+		$this->title    = __( 'Discounts Pro', 'edd_dp' );
 		$this->file     = __FILE__;
 		$this->basename = apply_filters( 'edd_edd_dp_plugin_basename', plugin_basename( $this->file ) );
 		// Plugin Name
@@ -110,7 +110,7 @@ class edd_dp {
 	}
 
 	public function load_textdomain() {
-		load_plugin_textdomain( 'edd-dp', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain( 'edd_dp', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 }

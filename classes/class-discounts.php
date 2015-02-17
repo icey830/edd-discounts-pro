@@ -52,7 +52,7 @@ class EDD_Discounts {
 
 		$option = edd_get_option( 'edd_dp_old_price_text', __( 'Old Price:', 'edd_dp') );
 
-		$line = $option . ' <s>' . $old_price. '</s>';
+		$line = $option . ' <s>' .  edd_currency_filter( edd_format_amount( $old_price ) ) . '</s>';
 
 		$line = apply_filters( 'edd_dp_purchase_link_top', $line, $download_id );
 
@@ -78,7 +78,7 @@ class EDD_Discounts {
 
 		$option = edd_get_option( 'edd_dp_old_price_text', __( 'Old Price:', 'edd_dp') );
 
-		$line = '<br / >' . $option . ' <s>' . $prices[ $key ]['amount']. '</s>';
+		$line = '<br / >' . $option . ' <s>' . edd_currency_filter( edd_format_amount( $prices[ $key ]['amount'] ) ) . '</s>';
 
 		$line = apply_filters( 'edd_dp_purchase_link_variable', $line, $key, $prices[ $key ]['amount'], $download_id );
 		
@@ -149,7 +149,7 @@ class EDD_Discounts {
 
 			$option = edd_get_option( 'edd_dp_old_price_text', __( 'Old Price:', 'edd_dp') );
 
-			$line = $option . ' <s>' . $prices[ $key ]['amount']. '</s><br / >';
+			$line = $option . ' <s>' . edd_currency_filter( edd_format_amount( $prices[ $key ]['amount'] ) ) . '</s><br / >';
 
 			$line = apply_filters( 'edd_dp_edd_price_top', $line, $key, $prices[ $key ]['amount'], $download_id );
 
@@ -166,7 +166,7 @@ class EDD_Discounts {
 
 			$option = edd_get_option( 'edd_dp_old_price_text', __( 'Old Price:', 'edd_dp') );
 
-			$line = $option . ' <s>' . $prices . '</s><br / >';
+			$line = $option . ' <s>' . edd_currency_filter( edd_format_amount( $prices ) ) . '</s><br / >';
 
 			$line = apply_filters( 'edd_dp_edd_price_top', $line, $key, $prices, $download_id );
 

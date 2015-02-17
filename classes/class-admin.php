@@ -27,18 +27,19 @@ class EDD_Admin {
         $new_settings = array(
             array(
                 'id'    => 'edd_dp_settings',
-                'name'  => '<strong>' . __( 'Discount Pro Settings', 'edd-dp' ) . '</strong>',
-                'desc'  => __( 'Configure Discount Pro Settings', 'edd-dp' ),
+                'name'  => '<strong>' . __( 'Discount Pro Settings', 'edd_dp' ) . '</strong>',
+                'desc'  => __( 'Configure Discount Pro Settings', 'edd_dp' ),
                 'type'  => 'header',
             ),
 			array(
 				'id' => 'edd_dp_frontend_output_toggle',
-				'name' => __( 'Display Discounted Price on Product Pages and Add to Cart Buttons', 'edd-dp' ),
+				'name' => __( 'Show discounted price?', 'edd_dp' ),
+				'desc' => __( 'If enabled, the discounted price and original price will automatically appear', 'edd_dp' ),
 				'type' => 'checkbox'
 			),
 			array(
 				'id' => 'edd_dp_old_price_text',
-				'name' => __( 'Old Price Text', 'edd-dp' ),
+				'name' => __( 'Old Price Text', 'edd_dp' ),
 				'type' => 'text',
 				'desc' => __( 'Enter the label for the Old Price: display', 'edd_dp' ),
 				'std' => 'Old Price:'
@@ -485,16 +486,16 @@ class EDD_Admin {
 	public function form_updated_message( $messages ) {
 		$message = array(
 			0 => '',
-			1 => __( 'Discount Updated!', 'edd-dp' ),
-			2 => __( 'Discount updated.', 'edd-dp' ),
-			3 => __( 'Discount deleted.', 'edd-dp' ),
-			4 => __( 'Discount updated.', 'edd-dp' ),
-			5 => isset( $_GET['revision'] ) ? sprintf( __( 'Discount restored to revision from %s', 'edd-dp' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6 => __( 'Discount published.', 'edd-dp' ),
-			7 => __( 'Discount saved!', 'edd-dp' ),
-			8 => __( 'Discount submitted.', 'edd-dp' ),
+			1 => __( 'Discount Updated!', 'edd_dp' ),
+			2 => __( 'Discount updated.', 'edd_dp' ),
+			3 => __( 'Discount deleted.', 'edd_dp' ),
+			4 => __( 'Discount updated.', 'edd_dp' ),
+			5 => isset( $_GET['revision'] ) ? sprintf( __( 'Discount restored to revision from %s', 'edd_dp' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6 => __( 'Discount published.', 'edd_dp' ),
+			7 => __( 'Discount saved!', 'edd_dp' ),
+			8 => __( 'Discount submitted.', 'edd_dp' ),
 			9 => '',
-			10 => __( 'Discount draft updated.', 'edd-dp' )
+			10 => __( 'Discount draft updated.', 'edd_dp' )
 		);
 
 		$messages['customer_discount'] = $message;
@@ -632,7 +633,7 @@ class EDD_Admin {
 			case 'users':
 				$ids = get_post_meta( $post_id, 'users', true );
 				if ( empty( $ids ) ) {
-					echo __('All users', 'edd-dp');
+					echo __('All users', 'edd_dp');
 					return;
 				}
 				$links = '';
@@ -653,7 +654,7 @@ class EDD_Admin {
 				$groups = get_post_meta( $post_id, 'groups', true );
 				if ( empty( $groups ) || ! is_array( $groups ) ) {
 
-					echo __('All user roles', 'edd-dp');
+					echo __('All user roles', 'edd_dp');
 
 				} else {
 
