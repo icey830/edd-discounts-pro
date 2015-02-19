@@ -449,7 +449,7 @@ class EDD_Discounts {
 		return $amount;
 	}
 
-	private function simple_discount_amount( $discount, $customer, $download_id = false, $quantity = false, $item_price = false   ){
+	private function simple_discount_amount( $discount, $customer, $download_id = false, $quantity = 1, $item_price = false   ){
 
 		// take id and make WP_User
 		$customer = new WP_User($customer);
@@ -524,10 +524,10 @@ class EDD_Discounts {
 		if ( strpos( $discount['value'], '%' ) !== false || $discount['type'] == 'percentage_price' ) {
 			// Percentage value
 			$val = round( ( (float) $discount['value'] ) / 100, 2 );
-			$amount = $item_price * $val;
+			$amount = $item_price * $val * $quantity;
 		} else {
 			// Fixed value
-			$amount = (float) $discount['value'];
+			$amount = (float) $discount['value'] * $quantity;
 		}
 		return $amount;
 	}
