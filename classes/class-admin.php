@@ -887,8 +887,6 @@ class EDD_Admin {
 		$found_users = array();
 		$users = get_users( $args );
 
-		//echo json_encode( $args ); exit;
-
 		if ( ! empty( $users ) ){
 			foreach ( $users as $user ) {
 
