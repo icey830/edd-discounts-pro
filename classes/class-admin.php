@@ -67,7 +67,6 @@ class EDD_Admin {
 			'placeholder' => null
 		);
 		extract( wp_parse_args( $field, $args ) );
-
 		$value     = isset( $value ) ? esc_attr( $value ) : get_post_meta( $post->ID, $id, true );
 		$disc_type = get_post_meta( $post->ID, 'type', true );
 
@@ -705,9 +704,18 @@ class EDD_Admin {
 		if ( empty( $term ) )
 			die();
 
-		if ( strpos( $term, ',' ) !== false ) {
+		$products;
+		$save_term = $term;
 
+		if ( !( strpos( $term, ',' ) !== false ) ){
+			$term = substr($term, 0, strpos($term, '_'));
+		}
+
+		if ( strpos( $term, ',' ) !== false ) {
 			$term = (array) explode( ',', $term );
+			foreach ( $term as $id => $t ){
+				$term[ $id ] = substr($t, 0, strpos($t, '_'));
+			}
 			$args = array(
 				'post_type'      => $post_types,
 				'post_status'    => 'publish',
@@ -718,7 +726,6 @@ class EDD_Admin {
 			$products = get_posts( $args );
 
 		} elseif ( is_numeric( $term ) ) {
-
 			$args = array(
 				'post_type'      => $post_types,
 				'post_status'    => 'publish',
@@ -732,7 +739,6 @@ class EDD_Admin {
 			$products = get_posts( $args );
 
 		} else {
-
 			$args = array(
 				'post_type'      => $post_types,
 				'post_status'    => 'publish',
@@ -747,11 +753,61 @@ class EDD_Admin {
 			foreach ( $products as $product_id ) {
 				if ( edd_has_variable_prices( $product_id ) ) {
 					$prices = edd_get_variable_prices( $product_id );
-					foreach ( $prices as $key => $value ) {
-						$found_products[] = array(
-							'id' => $product_id . '_' . $key,
-							'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
-						);
+
+					if ( $save_term ){
+						if ( strpos( $save_term, ',' ) !== false ) {
+							$save_term = (array) explode( ',', $save_term );
+							foreach( $save_term as $sterm ){
+								$found = false;
+								foreach ( $prices as $key => $value ) {
+									foreach( $save_term as $sterm ){
+										if ( $product_id."_".$key == $sterm ){
+											$found_products[] = array(
+													'id' => $product_id . '_' . $key,
+													'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
+											);
+											$found = true;								
+										}
+									}
+								}
+								if ( !$found ){
+									foreach ( $prices as $key => $value ) {
+										$found_products[] = array(
+												'id' => $product_id . '_' . $key,
+												'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
+										);
+									}
+								}
+							}
+						}
+						else{
+							$found = false;
+							foreach ( $prices as $key => $value ) {
+								if ( $product_id."_".$key == $save_term ){
+									$found_products[] = array(
+											'id' => $product_id . '_' . $key,
+											'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
+									);
+									$found = true;								
+								}
+							}
+							if ( !$found ){
+								foreach ( $prices as $key => $value ) {
+									$found_products[] = array(
+											'id' => $product_id . '_' . $key,
+											'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
+									);
+								}
+							}
+						}
+					}
+					else{
+						foreach ( $prices as $key => $value ) {
+							$found_products[] = array(
+								'id' => $product_id . '_' . $key,
+								'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
+							);
+						}
 					}
 				} else {
 					// If the customer turned on EDD's sku field
