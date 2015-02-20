@@ -547,9 +547,13 @@ class EDD_Admin {
 		}
 
 		if ( isset( $_POST['users'] ) ) {
-			$users = sanitize_text_field( $_POST['users'] );
+			$users = strip_tags( stripslashes( trim( $_POST['users'] ) ) );
+			if ( $users == 'Array' ) {
+				$users = '';
+			}
+			$users = $users != '' ? explode( ',', $users ) : array();
 		} else {
-			$users = '';
+			$users = array();
 		}
 
 		if ( isset( $_POST['dp-date-start'] ) ) {
@@ -632,6 +636,7 @@ class EDD_Admin {
 
 			case 'users':
 				$ids = get_post_meta( $post_id, 'users', true );
+
 				if ( empty( $ids ) ) {
 					echo __('All users', 'edd_dp');
 					return;
