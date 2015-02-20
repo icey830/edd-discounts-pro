@@ -5,6 +5,7 @@
 * Refactored the settings for edd_price outputs
 * Fixed variable pricing discounts
 * Fixed EDD detection before running
+* Fixed bug with users not saving properly
 
 1.1.1: 9/29/2014
 * Fixed an issue with the discount title not showing up in the cart
