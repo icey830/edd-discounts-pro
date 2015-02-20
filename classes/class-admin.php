@@ -644,7 +644,7 @@ class EDD_Admin {
 						)
 					) );
 				foreach ( $users as $item ) {
-					$links .= '<a href="' . admin_url( "user-edit.php?user_id=$item->ID" ) . '>' . $item->display_name . '</a>, ';
+					$links .= '<a href="' . admin_url( "user-edit.php?user_id=$item->ID" ) . '">' . $item->display_name . '</a>, ';
 				}
 				echo rtrim( $links, ', ' );
 				break;
