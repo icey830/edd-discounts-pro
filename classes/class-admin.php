@@ -66,6 +66,7 @@ class EDD_Admin {
 			'placeholder' => null
 		);
 		extract( wp_parse_args( $field, $args ) );
+
 		$value     = isset( $value ) ? esc_attr( $value ) : get_post_meta( $post->ID, $id, true );
 		$disc_type = get_post_meta( $post->ID, 'type', true );
 
@@ -435,6 +436,7 @@ class EDD_Admin {
 				closeOnSelect: true,
 				placeholder: "<?php _e( 'Any user', 'edd_dp' ); ?>",
 				ajax: {
+					type:     'GET',
 					url: "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
 					dataType: 'json',
 					quietMillis: 100,
@@ -453,7 +455,7 @@ class EDD_Admin {
 					var stuff = {
 						action:     'edd_json_search_users_ajax',
 						security:   '<?php echo wp_create_nonce( "search-users" ); ?>',
-						term:       element.val()
+						user:       element.val()
 					};
 					var data = [];
 					jQuery.ajax({
@@ -841,14 +843,30 @@ class EDD_Admin {
 		}
 
 		$args = array();
+		$args['include'] = array();
 
 		if ( strpos( $term, ',' ) !== false ) {
-
 			$term = (array) explode( ',', $term );
-
 		}
 
-		$args['search'] = '*' . $term . '*';
+		if( is_array( $term ) ) {
+			foreach( $term as $t ) {
+
+				if( is_numeric( $t ) ) {
+					$args['include'][] = $t;
+				} else {
+					$args['search'] = '*' . $t . '*';
+				}
+
+			}
+		} else {
+			if( is_numeric( $term ) ) {
+				$args['include'][] = $term;
+			} else {
+				$args['search'] = '*' . $term . '*';
+			}
+		}
+
 		$args['search_columns'] = array(
 			'ID',
 			'user_login',
@@ -856,8 +874,15 @@ class EDD_Admin {
 			'user_email',
 			'user_url'
 		);
+
+		if( empty( $args['include'] ) ) {
+			unset( $args['include'] );
+		}
+
 		$found_users = array();
 		$users = get_users( $args );
+
+		//echo json_encode( $args ); exit;
 
 		if ( ! empty( $users ) ){
 			foreach ( $users as $user ) {
