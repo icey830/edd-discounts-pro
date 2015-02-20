@@ -14,8 +14,7 @@ class EDD_Admin {
 		add_action( 'save_post', array( $this, 'save_discount' ) );
 		add_action( 'wp_ajax_edd_json_search_products', array( $this, 'edd_json_search_products' ) );
 		add_action( 'wp_ajax_edd_json_search_products_and_variations', array( $this, 'ajax_search_product_vars' ) );
-		add_action( 'wp_ajax_edd_json_search_users', array( $this, 'edd_json_search_users' ) );
-		add_action( 'wp_ajax_edd_json_search_users_ajax', array( $this, 'ajax_search_user_vars' ) );
+		add_action( 'wp_ajax_edd_json_search_users_ajax', array( $this, 'edd_json_search_users' ) );
 		add_filter( 'manage_edit-customer_discount_columns', array( $this, 'columns' ) );
 		add_action( 'manage_customer_discount_posts_custom_column', array( $this, 'column_value' ), 10, 2 );
 		if ( version_compare( EDD_VERSION, '2.1' ) >= 0 ){
@@ -831,7 +830,7 @@ class EDD_Admin {
 		$this->edd_json_search_products( '', array( 'download' ) );
 	}
 
-	public function edd_json_search_users( $x = '' ) {
+	public function edd_json_search_users() {
 
 		check_ajax_referer( 'search-users', 'security' );
 
@@ -872,10 +871,6 @@ class EDD_Admin {
 
 		echo json_encode( $found_users );
 		die();
-	}
-
-	public function ajax_search_user_vars() {
-		$this->edd_json_search_users( '' );
 	}
 
 	public function get_roles( $args = array() ) {
