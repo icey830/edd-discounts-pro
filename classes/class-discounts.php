@@ -8,6 +8,9 @@ class EDD_Discounts {
 	public function __construct() {
 		add_action( 'template_redirect', array( $this, 'apply_discount' ) );
 		add_action( 'init', array( $this, 'apply_discount' ),11 );
+		add_action( 'wp_head', array( $this, 'checkout_js' ) );
+		add_action( 'wp_ajax_edd_recalculate_discounts_pro', array( $this, 'recalculate_discounts' ) );
+		add_action( 'wp_ajax_nopriv_edd_recalculate_discounts_pro', array( $this, 'recalculate_discounts' ) );
 
 		$custom = edd_get_option( 'edd_dp_frontend_output_toggle', false );
 
@@ -547,4 +550,66 @@ class EDD_Discounts {
 			EDD()->fees->add_fee( -1 * $discount['amount'], $discount['name'], 'edd_discounts_pro');
 		}
 	}
+	
+		/**
+	 * JS to update checkout when quantity is updated
+	 *
+	 * @since 1.3
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function checkout_js() {
+?>		
+		<script type="text/javascript">
+		var edd_global_vars;
+		jQuery(document).ready(function($) {
+			$('body').on( 'edd_quantity_updated', function() {
+				$.ajax({
+					type: "POST",
+					data: {
+						action: 'edd_recalculate_discounts_pro'
+					},
+					dataType: "json",
+					url: edd_global_vars.ajaxurl,
+					xhrFields: {
+						withCredentials: true
+					},
+					success: function (response) {
+						$('#edd_checkout_cart_form').replaceWith(response.html);
+						$('.edd_cart_amount').html(response.total);
+					}
+				}).fail(function (data) {
+					if ( window.console && window.console.log ) {
+						console.log( data );
+					}
+				});				
+			});
+		});
+		</script>
+<?php
+	}
+
+	/**
+	 * Ajax callback to retrieve cart HTML
+	 *
+	 * @since 1.3
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function recalculate_discounts() {
+		ob_start();
+		edd_checkout_cart();
+		$cart = ob_get_clean();
+		$response = array(
+			'html'  => $cart,
+			'total' => html_entity_decode( edd_cart_total( false ), ENT_COMPAT, 'UTF-8' ),
+		);
+
+		echo json_encode( $response );
+
+		edd_die();
+	}
+
 }
