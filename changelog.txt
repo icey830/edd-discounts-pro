@@ -1,3 +1,6 @@
+1.3.1: 3/25/2015
+* Fixed a Javascript error when not on the checkout page
+
 1.3: 3/24/2015
 * Added support for automatically re-drawing the checkout when item quantities are updated
 
