@@ -560,6 +560,9 @@ class EDD_Discounts {
 	 * @return void
 	 */
 	public function checkout_js() {
+		if( ! edd_is_checkout() ) {
+			return;
+		}
 ?>		
 		<script type="text/javascript">
 		var edd_global_vars;

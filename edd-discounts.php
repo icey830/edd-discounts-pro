@@ -95,12 +95,10 @@ class edd_dp {
 		if ( ! defined( 'EDD_DP_ASSETS_URL' ) ) {
 			define( 'EDD_DP_ASSETS_URL', EDD_DP_PLUGIN_URL . 'assets/' );
 		}
-		if ( !class_exists( 'EDD_License' ) ) {
-			require_once EDD_DP_PLUGIN_PATH . 'assets/lib/EDD_License_Handler.php';
-		}
+
 		$license = new EDD_License( __FILE__, EDD_DP_PLUGIN_NAME, EDD_DP_PLUGIN_VERSION, 'Chris Christoff' );
 
-		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
+		add_action( 'init', array( $this, 'load_textdomain' ) );
 	}
 
 	public function includes() {
@@ -128,8 +126,9 @@ class edd_dp {
  * @return object The one true edd_dp Instance
  */
 function EDD_DP() {
+	if ( ! class_exists( 'Easy_Digital_Downloads' ) ){
+		return;
+	}
 	return edd_dp::instance();
 }
-if ( class_exists( 'Easy_Digital_Downloads' ) ){
-	EDD_DP();
-}
+add_action( 'plugins_loaded', 'EDD_DP' );
