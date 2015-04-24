@@ -234,7 +234,7 @@ class EDD_Discounts {
 	}
 
 	public function get_discounts( $customer_id, $cart ) {
-		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish' );
+		$args = array( 'post_type' => 'customer_discount', 'post_status' => 'publish', 'posts_per_page' => -1 );
 		$query = new WP_Query( $args );
 		$result = array();
 		if ( empty( $query->posts ) ) {
