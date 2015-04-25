@@ -77,7 +77,7 @@ class edd_dp {
 		}
 		// Plugin Version
 		if ( ! defined( 'EDD_DP_PLUGIN_VERSION' ) ) {
-			define( 'EDD_DP_PLUGIN_VERSION', '1.3.1' );
+			define( 'EDD_DP_PLUGIN_VERSION', '1.3.2' );
 		}
 		// Plugin Root File
 		if ( ! defined( 'EDD_DP_PLUGIN_FILE' ) ) {
