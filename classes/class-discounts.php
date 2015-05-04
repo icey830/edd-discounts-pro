@@ -315,6 +315,8 @@ class EDD_Discounts {
 			if ( isset( $discounts[0] ) ) {
 				if ( $apply ) {
 					$amount = $this->calculate_discount( $discounts[$id], $cart, $customer_id, $apply );
+				} else {
+					$amount = $discounts[0]['amount'];
 				}
 			}
 		}
