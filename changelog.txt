@@ -1,5 +1,6 @@
 1.4: 5/4/2015
 * Added support for commissions
+* Fixed from x products 
 
 1.3.2 4/24/2015
 * Fixed an error where more than two discounts could not be applied due to WordPress's posts per page setting
