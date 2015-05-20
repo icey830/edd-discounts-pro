@@ -505,6 +505,10 @@ class EDD_Discounts {
 			$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 			$total_applicable_value += ( $item_price * $cart_quantity );
 		}
+		
+		if ( $total_applicable_value == 0 ){
+			return 0;
+		}
 
 		// then find each item's weight ( $10 of 100 is 0.1. 0.1 is the weight. )
 		foreach ( $applicable_items as $key => $item ) {
