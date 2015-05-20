@@ -115,6 +115,9 @@ class EDD_Discounts {
 		if  ( $variable_pricing ) {
 			return $args;
 		}
+		
+		$price = $download->price;
+		
 		$cart = array(
 			0 => array(
 				'id' => $args['download_id'],
