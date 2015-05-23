@@ -343,11 +343,10 @@ class EDD_Discounts {
 
 		// take id and make WP_User
 		$customer = new WP_User( $customer );
-	
 		if ( isset( $product['options'] ) && isset( $product['options']['price_id'] ) ) {
 			$product['compare_id'] = $product['id'] .'_'. $product['options']['price_id'];
 		} else {
-			$product['compare_id'] = $product;
+			$product['compare_id'] = $product['id'];
 		}
 
 		// Check if discount is applicable to the product
