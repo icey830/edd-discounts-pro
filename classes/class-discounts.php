@@ -115,9 +115,9 @@ class EDD_Discounts {
 		if  ( $variable_pricing ) {
 			return $args;
 		}
-		
+
 		$price = $download->price;
-		
+
 		$cart = array(
 			0 => array(
 				'id' => $args['download_id'],
@@ -497,7 +497,7 @@ class EDD_Discounts {
 			$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 			$total_applicable_value += ( $item_price * $cart_quantity );
 		}
-		
+
 		if ( $total_applicable_value == 0 ){
 			return 0;
 		}
@@ -516,7 +516,7 @@ class EDD_Discounts {
 				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				if ( $cart_quantity >= $discount['quantity'] ) {
-					$value = $this->get_discount_amount( $disc, $cart_quantity, $item_price );
+					$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
 					$total_discount += $value;
 					$applicable_items[$key]['value'] = $value;
 				}
