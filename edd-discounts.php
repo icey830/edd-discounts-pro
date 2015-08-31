@@ -6,7 +6,7 @@
  * Author:              Chris Christoff
  * Author URI:          http://www.chriscct7.com
  *
- * Version:             1.4.2
+ * Version:             1.4.3
  * Requires at least:   3.9
  * Tested up to:        4.3
  *
@@ -30,14 +30,14 @@ class edd_dp {
 	 * @since 1.0
 	 */
 	private static $instance;
-	
+
 	public $id = 'edd_dp';
-	
+
 	public $basename;
-	
+
 	// Setup objects for each class
 	public $discounts;
-	
+
 	/**
 	 * Main edd_dp Instance
 	 *
@@ -77,7 +77,7 @@ class edd_dp {
 		}
 		// Plugin Version
 		if ( ! defined( 'EDD_DP_PLUGIN_VERSION' ) ) {
-			define( 'EDD_DP_PLUGIN_VERSION', '1.4.2' );
+			define( 'EDD_DP_PLUGIN_VERSION', '1.4.3' );
 		}
 		// Plugin Root File
 		if ( ! defined( 'EDD_DP_PLUGIN_FILE' ) ) {
