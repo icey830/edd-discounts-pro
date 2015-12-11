@@ -436,6 +436,13 @@ class EDD_Discounts {
 		case 'cart_quantity':
 			$quantity = 0;
 			foreach ( $applicable_items as $key => $item ) {
+
+				$price_id = isset( $item['options']['price_id'] ) ? $item['options']['price_id'] : null; 
+				if( edd_is_free_download( $item['id'], $price_id ) ) {
+					unset( $applicable_items[ $key ] );
+					continue;
+				}
+
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				$quantity += $cart_quantity;
 			}
