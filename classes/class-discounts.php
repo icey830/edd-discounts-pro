@@ -234,10 +234,7 @@ class EDD_Discounts {
 			$cart = array(
 				0 => array(
 					'id' => $download_id,
-					'quantity' => 1,
-					'options' => array(
-						'price_id' => $key
-					),
+					'quantity' => 1
 				)
 			);
 
@@ -253,6 +250,9 @@ class EDD_Discounts {
 				0 => array(
 					'id' => $download_id,
 					'quantity' => 1,
+					'options' => array(
+						'price_id' => $key
+					),
 				)
 			);
 
