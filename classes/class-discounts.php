@@ -243,7 +243,7 @@ class EDD_Discounts {
 			if ( !$discount ) {
 				return $price;
 			}
-			return $price - $discount;
+			return edd_sanitize_amount( $price - $discount );
 		}
 		else {
 			$cart = array(
@@ -262,7 +262,7 @@ class EDD_Discounts {
 				return $price;
 			}
 
-			return $price - $discount;
+			return edd_sanitize_amount( $price - $discount );
 		}
 
 	}
