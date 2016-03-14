@@ -1,0 +1,17 @@
+{
+ 	"name": "chriscct7/edd-discounts",
+ 	"type": "wordpress-plugin",
+	"description": "EDD Discounts Pro",
+	"keywords": [ "edd", "discounts"],
+	"homepage": "https://easydigitaldownloads.com/downloads/discounts-pro/",
+	"authors": [
+	    {
+	      	"name": "Chris Christoff",
+	      	"email": "hello@chriscct7.com",
+	      	"homepage": "http://chriscct7.com/"
+	    }
+	],
+   	"require": {
+     	"composer/installers": "~1.0.6"
+   	}
+}
