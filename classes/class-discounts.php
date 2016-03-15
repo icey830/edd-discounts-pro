@@ -454,7 +454,7 @@ class EDD_Discounts {
 		case 'cart_threshold':
 			$total = 0; // amount of applicable cart value
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+				$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				$total += $item_price * $cart_quantity;
 			}
@@ -500,7 +500,7 @@ class EDD_Discounts {
 
 		// we first need to know how large the applicable cart is
 		foreach ( $applicable_items as $key => $item ) {
-			$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+			$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 			$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 			$total_applicable_value += ( $item_price * $cart_quantity );
 		}
@@ -511,7 +511,7 @@ class EDD_Discounts {
 
 		// then find each item's weight ( $10 of 100 is 0.1. 0.1 is the weight. )
 		foreach ( $applicable_items as $key => $item ) {
-			$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+			$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 			$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 			$applicable_items[$key]['weight'] = ( $item_price * $cart_quantity ) / $total_applicable_value;
 		}
@@ -520,7 +520,7 @@ class EDD_Discounts {
 			// discount for quantities of a product
 		case 'product_quantity':
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+				$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				if ( $cart_quantity >= $discount['quantity'] ) {
 					$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
@@ -533,7 +533,7 @@ class EDD_Discounts {
 		case 'each_x_products':
 			$count = 1;
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+				$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				if ( $count == $discount['quantity'] ) {
 					$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
@@ -550,7 +550,7 @@ class EDD_Discounts {
 		case 'from_x_products':
 			$count = 1;
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+				$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				// if the cart quantity plus the next download's quantity is over the threshold
 				if ( $count >= $discount['quantity'] ) {
@@ -567,7 +567,7 @@ class EDD_Discounts {
 		case 'percentage_price':
 		default:
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+				$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
 				$total_discount += $value;
