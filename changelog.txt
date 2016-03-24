@@ -1,4 +1,4 @@
-1.4.5: 3/15/2016
+1.4.5: 3/24/2016
 * Added composer file
 * Fixes tax issue with EDD where discounts are miscalculated when product prices inclusive of tax
 * Don't count free products toward cart quantity discount
