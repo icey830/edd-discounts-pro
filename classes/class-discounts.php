@@ -191,7 +191,7 @@ class EDD_Discounts {
 
 			$option = edd_get_option( 'edd_dp_old_price_text', __( 'Old Price:', 'edd_dp' ) );
 
-			$line = '<span class="old-priced-container"><span class="old-price-title">' . $option . ' </span><s class="old-price">' . edd_currency_filter( edd_format_amount( $prices[ $key ]['amount'] ) ) . '</s></span>';
+			$line = '<span class="old-priced-container"><span class="old-price-title">' . $option . ' </span><s class="old-price">' . edd_currency_filter( edd_format_amount( $prices[ $key ]['amount'] ) ) . '</s> </span>';
 
 			$line = apply_filters( 'edd_dp_edd_price_top', $line, $key, $prices[ $key ]['amount'], $download_id );
 
@@ -215,7 +215,7 @@ class EDD_Discounts {
 
 			$option = edd_get_option( 'edd_dp_old_price_text',  __( 'Old Price:', 'edd_dp' ) );
 
-			$line = '<span class="old-priced-container"><span class="old-price-title">' . $option . ' </span><s class="old-price">' . edd_currency_filter( edd_format_amount( $prices ) ) . '</s></span>';
+			$line = '<span class="old-priced-container"><span class="old-price-title">' . $option . ' </span><s class="old-price">' . edd_currency_filter( edd_format_amount( $prices ) ) . '</s> </span>';
 
 			$line = apply_filters( 'edd_dp_edd_price_top', $line, $key, $prices, $download_id );
 
