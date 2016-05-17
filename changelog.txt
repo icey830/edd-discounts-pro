@@ -1,3 +1,6 @@
+1.4.6: 3/24/2016
+* Added HTML to Old Price output for easier customization
+
 1.4.5: 3/24/2016
 * Added composer file
 * Fixes tax issue with EDD where discounts are miscalculated when product prices inclusive of tax
