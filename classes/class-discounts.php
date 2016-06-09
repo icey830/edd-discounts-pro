@@ -224,6 +224,10 @@ class EDD_Discounts {
 	}
 
 	public function edd_price( $price, $download_id, $key = false ) {
+
+		$download = new EDD_Download( $download_id );
+		$price    = $download->price;
+
 		if ( !$key ) {
 			$variable_pricing = edd_has_variable_prices( $download_id );
 
@@ -246,9 +250,10 @@ class EDD_Discounts {
 			if ( !$discount ) {
 				return $price;
 			}
-			return $price - $discount;
-		}
-		else {
+
+			return edd_format_amount( $price - $discount, edd_currency_decimal_filter() );
+
+		} else {
 			$cart = array(
 				0 => array(
 					'id' => $download_id,
@@ -262,7 +267,7 @@ class EDD_Discounts {
 				return $price;
 			}
 
-			return $price - $discount;
+			return edd_format_amount( $price - $discount, edd_currency_decimal_filter() );
 		}
 
 	}
