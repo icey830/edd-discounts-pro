@@ -1,3 +1,6 @@
+1.4.7: 7/6/2016
+* Fix: price_id not passed to add_fee() method when cart item has a variable price
+
 1.4.6: 5/17/2016
 * Added HTML to Old Price output for easier customization
 
