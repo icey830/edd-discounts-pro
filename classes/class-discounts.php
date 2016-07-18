@@ -397,11 +397,11 @@ class EDD_Discounts {
 		}
 
 		// check start and end dates
-		if ( $discount['start'] !== '' && strtotime( $discount['start'] ) > strtotime( "now" ) ) {
+		if ( $discount['start'] !== '' && strtotime( $discount['start'] ) > current_time( "timestamp") ) {
 			return false;
 		}
 
-		if ( $discount['end'] !== '' && strtotime( $discount['end'] ) < strtotime( "now" ) ) {
+		if ( $discount['end'] !== '' && strtotime( $discount['end'] ) < current_time( "timestamp") ) {
 			return false;
 		}
 
