@@ -49,149 +49,6 @@ class EDD_Admin {
 		return array_merge( $settings, $new_settings );
 	}
 
-	public static function input( $field ) {
-		global $post;
-		$args = array(
-			'id'          => null,
-			'name'        => null,
-			'type'        => 'text',
-			'label'       => null,
-			'after_label' => null,
-			'class'       => 'short',
-			'desc'        => false,
-			'tip'         => false,
-			'value'       => null,
-			'min'         => null,
-			'max'         => null,
-			'step'        => 'any',
-			'placeholder' => null,
-		);
-		extract( wp_parse_args( $field, $args ) );
-
-		$value     = isset( $value ) ? esc_attr( $value ) : get_post_meta( $post->ID, $id, true );
-		$disc_type = get_post_meta( $post->ID, 'type', true );
-
-		$name  = isset( $name ) ? $name : $id;
-		$html  = '';
-		$html .= "<p class='form-field {$id}_field'>";
-		$html .= "<label for='{$id}'>$label{$after_label}</label>";
-		$html .= "<input type='{$type}' id='{$id}' name='{$name}' class='{$class}'";
-		$html .= " value='{$value}'";
-		if ( $type == 'number' ) {
-			if ( !empty( $min ) )
-				$html .= " min='{$min}'";
-			if ( !empty( $max ) )
-				$html .= " max='{$max}'";
-			if ( !empty( $step ) )
-				$html .= " step='{$step}'";
-		}
-		$html .= " placeholder='{$placeholder}' />";
-		if ( $tip ) {
-			$html .= '<a href="#" tip="' . $tip . '" class="tips" tabindex="99"></a>';
-		}
-		if ( $desc ) {
-			$html .= '<span class="description">' . $desc . '</span>';
-		}
-		$html .= "</p>";
-
-		return $html;
-	}
-
-	public static function select( $field ) {
-		global $post;
-		$args = array(
-			'id'          => null,
-			'name'        => null,
-			'label'       => null,
-			'after_label' => null,
-			'class'       => 'select short',
-			'desc'        => false,
-			'tip'         => false,
-			'multiple'    => false,
-			'placeholder' => '',
-			'options'     => array(),
-			'selected'    => false,
-		);
-		extract( wp_parse_args( $field, $args ) );
-		$selected = ( $selected ) ? (array) $selected : (array) get_post_meta( $post->ID, $id, true );
-		$name     = isset( $name ) ? $name : $id;
-		$name     = ( $multiple ) ? $name . '[]' : $name;
-		$multiple = ( $multiple ) ? 'multiple="multiple"' : '';
-		$desc     = ( $desc ) ? esc_html( $desc ) : false;
-		$html     = '';
-		$html .= "<p class='form-field {$id}_field'>";
-		$html .= "<label for='{$id}'>$label{$after_label}</label>";
-		$html .= "<select {$multiple} id='{$id}' name='{$name}' class='{$class}' data-placeholder='{$placeholder}'>";
-		foreach ( $options as $value => $label ) {
-			if ( is_array( $label ) ) {
-				$html .= '<optgroup label="' . esc_attr( $value ) . '">';
-				foreach ( $label as $opt_value => $opt_label ) {
-					$mark = '';
-					if ( in_array( $opt_value, $selected ) ) {
-						$mark = 'selected="selected"';
-					}
-					$html .= '<option value="' . esc_attr( $opt_value ) . '"' . $mark . '>' . $opt_label . '</option>';
-				}
-				$html .= '</optgroup>';
-			} else {
-				$mark = '';
-				if ( in_array( $value, $selected ) ) {
-					$mark = 'selected="selected"';
-				}
-				$html .= '<option value="' . esc_attr( $value ) . '"' . $mark . '>' . $label . '</option>';
-			}
-		}
-		$html .= "</select>";
-		if ( $tip ) {
-			$html .= '<a href="#" tip="' . $tip . '" class="tips" tabindex="99"></a>';
-		}
-		if ( $desc ) {
-			$html .= '<span class="description">' . $desc . '</span>';
-		}
-		$html .= "</p>";
-		$html .= '<script type="text/javascript">
-					/*<![CDATA[*/
-						jQuery(function() {
-							jQuery("#' . $id . '").select2();
-						});
-					/*]]>*/
-					</script>';
-		return $html;
-	}
-
-	public static function checkbox( $field ) {
-		global $post;
-		$args = array(
-			'id'          => null,
-			'name'        => null,
-			'label'       => null,
-			'after_label' => null,
-			'class'       => 'checkbox',
-			'desc'        => false,
-			'tip'         => false,
-			'value'       => false,
-		);
-
-		extract( wp_parse_args( $field, $args ) );
-
-		$name  = isset( $name ) ? $name : $id;
-		$value = ( $value ) ? $value : get_post_meta( $post->ID, $id, true );
-		$desc  = ( $desc ) ? esc_html( $desc ) : false;
-		$mark  = checked( $value, 1, false );
-		$html  = '';
-		$html .= "<p class='form-field {$id}_field'>";
-		$html .= "<label for='{$id}'>$label{$after_label}</label>";
-		$html .= "<input type='checkbox' name='{$name}' class='{$class}' id='{$id}' {$mark} />";
-		if ( $desc ) {
-			$html .= "<label for='{$id}' class='description'>$desc</label>";
-		}
-		if ( $tip ) {
-			$html .= '<a href="#" tip="' . $tip . '" class="tips" tabindex="99"></a>';
-		}
-		$html .= "</p>";
-
-		return $html;
-	}
 
 	// Kudos thomasgriffin
 	public function edd_remove_all_the_metaboxes() {
@@ -255,94 +112,126 @@ class EDD_Admin {
 		echo '<div id="discount_options" class="panel edd_options_panel"><div class="options_group">';
 		$args = array(
 			'id'          => 'type',
+			'name'        => 'type',
 			'label'       => __( 'Discount Type', 'edd_dp' ),
 			'options'     => $this->get_discount_types(),
+			'show_option_all'  => false,
+			'show_option_none' => false,
 		);
-		echo $this->select( $args );
+		echo EDD()->html->select( $args );
+		$value = get_post_meta( $post->ID, 'quantity', true );
 		$args = array(
 			'id'          => 'quantity',
+			'name'          => 'quantity',
 			'label'       => __( 'Quantity', 'edd_dp' ),
-			'type'        => 'number',
 			'desc'        => __( 'Enter a value, i.e. 20', 'edd_dp' ),
 			'placeholder' => '0',
-			'min'         => 0,
+			'value'       => $value,
 		);
-		echo $this->input( $args );
+		echo EDD()->html->text( $args );
+		$value = get_post_meta( $post->ID, 'value', true );
 		$args = array(
 			'id'          => 'value',
+			'name'          => 'value',
 			'label'       => __( 'Discount Value', 'edd_dp' ),
 			'type'        => 'text',
 			'desc'        => __( '<br />Enter a value, i.e. 9.99 or 20%.', 'edd_dp' ) .' '. __( 'For free please enter 100%.', 'edd_dp' ),
 			'placeholder' => '0.00',
+			'value'       => $value,
 		);
-		echo $this->input( $args );
+		echo EDD()->html->text( $args );
 		echo '</div>';
 		echo '<div class="options_group">';
-		$selected = implode( ',', (array) get_post_meta( $post->ID, 'products', true ) );
-		$args     = array(
+
+		$selected = get_post_meta( $post->ID, 'products', true );
+		echo EDD()->html->product_dropdown( array(
+			'name'        => 'products[]',
+			'label'       => __( "Products", 'edd_dp' ),
 			'id'          => 'products',
-			'type'        => 'hidden',
-			/* use hidden input type for Select2 custom data loading */
-			'class'       => 'long',
-			'label'       => __( 'Products', 'edd_dp' ),
-			'desc'        => __( 'Control which products this coupon can apply to.', 'edd_dp' ),
-			'value'       => $selected,
-		);
-		echo $this->input( $args );
+			'selected'    => $selected,
+			'multiple'    => true,
+			'chosen'      => true,
+			'variations'  => true,
+			'desc'        => __( 'Control which products this discount can apply to.', 'edd_dp' ),
+			'placeholder' => sprintf( __( 'Select one or more %s', 'edd_dp' ), edd_get_label_plural() )
+		) );
+
+
 		$categories = array();
 		foreach ( get_terms( 'download_category', array( 'hide_empty' => false ) ) as $category ) {
 			$categories[ $category->term_id ] = $category->name;
 		}
+		$selected = get_post_meta( $post->ID, 'categories', true );
 		$args = array(
 			'id'          => 'categories',
+			'name'          => 'categories[]',
 			'label'       => __( 'Categories', 'edd_dp' ),
 			'desc'        => __( 'Control which product categories this discount can apply to.', 'edd_dp' ),
 			'multiple'    => true,
+			'chosen'      => true,
 			'placeholder' => __( 'Any category', 'edd_dp' ),
 			'class'       => 'select long',
 			'options'     => $categories,
+			'selected'    => $selected,
+			'show_option_all'  => false,
+			'show_option_none' => false,
 		);
-		echo $this->select( $args );
+		echo EDD()->html->select( $args );
 
 		$tags = array();
 		foreach ( get_terms( 'download_tag', array( 'hide_empty' => false ) ) as $tag ) {
 			$tags[ $tag->term_id ] = $tag->name;
 		}
+		$selected = get_post_meta( $post->ID, 'tags', true );
 		$args = array(
 			'id'          => 'tags',
+			'name'        => 'tags[]',
 			'label'       => __( 'Tags', 'edd_dp' ),
 			'desc'        => __( 'Control which product tags this discount can apply to.', 'edd_dp' ),
 			'multiple'    => true,
+			'chosen'      => true,
 			'placeholder' => __( 'Any tag', 'edd_dp' ),
 			'class'       => 'select long',
 			'options'     => $tags,
+			'selected'    => $selected,
+			'show_option_all'  => false,
+			'show_option_none' => false,
 		);
-		echo $this->select( $args );
+		echo EDD()->html->select( $args ); echo '<br />';
 
-		$selected = implode( ',', (array) get_post_meta( $post->ID, 'users', true ) );
-		$args     = array(
+		$selected = get_post_meta( $post->ID, 'users', true );
+		echo EDD()->html->user_dropdown(  array(
+			'name'        => 'users[]',
 			'id'          => 'users',
-			'type'        => 'hidden',
-			/* use hidden input type for Select2 custom data loading */
-			'class'       => 'long',
-			'label'       => __( 'Users', 'edd_dp' ),
-			'desc'        => __( 'Control which user this discount can apply to. Search by email address, URL, ID or username.', 'edd_dp' ),
-			'value'       => $selected,
-		);
-		echo $this->input( $args );
+			'key'         => 'user_login',
+			'label'       => __( "Users", 'edd_dp' ),
+			'selected'    => $selected,
+			'multiple'    => true,
+			'chosen'      => true,
+			'desc'        => __( 'Control which users this discount can apply to.', 'edd_dp' ),
+			'placeholder' => __( 'Select one or more users', 'edd_dp' ),
+			'show_option_all'  => false,
+			'show_option_none' => false,
+		) ); echo '<br />';
 
 		// Roles (we'll call them groups in core so we don't get confusion when EDD finally integrates w/groups plugin)
 		$groups = $this->get_roles();
+		$selected = get_post_meta( $post->ID, 'groups', true );
 		$args   = array(
 			'id'          => 'groups',
+			'name'        => 'groups[]',
 			'label'       => __( 'Roles', 'edd_dp' ),
 			'desc'        => __( 'Control which roles this discount can apply to.', 'edd_dp' ),
 			'multiple'    => true,
+			'chosen'      => true,
 			'placeholder' => __( 'Any roles', 'edd_dp' ),
 			'class'       => 'select long',
 			'options'     => $groups,
+			'selected'    => $selected,
+			'show_option_all'  => false,
+			'show_option_none' => false,
 		);
-		echo $this->select( $args );
+		echo EDD()->html->select( $args ); echo '<br />';
 		$date_format = $this->dateStringToDatepickerFormat(get_option( 'date_format' ));
 		$string = $date_format;
 ?>		<p class="form-field dp-date-start"><label for="dp-date-start">Start Date</label>
@@ -383,105 +272,24 @@ class EDD_Admin {
 			$('#type').change(function() {
 				type_val = $(this).find('option:selected').val();
 				if(type_val == 'cart_quantity' || type_val == 'cart_threshold' || type_val == 'product_quantity' || type_val == 'each_x_products' || type_val == 'from_x_products') {
-					$('.quantity_field > span.description').html(quantity_help[type_val]);
-					$('.quantity_field').show();
+					$('#quantity').prev('.edd-description').html(quantity_help[type_val]);
+					$('#quantity').show();
 				} else {
-					$('.quantity_field').hide()
+					$('#quantity').hide()
 				}
 			});
 			$('#type').change();
-
-			// allow searching of products to use on a discount
-			jQuery("#products").select2({
-				minimumInputLength: 3,
-				multiple: true,
-				closeOnSelect: true,
-				placeholder: "<?php _e( 'Any product', 'edd_dp' ); ?>",
-				ajax: {
-					url: "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
-					dataType: 'json',
-					quietMillis: 100,
-					data: function(term, page) {
-						return {
-							term:       term,
-							action:     'edd_json_search_products_and_variations',
-							security:   '<?php echo wp_create_nonce( "search-products" ); ?>'
-						};
-					},
-					results: function( data, page ) {
-						return { results: data };
-					}
-				},
-				initSelection: function( element, callback ) {
-					var product_init_data = {
-						action:     'edd_json_search_products_and_variations',
-						security:   '<?php echo wp_create_nonce( "search-products" ); ?>',
-						term:       element.val()
-					};
-
-					jQuery.ajax({
-						type:     'GET',
-						url:      "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
-						dataType: "json",
-						data:     product_init_data,
-						success: 	function( result ) {
-							callback( result );
-						}
-					});
-				}
-			});
-			// allow searching of users to use on a discount
-			jQuery("#users").select2({
-				minimumInputLength: 3,
-				multiple: true,
-				closeOnSelect: true,
-				placeholder: "<?php _e( 'Any user', 'edd_dp' ); ?>",
-				ajax: {
-					type:     'GET',
-					url: "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
-					dataType: 'json',
-					quietMillis: 100,
-					data: function(term, page) {
-						return {
-							user:       term,
-							action:     'edd_json_search_users_ajax',
-							security:   '<?php echo wp_create_nonce( "search-users" ); ?>'
-						};
-					},
-					results: function( data, page ) {
-						return { results: data };
-					}
-				},
-				initSelection: function( element, callback ) {
-					var stuff = {
-						action:     'edd_json_search_users_ajax',
-						security:   '<?php echo wp_create_nonce( "search-users" ); ?>',
-						user:       element.val()
-					};
-					var data = [];
-					jQuery.ajax({
-						type:     'GET',
-						url:      "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
-						dataType: "json",
-						data:     stuff,
-						success: 	function( result ) {
-							callback( result );
-						}
-					});
-				}
-			});
 		});
 	</script>
 	<?php
+	$current = get_post_meta( $post->ID, 'cust', true );
 	$args = array(
-		'id'          => 'cust',
+		'name'        => 'cust',
 		'label'       => __( 'Apply for previous customers only', 'edd_dp' ),
-		'type'        => 'checkbox',
 		'desc'        => __( 'When checked, only customers who have previously made purchases will be eligible for this discount', 'edd_dp' ),
-		'placeholder' => '0',
-		'min'         => 0,
+		'current'     => $current,
 	);
-	echo $this->checkbox( $args );
+	echo EDD()->html->checkbox( $args );
 	}
 
 	public function form_updated_message( $messages ) {
@@ -524,13 +332,11 @@ class EDD_Admin {
 		$type     = strip_tags( stripslashes( trim( $_POST['type'] ) ) );
 		$quantity = strip_tags( stripslashes( trim( $_POST['quantity'] ) ) );
 		$value    = strip_tags( stripslashes( trim( $_POST['value'] ) ) );
-
-		if ( isset( $_POST['products'] ) ) {
-			$products = strip_tags( stripslashes( trim( $_POST['products'] ) ) );
-			if ( $products == 'Array' ) {
-				$products = '';
-			}
-			$products = $products != '' ? explode( ',', $products ) : array();
+		if ( ! empty( $_POST['products'] ) ) {
+			$products = array_map( "trim", $_POST['products'] );
+			$products = array_map( "stripslashes", $products );
+			$products = array_map( "strip_tags", $products );
+			$products = array_map( "sanitize_key", $products );
 		} else {
 			$products = array();
 		}
@@ -547,12 +353,11 @@ class EDD_Admin {
 			$tags = array();
 		}
 
-		if ( isset( $_POST['users'] ) ) {
-			$users = strip_tags( stripslashes( trim( $_POST['users'] ) ) );
-			if ( $users == 'Array' ) {
-				$users = '';
-			}
-			$users = $users != '' ? explode( ',', $users ) : array();
+		if ( ! empty( $_POST['users'] ) ) {
+			$users = array_map( "trim", $_POST['users'] );
+			$users = array_map( "stripslashes", $users );
+			$users = array_map( "strip_tags", $users );
+			$users = array_map( "sanitize_key", $users );
 		} else {
 			$users = array();
 		}
@@ -700,210 +505,6 @@ class EDD_Admin {
 				echo $column;
 				break;
 		}
-	}
-
-	public function edd_json_search_products( $x = '', $post_types = array( 'download' ) ) {
-
-		check_ajax_referer( 'search-products', 'security' );
-
-		$term = (string) urldecode( stripslashes( strip_tags( $_GET['term'] ) ) );
-
-		if ( empty( $term ) )
-			die();
-
-		$products;
-		$save_term = $term;
-
-		if ( ! ( strpos( $term, ',' ) !== false ) && strpos( $term, '_' ) !== false ){
-			$term = substr( $term, 0, strpos( $term, '_' ) );
-		}
-
-		if ( strpos( $term, ',' ) !== false ) {
-			$term = (array) explode( ',', $term );
-
-			foreach ( $term as $id => $t ) {
-				if ( strpos( $t, '_' ) !== false ) {
-					$term[ $id ] = substr( $t, 0, strpos( $t, '_' ) );
-				}
-			}
-
-			$args = array(
-				'post_type'      => $post_types,
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'post__in'       => $term,
-				'fields'         => 'ids',
-			);
-			$products = get_posts( $args );
-
-		} elseif ( is_numeric( $term ) ) {
-			$args = array(
-				'post_type'      => $post_types,
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'post__in'       => array(
-					0,
-					$term
-				),
-				'fields'         => 'ids',
-			);
-			$products = get_posts( $args );
-
-		} else {
-			$args = array(
-				'post_type'      => $post_types,
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				's'              => $term,
-				'fields'         => 'ids',
-			);
-			$products = get_posts( $args );
-		}
-		$found_products = array();
-		if ( !empty( $products ) )
-			foreach ( $products as $product_id ) {
-				if ( edd_has_variable_prices( $product_id ) ) {
-					$prices = edd_get_variable_prices( $product_id );
-
-					if ( $save_term ){
-						if ( strpos( $save_term, ',' ) !== false ) {
-							$save_term = (array) explode( ',', $save_term );
-							foreach( $save_term as $sterm ){
-								$found = false;
-								foreach ( $prices as $key => $value ) {
-									foreach( $save_term as $sterm ){
-										if ( $product_id."_".$key == $sterm ){
-											$found_products[] = array(
-													'id' => $product_id . '_' . $key,
-													'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
-											);
-											$found = true;
-										}
-									}
-								}
-								if ( !$found ){
-									foreach ( $prices as $key => $value ) {
-										$found_products[] = array(
-												'id' => $product_id . '_' . $key,
-												'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
-										);
-									}
-								}
-							}
-						}
-						else{
-							$found = false;
-							foreach ( $prices as $key => $value ) {
-								if ( $product_id."_".$key == $save_term ){
-									$found_products[] = array(
-											'id' => $product_id . '_' . $key,
-											'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
-									);
-									$found = true;
-								}
-							}
-							if ( !$found ){
-								foreach ( $prices as $key => $value ) {
-									$found_products[] = array(
-											'id' => $product_id . '_' . $key,
-											'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
-									);
-								}
-							}
-						}
-					}
-					else{
-						foreach ( $prices as $key => $value ) {
-							$found_products[] = array(
-								'id' => $product_id . '_' . $key,
-								'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
-							);
-						}
-					}
-				} else {
-					// If the customer turned on EDD's sku field
-					$SKU = get_post_meta( $product_id, 'edd_sku', true );
-					if ( isset( $SKU ) && $SKU ) {
-						$SKU = ' (SKU: ' . $SKU . ')';
-					} else {
-						$SKU = ' (ID: ' . $product_id . ')';
-					}
-					$found_products[] = array(
-						'id' => $product_id,
-						'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . $SKU
-					);
-				}
-			}
-		echo json_encode( $found_products );
-		die();
-	}
-
-	public function ajax_search_product_vars() {
-		$this->edd_json_search_products( '', array( 'download' ) );
-	}
-
-	public function edd_json_search_users() {
-
-		check_ajax_referer( 'search-users', 'security' );
-
-		$term = (string) urldecode( stripslashes( strip_tags( $_GET['user'] ) ) );
-
-		if ( empty( $term ) ){
-			die();
-		}
-
-		$args = array();
-		$args['include'] = array();
-
-		if ( strpos( $term, ',' ) !== false ) {
-			$term = (array) explode( ',', $term );
-		}
-
-		if( is_array( $term ) ) {
-			foreach( $term as $t ) {
-
-				if( is_numeric( $t ) ) {
-					$args['include'][] = $t;
-				} else {
-					$args['search'] = '*' . $t . '*';
-				}
-
-			}
-		} else {
-			if( is_numeric( $term ) ) {
-				$args['include'][] = $term;
-			} else {
-				$args['search'] = '*' . $term . '*';
-			}
-		}
-
-		$args['search_columns'] = array(
-			'ID',
-			'user_login',
-			'display_name',
-			'user_email',
-			'user_url'
-		);
-
-		if( empty( $args['include'] ) ) {
-			unset( $args['include'] );
-		}
-
-		$found_users = array();
-		$users = get_users( $args );
-
-		if ( ! empty( $users ) ){
-			foreach ( $users as $user ) {
-
-				$found_users[] = array(
-					'id' => $user->ID,
-					'text' => html_entity_decode( $user->display_name , ENT_COMPAT, 'UTF-8' )
-				);
-			}
-		}
-
-		echo json_encode( $found_users );
-		die();
 	}
 
 	public function get_roles( $args = array() ) {
