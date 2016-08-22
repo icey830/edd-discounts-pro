@@ -18,7 +18,7 @@ class EDD_Discounts {
 		$custom = edd_get_option( 'edd_dp_frontend_output_toggle', false );
 
 		// Purchase link
-		if ( version_compare( EDD_VERSION, '2.1' ) >= 0 && $custom ) {
+		if ( $custom ) {
 			// Top ( Old Price)
 			add_action( 'edd_purchase_link_top', array( $this, 'edd_purchase_link_top' ), 10, 1 );
 			add_action( 'edd_after_price_option', array( $this, 'edd_purchase_link_variable' ), 10, 3 );
@@ -29,7 +29,7 @@ class EDD_Discounts {
 		}
 
 		// edd_price
-		if ( version_compare( EDD_VERSION, '2.3' ) >= 0 && $custom ) {
+		if ( $custom ) {
 			// Top ( Old Price)
 			add_filter( 'edd_download_price_after_html', array( $this, 'edd_price_top' ), 10, 3 );
 

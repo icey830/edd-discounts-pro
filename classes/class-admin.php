@@ -18,9 +18,7 @@ class EDD_Admin {
 		add_filter( 'manage_edit-customer_discount_columns', array( $this, 'columns' ) );
 		add_action( 'manage_customer_discount_posts_custom_column', array( $this, 'column_value' ), 10, 2 );
 
-		if ( version_compare( EDD_VERSION, '2.1' ) >= 0 ){
-			add_filter( 'edd_settings_extensions', array( $this, 'settings' ), -1 );
-		}
+		add_filter( 'edd_settings_extensions', array( $this, 'settings' ), -1 );
 	}
 
 	public function settings( $settings ) {
