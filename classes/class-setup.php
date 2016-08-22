@@ -9,7 +9,6 @@ class EDD_DP_Setup {
 		add_action( 'admin_init', array( $this, 'is_wp_36_and_edd_activated' ), 1 );
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action( 'admin_menu', array( $this, 'discount_submenu' ), 9 );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );
 		add_action( 'wp_head', array( $this, 'dp_version' ) );
 	}
@@ -28,7 +27,7 @@ class EDD_DP_Setup {
 				) );
 			}
 		
-		} else if ( !class_exists( 'Easy_Digital_Downloads' ) || ( version_compare( EDD_VERSION, '2.5.10' ) < 0 ) ) {
+		} else if ( ! class_exists( 'Easy_Digital_Downloads' ) || ( version_compare( EDD_VERSION, '2.5.10' ) < 0 ) ) {
 		
 			if ( is_plugin_active( EDD_DP()->basename ) ) {
 		
@@ -60,20 +59,6 @@ class EDD_DP_Setup {
 <?php
 	}
 
-	public function admin_enqueue_scripts() {
-
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		$current_screen = get_current_screen();
-		
-		if ( $current_screen->post_type === 'download' || $current_screen->post_type === 'customer_discount' ) {
-			wp_enqueue_script( 'edd-select2', EDD_DP_ASSETS_URL . 'js/select2.js', array( 'jquery' ), '2.1' );
-			wp_enqueue_script( 'jquery-ui-datepicker' );
-		}
-
-	}
 	public function admin_enqueue_styles() {
 
 		if ( ! is_admin() ) {
@@ -87,7 +72,6 @@ class EDD_DP_Setup {
 		}
 
 		if ( $current_screen->post_type === 'customer_discount' ) {
-			wp_enqueue_style( 'edd-select2', EDD_DP_ASSETS_URL . 'css/select2.css', '', '2.1', 'screen' );
 			wp_enqueue_style( 'edd_discounts_admin', EDD_DP_ASSETS_URL . 'css/admin.css' );
 		}
 

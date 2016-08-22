@@ -6,9 +6,9 @@
  * Author:              Chris Christoff
  * Author URI:          http://www.chriscct7.com
  *
- * Version:             1.4.7
+ * Version:             1.5.0
  * Requires at least:   4.1
- * Tested up to:        4.5
+ * Tested up to:        4.7
  *
  * Text Domain:         edd_dp
  * Domain Path:         /languages/
@@ -77,7 +77,7 @@ class edd_dp {
 		}
 		// Plugin Version
 		if ( ! defined( 'EDD_DP_PLUGIN_VERSION' ) ) {
-			define( 'EDD_DP_PLUGIN_VERSION', '1.4.7' );
+			define( 'EDD_DP_PLUGIN_VERSION', '1.5.0' );
 		}
 		// Plugin Root File
 		if ( ! defined( 'EDD_DP_PLUGIN_FILE' ) ) {
