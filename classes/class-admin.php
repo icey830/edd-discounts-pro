@@ -518,27 +518,16 @@ class EDD_Admin {
 		$roles    = array();
 
 		if ( empty( $args['include'] ) ) {
-
 			foreach ( $wp_roles->role_names as $role => $role_name ) {
-
-				$roles[$role] = $role_name;
-
+				$roles[ $role ] = $role_name;
 			}
-
 		} else {
-
 			foreach ( $wp_roles->role_names as $role => $role_name ) {
-
 				if ( in_array( $role, $args['include'] ) ) {
-
-					$roles[$role] = $role_name;
-
+					$roles[ $role ] = $role_name;
 				}
-
 			}
-
 		}
-
 		return $roles;
 	}
 
