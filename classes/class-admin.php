@@ -684,12 +684,12 @@ class EDD_Admin {
 					return;
 				}
 
-				if ( $start !== '' && strtotime( $start ) > strtotime("now") ){
+				if ( $start !== '' && (int) strtotime( $start, current_time( "timestamp" ) ) > (int) current_time( "timestamp" ) ){
 					_e('Waiting to Begin','edd_dp');
 					return;
 				}
 
-				if ( $end !== '' && strtotime( $end ) < strtotime("now") ){
+				if ( $end !== '' && (int) strtotime( $end, current_time( "timestamp" ) ) < (int) current_time( "timestamp" ) ){
 					_e('Finished','edd_dp');
 					return;
 				}
