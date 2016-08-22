@@ -1,3 +1,8 @@
+1.5.0: TBA
+* New: Completely revamped admin panel using the EDD HTML class
+* Fixed: Issue with products not saving correctly sometimes in the admin panel
+
+
 1.4.7: 7/6/2016
 * Fix: price_id not passed to add_fee() method when cart item has a variable price
 
