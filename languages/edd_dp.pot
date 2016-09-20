@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Easy Digital Downloads - Discounts Pro\n"
-"POT-Creation-Date: 2016-09-20 18:15-0400\n"
+"POT-Creation-Date: 2016-09-20 19:01-0400\n"
 "PO-Revision-Date: 2016-03-14 19:24-0400\n"
 "Last-Translator: Chris Christoff <support@easydigitaldownloads.com>\n"
 "Language-Team: Chris Christoff <support@easydigitaldownloads.com>\n"
@@ -295,7 +295,7 @@ msgstr ""
 #: classes/class-setup.php:48
 msgid ""
 "<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires Easy "
-"Digital Downloads 2.7 or higher in order to function properly."
+"Digital Downloads 2.6.8 or higher in order to function properly."
 msgstr ""
 
 #: classes/class-setup.php:56

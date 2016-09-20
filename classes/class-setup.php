@@ -26,7 +26,7 @@ class EDD_DP_Setup {
 				) );
 			}
 		
-		} else if ( ! class_exists( 'Easy_Digital_Downloads' ) || ( version_compare( EDD_VERSION, '2.7' ) < 0 ) ) {
+		} else if ( ! class_exists( 'Easy_Digital_Downloads' ) || ( version_compare( EDD_VERSION, '2.6.8' ) < 0 ) ) {
 		
 			if ( is_plugin_active( EDD_DP()->basename ) ) {
 		
@@ -45,7 +45,7 @@ class EDD_DP_Setup {
 	public function edd_notice() {
 ?>
 		<div class="updated">
-			<p><?php printf( __( '<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires Easy Digital Downloads 2.7 or higher in order to function properly.', 'edd_dp' ) ); ?></p>
+			<p><?php printf( __( '<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires Easy Digital Downloads 2.6.8 or higher in order to function properly.', 'edd_dp' ) ); ?></p>
 		</div>
 <?php
 	}
