@@ -3,9 +3,9 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class EDD_Admin {
+class EDD_DP_Admin {
 	public function __construct() {
-		if ( !is_admin() ){
+		if ( ! is_admin() ){
 			return;
 		}
 		add_action( 'add_meta_boxes', array( $this, 'edd_remove_all_the_metaboxes' ), 100 );
@@ -93,201 +93,272 @@ class EDD_Admin {
 	}
 
 	public function discount_metabox() {
-		add_meta_box(
-			'edd_discounts_data',
-			__( 'Discount Data', 'edd_dp' ),
-			array( $this, 'discount_template' ),
-			'customer_discount',
-			'normal',
-			'high'
-		);
+		add_meta_box( 'edd_discounts_data', __( 'Discount Data', 'edd_dp' ), array( $this, 'discount_template' ), 'customer_discount', 'normal', 'high'	);
 	}
 
 	public function discount_template( $post ) {
-
+		ob_start();
 		wp_nonce_field( 'edd_dp_save_meta', 'edd_dp_meta_nonce' );
-		echo '<style type="text/css">#edit-slug-box { display: none;} #minor-publishing-actions, .misc-pub-visibility{ display: none;}</style>';
-		echo '<div id="discount_options" class="panel edd_options_panel"><div class="options_group">';
-		$args = array(
-			'id'          => 'type',
-			'name'        => 'type',
-			'label'       => __( 'Discount Type', 'edd_dp' ),
-			'options'     => $this->get_discount_types(),
-			'show_option_all'  => false,
-			'show_option_none' => false,
-		);
-		echo EDD()->html->select( $args );
-		$value = get_post_meta( $post->ID, 'quantity', true );
-		$args = array(
-			'id'          => 'quantity',
-			'name'          => 'quantity',
-			'label'       => __( 'Quantity', 'edd_dp' ),
-			'desc'        => __( 'Enter a value, i.e. 20', 'edd_dp' ),
-			'placeholder' => '0',
-			'value'       => $value,
-		);
-		echo EDD()->html->text( $args );
-		$value = get_post_meta( $post->ID, 'value', true );
-		$args = array(
-			'id'          => 'value',
-			'name'          => 'value',
-			'label'       => __( 'Discount Value', 'edd_dp' ),
-			'type'        => 'text',
-			'desc'        => __( '<br />Enter a value, i.e. 9.99 or 20%.', 'edd_dp' ) .' '. __( 'For free please enter 100%.', 'edd_dp' ),
-			'placeholder' => '0.00',
-			'value'       => $value,
-		);
-		echo EDD()->html->text( $args );
-		echo '</div>';
-		echo '<div class="options_group">';
-
-		$selected = get_post_meta( $post->ID, 'products', true );
-		echo EDD()->html->product_dropdown( array(
-			'name'        => 'products[]',
-			'label'       => __( "Products", 'edd_dp' ),
-			'id'          => 'products',
-			'selected'    => $selected,
-			'multiple'    => true,
-			'chosen'      => true,
-			'variations'  => true,
-			'desc'        => __( 'Control which products this discount can apply to.', 'edd_dp' ),
-			'placeholder' => sprintf( __( 'Select one or more %s', 'edd_dp' ), edd_get_label_plural() )
-		) );
-
-
-		$categories = array();
-		foreach ( get_terms( 'download_category', array( 'hide_empty' => false ) ) as $category ) {
-			$categories[ $category->term_id ] = $category->name;
-		}
-		$selected = get_post_meta( $post->ID, 'categories', true );
-		$args = array(
-			'id'          => 'categories',
-			'name'          => 'categories[]',
-			'label'       => __( 'Categories', 'edd_dp' ),
-			'desc'        => __( 'Control which product categories this discount can apply to.', 'edd_dp' ),
-			'multiple'    => true,
-			'chosen'      => true,
-			'placeholder' => __( 'Any category', 'edd_dp' ),
-			'class'       => 'select long',
-			'options'     => $categories,
-			'selected'    => $selected,
-			'show_option_all'  => false,
-			'show_option_none' => false,
-		);
-		echo EDD()->html->select( $args );
-
-		$tags = array();
-		foreach ( get_terms( 'download_tag', array( 'hide_empty' => false ) ) as $tag ) {
-			$tags[ $tag->term_id ] = $tag->name;
-		}
-		$selected = get_post_meta( $post->ID, 'tags', true );
-		$args = array(
-			'id'          => 'tags',
-			'name'        => 'tags[]',
-			'label'       => __( 'Tags', 'edd_dp' ),
-			'desc'        => __( 'Control which product tags this discount can apply to.', 'edd_dp' ),
-			'multiple'    => true,
-			'chosen'      => true,
-			'placeholder' => __( 'Any tag', 'edd_dp' ),
-			'class'       => 'select long',
-			'options'     => $tags,
-			'selected'    => $selected,
-			'show_option_all'  => false,
-			'show_option_none' => false,
-		);
-		echo EDD()->html->select( $args ); echo '<br />';
-
-		$selected = get_post_meta( $post->ID, 'users', true );
-		echo EDD()->html->user_dropdown(  array(
-			'name'        => 'users[]',
-			'id'          => 'users',
-			'key'         => 'user_login',
-			'label'       => __( "Users", 'edd_dp' ),
-			'selected'    => $selected,
-			'multiple'    => true,
-			'chosen'      => true,
-			'desc'        => __( 'Control which users this discount can apply to.', 'edd_dp' ),
-			'placeholder' => __( 'Select one or more users', 'edd_dp' ),
-			'show_option_all'  => false,
-			'show_option_none' => false,
-		) ); echo '<br />';
-
-		// Roles (we'll call them groups in core so we don't get confusion when EDD finally integrates w/groups plugin)
-		$groups = $this->get_roles();
-		$selected = get_post_meta( $post->ID, 'groups', true );
-		$args   = array(
-			'id'          => 'groups',
-			'name'        => 'groups[]',
-			'label'       => __( 'Roles', 'edd_dp' ),
-			'desc'        => __( 'Control which roles this discount can apply to.', 'edd_dp' ),
-			'multiple'    => true,
-			'chosen'      => true,
-			'placeholder' => __( 'Any roles', 'edd_dp' ),
-			'class'       => 'select long',
-			'options'     => $groups,
-			'selected'    => $selected,
-			'show_option_all'  => false,
-			'show_option_none' => false,
-		);
-		echo EDD()->html->select( $args ); echo '<br />';
-		$date_format = $this->dateStringToDatepickerFormat(get_option( 'date_format' ));
-		$string = $date_format;
-?>		<p class="form-field dp-date-start"><label for="dp-date-start">Start Date</label>
-		<input id="dp-date-start" type="text" class="datepicker" data-type="text" name="dp-date-start" value="<?php echo get_post_meta( $post->ID, 'start', true ); ?>" size="30" />
-		<span class="description">Select date when this discount may start being used. Leave blank for always on.</span>
-		</p>
-		<p class="form-field dp-date-end"><label for="dp-date-end">End Date</label>
-		<input id="dp-date-end" type="text" class="datepicker" data-type="text" name="dp-date-end" value="<?php echo get_post_meta( $post->ID, 'end', true ); ?>" size="30" />
-		<span class="description">Select end date when this discount may no longer used. Leave blank for always on.</span>
-		</p>
+		?>
+		<style type="text/css">#edit-slug-box { display: none;} #minor-publishing-actions, .misc-pub-visibility{ display: none;}.quantity_field {display: none;}#postbox-container-2{ margin-top: 20px;}</style>
+		<table class="form-table">
+			<tbody>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-type"><?php _e( 'Discount Type', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'type', true );
+						$args = array(
+							'id'         	   => 'edd-dp-discount-type',
+							'name'        	   => 'type',
+							'options'    	   => $this->get_discount_types(),
+							'show_option_all'  => false,
+							'show_option_none' => false,
+							'selected'         => $value,
+						);
+						echo EDD()->html->select( $args );
+						?>
+						<p class="description"><?php _e( 'The type of discount', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+				<tr id="edd-dp-discount-quantity-row">
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-quantity"><?php _e( 'Discount Quantity', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'quantity', true );
+						$args = array(
+							'id'          => 'edd-dp-discount-quantity',
+							'name'        => 'quantity',
+							'label'       => false,
+							'desc'        => false,
+							'placeholder' => '0',
+							'value'       => $value,
+						);
+						echo EDD()->html->text( $args );
+						?>
+						<p class="description"><?php _e( 'Enter a value, i.e. 20', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-value"><?php _e( 'Discount Value', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'value', true );
+						$args = array(
+							'id'          => 'edd-dp-discount-value',
+							'name'          => 'value',
+							'type'        => 'text',
+							'placeholder' => '0.00',
+							'value'       => $value,
+						);
+						echo EDD()->html->text( $args );
+						?>
+						<p class="description"><?php _e( 'Enter a value, i.e. 9.99 or 20%. For free please enter 100%.', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-products"><?php _e( 'Products', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'products', true );
+						$args = array(
+							'name'        => 'products[]',
+							'id'          => 'edd-dp-discount-products',
+							'selected'    => $value,
+							'multiple'    => true,
+							'chosen'      => true,
+							'variations'  => true,
+							'placeholder' => sprintf( __( 'Select one or more %s', 'edd_dp' ), edd_get_label_plural() )
+						);
+						echo EDD()->html->select( $args );
+						?>
+						<p class="description"><?php _e( 'Control which products this discount can apply to.', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-categories"><?php _e( 'Categories', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'categories', true );
+						$categories = array();
+						foreach ( get_terms( 'download_category', array( 'hide_empty' => false ) ) as $category ) {
+							$categories[ $category->term_id ] = $category->name;
+						}
+						$args = array(
+							'id'          => 'edd-dp-discount-categories',
+							'name'        => 'categories[]',
+							'multiple'    => true,
+							'chosen'      => true,
+							'placeholder' => __( 'Any category', 'edd_dp' ),
+							'class'       => 'select long',
+							'options'     => $categories,
+							'selected'    => $value,
+							'show_option_all'  => false,
+							'show_option_none' => false,
+						);
+						echo EDD()->html->select( $args );
+						?>
+						<p class="description"><?php _e( 'Control which product categories this discount can apply to.', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-tags"><?php _e( 'Tags', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'tags', true );
+						$tags = array();
+						foreach ( get_terms( 'download_tag', array( 'hide_empty' => false ) ) as $tag ) {
+							$tags[ $tag->term_id ] = $tag->name;
+						}
+						$args = array(
+							'id'          => 'edd-dp-discount-tags',
+							'name'        => 'tags[]',
+							'multiple'    => true,
+							'chosen'      => true,
+							'placeholder' => __( 'Any category', 'edd_dp' ),
+							'class'       => 'select long',
+							'options'     => $tags,
+							'selected'    => $value,
+							'show_option_all'  => false,
+							'show_option_none' => false,
+						);
+						echo EDD()->html->select( $args );
+						?>
+						<p class="description"><?php _e( 'Control which product tags this discount can apply to.', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-users"><?php _e( 'Users', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'users', true );
+						$args = array(
+							'name'        => 'users[]',
+							'id'          => 'edd-dp-discount-users',
+							'key'         => 'user_login',
+							'selected'    => $value,
+							'multiple'    => true,
+							'chosen'      => true,
+							'placeholder' => __( 'Select one or more users', 'edd_dp' ),
+							'show_option_all'  => false,
+							'show_option_none' => false,
+						);
+						echo EDD()->html->user_dropdown( $args );
+						?>
+						<p class="description"><?php _e( 'Control which users this discount can apply to.', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-groups"><?php _e( 'Roles', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'groups', true );
+						$groups = $this->get_roles();
+						$args = array(
+							'id'          => 'edd-dp-discount-groups',
+							'name'        => 'groups[]',
+							'multiple'    => true,
+							'chosen'      => true,
+							'placeholder' => __( 'Any roles', 'edd_dp' ),
+							'class'       => 'select long',
+							'options'     => $groups,
+							'selected'    => $selected,
+							'show_option_all'  => false,
+							'show_option_none' => false,
+						);
+						echo EDD()->html->select( $args );
+						?>
+						<p class="description"><?php _e( 'Control which roles this discount can apply to.', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-start"><?php _e( 'Start Date', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'start', true );
+						?>
+						<input id="edd-dp-discount-start" type="text" class="datepicker" data-type="text" name="start" value="<?php echo esc_attr( $value ); ?>" size="30" />
+						<p class="description"><?php _e( 'Select date when this discount may start being used. Leave blank for always on.', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-end"><?php _e( 'End Date', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'end', true );
+						?>
+						<input id="edd-dp-discount-end" type="text" class="datepicker" data-type="text" name="end" value="<?php echo esc_attr( $value ); ?>" size="30" />
+						<p class="description"><?php _e( 'Select date when this discount may no longer be used. Leave blank for always on.', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="edd-dp-discount-previous-only"><?php _e( 'Apply for previous customers only', 'edd_dp' ); ?></label>
+					</th>
+					<td>
+						<?php
+						$value = get_post_meta( $post->ID, 'cust', true );
+						$args = array(
+							'name'        => 'cust',
+							'id'          => 'edd-dp-discount-previous-only',
+							'current'     => $value,
+						);
+						echo EDD()->html->checkbox( $args );
+						?>
+						<p class="description"><?php _e( 'When checked, only customers who have previously made purchases will be eligible for this discount.', 'edd_dp' ); ?></p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<?php $date_format = $this->dateStringToDatepickerFormat( get_option( 'date_format' ) ); ?>
 		<script type="text/javascript">
 			jQuery(function($) {
-				$("#dp-date-start").datepicker({ dateFormat: '<?php echo $string; ?>' });
-				$("#dp-date-end").datepicker({ dateFormat: '<?php echo $string; ?>' });
+				$("#edd-dp-discount-start").datepicker({ dateFormat: '<?php echo $date_format; ?>' });
+				$("#edd-dp-discount-end").datepicker({ dateFormat: '<?php echo $date_format; ?>' });
+			});
+			var quantity_help = {
+				'product_quantity': "<?php _e( 'Quantity of selected product in cart to apply discount, i.e. 5.', 'edd_dp' ); ?>",
+				'cart_quantity':    "<?php _e( 'Number of products in cart to apply discount, i.e. 5.', 'edd_dp' ); ?>",
+				'each_x_products':  "<?php _e( 'Which product has a discount, i.e. every third is 3 in this field.', 'edd_dp' ); ?>",
+				'from_x_products':  "<?php _e( 'After how many products you want to give the discount, i.e. third, fourth and so on product discounted is 2 in this field.', 'edd_dp' ); ?>",
+				'cart_threshold':   "<?php _e( 'Minimum cart value to apply discount.', 'edd_dp' ); ?>"
+			}
+			jQuery(document).ready(function ($) {
+				var type_val;
+				$('#edd_dp_discount_type').change(function() {
+					type_val = $(this).find('option:selected').val();
+					if(type_val == 'cart_quantity' || type_val == 'cart_threshold' || type_val == 'product_quantity' || type_val == 'each_x_products' || type_val == 'from_x_products') {
+						$('#edd-dp-discount-quantity').parent().next('.description').html(quantity_help[type_val]);
+						$('#edd-dp-discount-quantity-row').show();
+					} else {
+						$('#edd-dp-discount-quantity-row').hide()
+					}
+				});
+				$('#edd_dp_discount_type').change();
 			});
 		</script>
-		</div>
-		<script type="text/javascript">
-		var quantity_help = {
-			'product_quantity':"<?php
-		_e( 'Quantity of selected product in cart to apply discount, i.e. 5.', 'edd_dp' );
-		?>",
-			'cart_quantity':"<?php
-		_e( 'Number of products in cart to apply discount, i.e. 5.', 'edd_dp' );
-		?>",
-			'each_x_products':"<?php
-		_e( 'Which product has a discount, i.e. every third is 3 in this field.', 'edd_dp' );
-		?>",
-			'from_x_products':"<?php
-		_e( 'After how many products you want to give the discount, i.e. third, fourth and so on product discounted is 2 in this field.', 'edd_dp' );
-		?>",
-			'cart_threshold':"<?php
-		_e( 'Minimum cart value to apply discount.', 'edd_dp' );
-		?>"
-		}
-		jQuery(document).ready(function ($) {
-			var type_val;
-			$('#type').change(function() {
-				type_val = $(this).find('option:selected').val();
-				if(type_val == 'cart_quantity' || type_val == 'cart_threshold' || type_val == 'product_quantity' || type_val == 'each_x_products' || type_val == 'from_x_products') {
-					$('#quantity').prev('.edd-description').html(quantity_help[type_val]);
-					$('#quantity').show();
-				} else {
-					$('#quantity').hide()
-				}
-			});
-			$('#type').change();
-		});
-	</script>
-	<?php
-	$current = get_post_meta( $post->ID, 'cust', true );
-	$args = array(
-		'name'        => 'cust',
-		'label'       => __( 'Apply for previous customers only', 'edd_dp' ),
-		'desc'        => __( 'When checked, only customers who have previously made purchases will be eligible for this discount', 'edd_dp' ),
-		'current'     => $current,
-	);
-	echo EDD()->html->checkbox( $args );
+		<?php
+		echo ob_get_clean();
 	}
 
 	public function form_updated_message( $messages ) {
@@ -327,62 +398,17 @@ class EDD_Admin {
 			return $post_id;
 		}
 
-		$type     = strip_tags( stripslashes( trim( $_POST['type'] ) ) );
-		$quantity = strip_tags( stripslashes( trim( $_POST['quantity'] ) ) );
-		$value    = strip_tags( stripslashes( trim( $_POST['value'] ) ) );
-		if ( ! empty( $_POST['products'] ) ) {
-			$products = array_map( "trim", $_POST['products'] );
-			$products = array_map( "stripslashes", $products );
-			$products = array_map( "strip_tags", $products );
-			$products = array_map( "sanitize_key", $products );
-		} else {
-			$products = array();
-		}
-
-		if ( isset( $_POST['categories'] ) ) {
-			$categories = array_map( 'absint', $_POST['categories'] );
-		} else {
-			$categories = array();
-		}
-
-		if ( isset( $_POST['tags'] ) ) {
-			$tags = array_map( 'absint', $_POST['tags'] );
-		} else {
-			$tags = array();
-		}
-
-		if ( ! empty( $_POST['users'] ) ) {
-			$users = array_map( "trim", $_POST['users'] );
-			$users = array_map( "stripslashes", $users );
-			$users = array_map( "strip_tags", $users );
-			$users = array_map( "sanitize_key", $users );
-		} else {
-			$users = array();
-		}
-
-		if ( isset( $_POST['dp-date-start'] ) ) {
-			$start = sanitize_text_field( $_POST['dp-date-start'] );
-		} else {
-			$start = '';
-		}
-
-		if ( isset( $_POST['dp-date-end'] ) ) {
-			$end = sanitize_text_field( $_POST['dp-date-end'] );
-		} else {
-			$end = '';
-		}
-
-		if ( isset( $_POST['cust'] ) ) {
-			$cust = true;
-		} else {
-			$cust = false;
-		}
-
-		if ( isset( $_POST['groups'] ) ) {
-			$groups = array_map( 'sanitize_text_field', $_POST['groups'] );
-		} else {
-			$groups = array();
-		}
+		$type       = ! empty( $_POST['type'] )       ? strip_tags( stripslashes( trim( $_POST['type'] ) ) ) : false;
+		$quantity   = ! empty( $_POST['quantity'] )   ? strip_tags( stripslashes( trim( $_POST['quantity'] ) ) ) : false;
+		$value      = ! empty( $_POST['value'] )      ? strip_tags( stripslashes( trim( $_POST['value'] ) ) ) : false;
+		$products   = ! empty( $_POST['products'] )   ? array_map( "sanitize_key", array_map( "strip_tags", array_map( "stripslashes", array_map( "trim", $_POST['products'] ) ) ) ) : array();
+		$categories = ! empty( $_POST['categories'] ) ? array_map( 'absint', $_POST['categories'] ) : array();
+		$tags 	    = ! empty( $_POST['tags'] ) 	  ? array_map( 'absint', $_POST['tags'] ) : array();		
+		$users      = ! empty( $_POST['users'] ) 	  ? array_map( "sanitize_key", array_map( "strip_tags", array_map( "stripslashes", array_map( "trim", $_POST['users'] ) ) ) ) : array();
+		$start 		= ! empty( $_POST['start'] )  	  ? sanitize_text_field( $_POST['start'] ) : '';
+		$end   		= ! empty( $_POST['end'] )  	  ? sanitize_text_field( $_POST['end'] ) : '';
+		$cust 		= ! empty( $_POST['cust'] ) 	  ? true : false;
+		$groups 	= ! empty( $_POST['groups'] ) 	  ? array_map( 'sanitize_text_field', $_POST['groups'] ) : array();
 
 		$meta = array(
 			'type'       => $type,

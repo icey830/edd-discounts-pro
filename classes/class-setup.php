@@ -6,13 +6,12 @@ class EDD_DP_Setup {
 
 	public function __construct() {
 	
-		add_action( 'admin_init', array( $this, 'is_wp_36_and_edd_activated' ), 1 );
+		add_action( 'admin_init', array( $this, 'is_wp_and_edd_activated' ), 1 );
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action( 'admin_menu', array( $this, 'discount_submenu' ), 9 );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );
 		add_action( 'wp_head', array( $this, 'dp_version' ) );
 	}
-	public function is_wp_36_and_edd_activated() {
+	public function is_wp_and_edd_activated() {
 
 		global $wp_version;
 		
@@ -46,7 +45,7 @@ class EDD_DP_Setup {
 	public function edd_notice() {
 ?>
 		<div class="updated">
-			<p><?php printf( __( '<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires Easy Digital Downloads 2.7 or higher in order to function properly.', 'edd-dp' ) ); ?></p>
+			<p><?php printf( __( '<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires Easy Digital Downloads 2.7 or higher in order to function properly.', 'edd_dp' ) ); ?></p>
 		</div>
 <?php
 	}
@@ -54,27 +53,9 @@ class EDD_DP_Setup {
 	public function wp_notice() {
 ?>
 	<div class="updated">
-		<p><?php printf( __( '<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires WordPress 4.1 or higher in order to function properly.', 'edd-dp' ) ); ?></p>
+		<p><?php printf( __( '<strong>Notice:</strong> Easy Digital Downloads Discounts Pro requires WordPress 4.1 or higher in order to function properly.', 'edd_dp' ) ); ?></p>
 	</div>
 <?php
-	}
-
-	public function admin_enqueue_styles() {
-
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		$current_screen = get_current_screen();
-
-		if( empty( $current_screen ) ) {
-			return;
-		}
-
-		if ( $current_screen->post_type === 'customer_discount' ) {
-			wp_enqueue_style( 'edd_discounts_admin', EDD_DP_ASSETS_URL . 'css/admin.css' );
-		}
-
 	}
 
 	public function register_post_type() {

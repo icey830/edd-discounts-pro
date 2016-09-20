@@ -61,7 +61,7 @@ class edd_dp {
 			// Setup class instances
 			self::$instance->setup     = new EDD_DP_Setup;
 			if ( is_admin() ){
-				self::$instance->admin = new EDD_Admin;
+				self::$instance->admin = new EDD_DP_Admin;
 			}
 			self::$instance->discounts = new EDD_Discounts;
 		}
