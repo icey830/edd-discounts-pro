@@ -170,15 +170,17 @@ class EDD_DP_Admin {
 						<?php
 						$value = get_post_meta( $post->ID, 'products', true );
 						$args = array(
-							'name'        => 'products[]',
-							'id'          => 'edd-dp-discount-products',
-							'selected'    => $value,
-							'multiple'    => true,
-							'chosen'      => true,
-							'variations'  => true,
-							'placeholder' => sprintf( __( 'Select one or more %s', 'edd_dp' ), edd_get_label_plural() )
+							'name'             => 'products[]',
+							'id'               => 'edd-dp-discount-products',
+							'selected'         => $value,
+							'multiple'         => true,
+							'chosen'           => true,
+							'variations'       => true,
+							'show_option_all'  => false,
+							'show_option_none' => false,
+							'placeholder'      => sprintf( __( 'Select one or more %s', 'edd_dp' ), edd_get_label_plural() )
 						);
-						echo EDD()->html->select( $args );
+						echo EDD()->html->product_dropdown( $args );
 						?>
 						<p class="description"><?php _e( 'Control which products this discount can apply to.', 'edd_dp' ); ?></p>
 					</td>
@@ -249,11 +251,10 @@ class EDD_DP_Admin {
 						$args = array(
 							'name'        => 'users[]',
 							'id'          => 'edd-dp-discount-users',
-							'key'         => 'user_login',
 							'selected'    => $value,
 							'multiple'    => true,
-							'chosen'      => true,
-							'placeholder' => __( 'Select one or more users', 'edd_dp' ),
+							'chosen'           => true,
+							'placeholder'      => __( 'Select one or more users', 'edd_dp' ),
 							'show_option_all'  => false,
 							'show_option_none' => false,
 						);
@@ -398,17 +399,17 @@ class EDD_DP_Admin {
 			return $post_id;
 		}
 
-		$type       = ! empty( $_POST['type'] )       ? strip_tags( stripslashes( trim( $_POST['type'] ) ) ) : false;
-		$quantity   = ! empty( $_POST['quantity'] )   ? strip_tags( stripslashes( trim( $_POST['quantity'] ) ) ) : false;
-		$value      = ! empty( $_POST['value'] )      ? strip_tags( stripslashes( trim( $_POST['value'] ) ) ) : false;
-		$products   = ! empty( $_POST['products'] )   ? array_map( "sanitize_key", array_map( "strip_tags", array_map( "stripslashes", array_map( "trim", $_POST['products'] ) ) ) ) : array();
-		$categories = ! empty( $_POST['categories'] ) ? array_map( 'absint', $_POST['categories'] ) : array();
-		$tags 	    = ! empty( $_POST['tags'] ) 	  ? array_map( 'absint', $_POST['tags'] ) : array();		
-		$users      = ! empty( $_POST['users'] ) 	  ? array_map( "sanitize_key", array_map( "strip_tags", array_map( "stripslashes", array_map( "trim", $_POST['users'] ) ) ) ) : array();
-		$start 		= ! empty( $_POST['start'] )  	  ? sanitize_text_field( $_POST['start'] ) : '';
-		$end   		= ! empty( $_POST['end'] )  	  ? sanitize_text_field( $_POST['end'] ) : '';
+		$type       = ! empty( $_POST['type'] )       ? array_map( "sanitize_key", array_map( "strip_tags", array_map( "stripslashes", array_map( "trim", $_POST['type'] ) ) ) ) : false;
+		$quantity   = ! empty( $_POST['quantity'] )   ? absint( trim( $_POST['quantity'] ) ) : false;
+		$value      = ! empty( $_POST['value'] )      ? array_map( "sanitize_key", array_map( "strip_tags", array_map( "stripslashes", array_map( "trim", $_POST['value'] ) ) ) ) : false;
+		$products   = ! empty( $_POST['products'] )   ? array_map( "absint", array_map( "trim", $_POST['users'] ) ) : array();
+		$categories = ! empty( $_POST['categories'] ) ? array_map( 'absint', array_map( "trim", $_POST['categories'] ) ) : array();
+		$tags 	    = ! empty( $_POST['tags'] ) 	  ? array_map( 'absint', array_map( "trim", $_POST['tags'] ) ) : array();		
+		$users      = ! empty( $_POST['users'] ) 	  ? array_map( "absint", array_map( "trim", $_POST['users'] ) ) : array();
+		$start 		= ! empty( $_POST['start'] )  	  ? sanitize_text_field( trim( $_POST['start'] ) ) : '';
+		$end   		= ! empty( $_POST['end'] )  	  ? sanitize_text_field( trim( $_POST['end'] ) ) : '';
 		$cust 		= ! empty( $_POST['cust'] ) 	  ? true : false;
-		$groups 	= ! empty( $_POST['groups'] ) 	  ? array_map( 'sanitize_text_field', $_POST['groups'] ) : array();
+		$groups 	= ! empty( $_POST['groups'] ) 	  ? array_map( 'sanitize_text_field', array_map( "trim", $_POST['groups'] ) ) : array();
 
 		$meta = array(
 			'type'       => $type,
@@ -454,51 +455,44 @@ class EDD_DP_Admin {
 
 		switch ( $column ) {
 			case 'type':
-				$type = get_post_meta( $post_id, 'type', true );
-				echo count( $type ) == 1 ? $this->get_discount_type( $type ) : '-';
+				$type  = get_post_meta( $post_id, 'type', true );
+				$value = ! empty ( $type ) ? $this->get_discount_type( $type ) : __( 'Unknown Type', 'edd_dp' );
+				echo $value;
 				break;
 
 			case 'value':
-				$type = get_post_meta( $post_id, 'type', true );
-				$value = get_post_meta( $post_id, 'value', true );
-				echo $value ? $value : '-';
+				$value  = get_post_meta( $post_id, 'value', true );
+				$value = ! empty ( $value ) ? $value : __( 'Value not set', 'edd_dp' );
+				echo $value;
 				break;
 
 			case 'users':
-				$ids = get_post_meta( $post_id, 'users', true );
-
-				if ( empty( $ids ) ) {
-					echo __('All users', 'edd_dp');
-					return;
+				$users = get_post_meta( $post_id, 'users', true );
+				if ( empty( $users ) || ! is_array( $users ) ) {
+					echo __( 'All users', 'edd_dp');
+				} else {
+					$links = '';
+					foreach ( $users as $index => $user_id ) {
+						$user = get_userdata( $user_id );
+						$links .= '<a href="' . admin_url( "user-edit.php?user_id=" . $user_id ) . '">' . esc_html( $user->display_name ) . '</a>, ';
+					}
+					echo rtrim( $links, ', ' );
 				}
-				$links = '';
-				$users = get_users( array(
-						'include' => $ids,
-						'fields'  => array(
-							'ID',
-							'display_name'
-						)
-					) );
-				foreach ( $users as $item ) {
-					$links .= '<a href="' . admin_url( "user-edit.php?user_id=$item->ID" ) . '">' . $item->display_name . '</a>, ';
-				}
-				echo rtrim( $links, ', ' );
 				break;
 
 			case 'groups':
-				$groups = get_post_meta( $post_id, 'groups', true );
+				$roles = get_post_meta( $post_id, 'groups', true );
+			
 				if ( empty( $groups ) || ! is_array( $groups ) ) {
-
 					echo __('All user roles', 'edd_dp');
-
 				} else {
-
+					global $wp_roles;
 					$links  = '';
-					$groups = $this->get_roles( array(
-							'include' => $groups
-						) );
-					foreach ( $groups as $role => $name ) {
-						$links .= '<a href="' . admin_url( "user-edit.php?user_id=$role" ) . '">' . $name . '</a>, ';
+					foreach ( $roles as $role ) {
+						if ( !empty( $wp_roles[ $role ] ) &&  ! empty( $wp_roles[ $role ]->name ) ) {
+							$name = translate_user_role( $wp_roles[ $role ]->name );
+							$links .= '<a href="' . admin_url( "user-edit.php?user_id=" . $role ) . '">' . esc_html( $name ). '</a>, ';
+						}
 					}
 					echo rtrim( $links, ', ' );
 
@@ -506,24 +500,40 @@ class EDD_DP_Admin {
 				break;
 
 			case 'status':
-				$start = get_post_meta( $post_id, 'start', true );
-				$end   = get_post_meta( $post_id, 'end', true );
-				if ( $start === '' && $end === '' ){
-					_e('N/A','edd_dp');
-					return;
+				$start  	  = get_post_meta( $post_id, 'start', true );
+				$end     	  = get_post_meta( $post_id, 'end', true );
+				$current_time = (int) current_time( "timestamp" );
+				$status = '';
+				if ( $start == '' && $end == '' ){ // Both not set
+					$status = __( 'Active','edd_dp' );
+				} else if ( $start !== '' && $end == '' ) { // Only start set
+					if ( (int) strtotime( $start, $current_time ) >= $current_time ) {
+						$status = __( 'Waiting to Begin','edd_dp' );
+					} else {
+						$status = __( 'Active','edd_dp' );
+					}
+				} else if ( $start == '' && $end !== '' ) { // Only end set
+					if ( (int) strtotime( $end, $current_time ) <= $current_time ) {
+						$status = __( 'Finished','edd_dp' );
+					} else {
+						$status = __( 'Active','edd_dp' );
+					}
+				} else { // Both set
+					if ( (int) strtotime( $start, $current_time ) >= $current_time ) {
+						if ( (int) strtotime( $end, $current_time ) <= $current_time ) { // started and done
+							$status = __( 'Finished','edd_dp' );
+						} else { //started and not done
+							$status = __( 'Active','edd_dp' );
+						}
+					} else {
+						if ( (int) strtotime( $end, $current_time ) <= $current_time ) { // not started and done
+							$status = __( 'Invalid time settings','edd_dp' );
+						} else { // not started and not done
+							$status = __( 'Waiting to Begin','edd_dp' );
+						}
+					}
 				}
-
-				if ( $start !== '' && (int) strtotime( $start, current_time( "timestamp" ) ) > (int) current_time( "timestamp" ) ){
-					_e('Waiting to Begin','edd_dp');
-					return;
-				}
-
-				if ( $end !== '' && (int) strtotime( $end, current_time( "timestamp" ) ) < (int) current_time( "timestamp" ) ){
-					_e('Finished','edd_dp');
-					return;
-				}
-				_e('In progress','edd_dp');
-				return;
+				echo $status;
 				break;
 			default :
 				echo $column;
@@ -578,7 +588,7 @@ class EDD_DP_Admin {
 
 	public function get_discount_type( $key ) {
 		$discount_types = $this->get_discount_types();
-		return isset( $discount_types[$key] ) ? $discount_types[$key] : null;
+		return ! empty( $discount_types[ $key ] ) ? $discount_types[ $key ] : '';
 	}
 
 	public function dateStringToDatepickerFormat( $dateString ){
