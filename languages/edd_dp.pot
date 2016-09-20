@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Easy Digital Downloads - Discounts Pro\n"
-"POT-Creation-Date: 2016-09-20 19:01-0400\n"
+"POT-Creation-Date: 2016-09-20 19:09-0400\n"
 "PO-Revision-Date: 2016-03-14 19:24-0400\n"
 "Last-Translator: Chris Christoff <support@easydigitaldownloads.com>\n"
 "Language-Team: Chris Christoff <support@easydigitaldownloads.com>\n"
@@ -174,8 +174,10 @@ msgstr ""
 
 #: classes/class-admin.php:343
 msgid ""
-"After how many products you want to give the discount, i.e. third, fourth "
-"and so on product discounted is 2 in this field."
+"The discount will be applied to all products that increase the cart quantity "
+"beyond this field value. Example: with a field value of \"2\" and a cart "
+"with four products, the third and fourth products will receive the discount "
+"while the first and second products will not."
 msgstr ""
 
 #: classes/class-admin.php:344
