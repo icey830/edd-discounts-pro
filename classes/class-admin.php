@@ -399,10 +399,10 @@ class EDD_DP_Admin {
 			return $post_id;
 		}
 
-		$type       = ! empty( $_POST['type'] )       ? array_map( "sanitize_key", array_map( "strip_tags", array_map( "stripslashes", array_map( "trim", $_POST['type'] ) ) ) ) : false;
+		$type       = ! empty( $_POST['type'] )       ? sanitize_key( strip_tags( stripslashes( trim( $_POST['type'] ) ) ) ) : false;
 		$quantity   = ! empty( $_POST['quantity'] )   ? absint( trim( $_POST['quantity'] ) ) : false;
-		$value      = ! empty( $_POST['value'] )      ? array_map( "sanitize_key", array_map( "strip_tags", array_map( "stripslashes", array_map( "trim", $_POST['value'] ) ) ) ) : false;
-		$products   = ! empty( $_POST['products'] )   ? array_map( "absint", array_map( "trim", $_POST['users'] ) ) : array();
+		$value      = ! empty( $_POST['value'] )      ? sanitize_key( strip_tags( stripslashes( trim( $_POST['value'] ) ) ) ) : false;
+		$products   = ! empty( $_POST['products'] )   ? array_map( "absint", array_map( "trim", $_POST['users'] ) ): array();
 		$categories = ! empty( $_POST['categories'] ) ? array_map( 'absint', array_map( "trim", $_POST['categories'] ) ) : array();
 		$tags 	    = ! empty( $_POST['tags'] ) 	  ? array_map( 'absint', array_map( "trim", $_POST['tags'] ) ) : array();		
 		$users      = ! empty( $_POST['users'] ) 	  ? array_map( "absint", array_map( "trim", $_POST['users'] ) ) : array();
@@ -472,7 +472,7 @@ class EDD_DP_Admin {
 					echo __( 'All users', 'edd_dp');
 				} else {
 					$links = '';
-					foreach ( $users as $index => $user_id ) {
+					foreach ( $users as $user_id ) {
 						$user = get_userdata( $user_id );
 						$links .= '<a href="' . admin_url( "user-edit.php?user_id=" . $user_id ) . '">' . esc_html( $user->display_name ) . '</a>, ';
 					}

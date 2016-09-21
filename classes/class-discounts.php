@@ -291,9 +291,6 @@ class EDD_Discounts {
 			$discounts[$id]['quantity']   = isset( $data['quantity'] )   ? (int) $data['quantity']   : 0             ;
 			$discounts[$id]['value']      = isset( $data['value'] )      ? $data['value']            : 0             ;
 			$discounts[$id]['products']   = isset( $data['products'] )   ? $data['products']         : array()       ;
-			if ( is_string( $discounts[$id]['products'] ) ) {
-				$discounts[$id]['products'] = empty( $discounts[$id]['products'] ) ? array() : explode( ',', $discounts[$id]['products'] );
-			}
 			$discounts[$id]['categories'] = isset( $data['categories'] ) ? $data['categories']       : array()       ;
 			$discounts[$id]['tags']       = isset( $data['tags'] )       ? $data['tags']             : array()       ;
 			$discounts[$id]['users']      = isset( $data['users'] )      ? $data['users']            : array()       ;
@@ -301,6 +298,13 @@ class EDD_Discounts {
 			$discounts[$id]['start']      = isset( $data['start'] )      ? $data['start']            : false         ;
 			$discounts[$id]['end']        = isset( $data['end'] )        ? $data['end']              : false         ;
 			$discounts[$id]['cust']       = isset( $data['cust'] )       ? $data['cust']             : false         ;
+
+			// Adjust for old version if needed
+			if ( is_string( $discounts[$id]['products'] ) ) {
+				$discounts[$id]['products'] = empty( $discounts[$id]['products'] ) ? array() : explode( ',', $discounts[$id]['products'] );
+			}
+
+			// Get discount amount
 			$discounts[$id]['amount']     = $this->calculate_discount( $discounts[$id], $cart, $customer_id );
 		}
 
