@@ -401,27 +401,11 @@ class EDD_Discounts {
 		}
 
 		// check start and end dates
-		$start 		  = $discount['start'];
-		$end 		  = $discount['end'];
-		$current_time = (int) current_time( "timestamp" );
-		if ( $start == '' && $end == '' ){ // Both not set
-			// fine
-		} else if ( $start !== '' && $end == '' ) { // Only start set
-			if ( (int) strtotime( $start, $current_time ) >= $current_time ) {
-				return false; // Waiting to begin
-			}
-		} else if ( $start == '' && $end !== '' ) { // Only end set
-			if ( (int) strtotime( $end, $current_time ) <= $current_time ) {
-				return false; // Finished
-			}
-		} else { // Both set
-			if ( (int) strtotime( $start, $current_time ) >= $current_time ) {
-				if ( (int) strtotime( $end, $current_time ) <= $current_time ) { // started and done
-					return false; // Finished
-				}
-			} else {
-				return false; // Invalid time settings or waiting to begin
-			}
+		if ( ! empty( $discount['start'] ) && (int) strtotime( $discount['start'], current_time( "timestamp" ) ) > (int) current_time( "timestamp" ) ) {
+			return false;
+		}
+		if ( ! empty( $discount['end'] ) && (int) strtotime( $discount['end'], current_time( "timestamp" ) ) < (int) current_time( "timestamp" ) ) {
+			return false;
 		}
 
 		// if discount is only for previous customers and customer does not have any previous purchases
