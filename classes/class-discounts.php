@@ -583,13 +583,18 @@ class EDD_Discounts {
 		if ( $apply && $total_discount > 0  ) {
 			foreach ( $applicable_items as $key => $item ) {
 				if ( isset( $item['value'] ) && $item['value'] > 0 ) {
-					EDD()->fees->add_fee( array(
+					$args = array(
 							'amount'      => -1* $item['value'],
 							'label'       => $discount['name']. ' - ' . get_the_title( $item['id'] ),
 							'id'          => 'dp_' . $key,
 							'download_id' => $item['id'],
 							'price_id'    => edd_get_cart_item_price_id( $item )
-						) );
+					);
+					if ( $args['price_id'] === null ) {
+						unset( $args['price_id'] );
+					}
+					
+					EDD()->fees->add_fee( $args );
 				}
 			}
 		}
