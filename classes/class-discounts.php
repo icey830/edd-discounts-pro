@@ -588,7 +588,7 @@ class EDD_Discounts {
 							'label'       => $discount['name']. ' - ' . get_the_title( $item['id'] ),
 							'id'          => 'dp_' . $key,
 							'download_id' => $item['id'],
-							'price_id'    => isset( $item['options']['price_id'] ) ? $item['options']['price_id'] : null
+							'price_id'    => edd_get_cart_item_price_id( $item )
 						) );
 				}
 			}
