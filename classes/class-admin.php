@@ -269,7 +269,7 @@ class EDD_DP_Admin {
 					</th>
 					<td>
 						<?php
-						$value = get_post_meta( $post->ID, 'groups', true );
+						$selected = get_post_meta( $post->ID, 'groups', true );
 						$groups = $this->get_roles();
 						$args = array(
 							'id'          => 'edd-dp-discount-groups',
