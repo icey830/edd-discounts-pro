@@ -403,7 +403,7 @@ class EDD_DP_Admin {
 		$type       = ! empty( $_POST['type'] )       ? sanitize_key( strip_tags( stripslashes( trim( $_POST['type'] ) ) ) ) : false;
 		$quantity   = ! empty( $_POST['quantity'] )   ? absint( trim( $_POST['quantity'] ) ) : false;
 		$value      = ! empty( $_POST['value'] )      ? sanitize_key( strip_tags( stripslashes( trim( $_POST['value'] ) ) ) ) : false;
-		$products   = ! empty( $_POST['products'] )   ? array_map( "absint", array_map( "trim", $_POST['products'] ) ): array();
+		$products   = ! empty( $_POST['products'] )   ? array_map( "trim", $_POST['products'] ): array();
 		$categories = ! empty( $_POST['categories'] ) ? array_map( 'absint', array_map( "trim", $_POST['categories'] ) ) : array();
 		$tags 	    = ! empty( $_POST['tags'] ) 	  ? array_map( 'absint', array_map( "trim", $_POST['tags'] ) ) : array();		
 		$users      = ! empty( $_POST['users'] ) 	  ? array_map( "absint", array_map( "trim", $_POST['users'] ) ) : array();
