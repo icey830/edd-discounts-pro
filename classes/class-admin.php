@@ -169,6 +169,10 @@ class EDD_DP_Admin {
 					<td>
 						<?php
 						$value = get_post_meta( $post->ID, 'products', true );
+		
+						if ( empty( $value ) ) {
+							$value = array();
+				    		}
 
 						$args = array(
 							'name'             => 'products[]',
