@@ -18,7 +18,13 @@ class EDD_DP_Admin {
 		add_filter( 'manage_edit-customer_discount_columns', array( $this, 'columns' ) );
 		add_action( 'manage_customer_discount_posts_custom_column', array( $this, 'column_value' ), 10, 2 );
 
+		add_filter( 'edd_settings_sections_extensions', array( $this, 'settings_section' ) );
 		add_filter( 'edd_settings_extensions', array( $this, 'settings' ), -1 );
+	}
+
+	public function settings_section( $sections ) {
+		$sections['edd-dp-settings'] = __( 'Discounts Pro', 'edd_dp' );
+		return $sections;
 	}
 
 	public function settings( $settings ) {
@@ -43,6 +49,10 @@ class EDD_DP_Admin {
 				'std'  => 'Old Price:',
 			),
 		);
+
+		if ( version_compare( EDD_VERSION, 2.5, '>=' ) ) {
+			$new_settings = array( 'edd-dp-settings' => $new_settings );
+		}
 
 		return array_merge( $settings, $new_settings );
 	}
@@ -169,7 +179,7 @@ class EDD_DP_Admin {
 					<td>
 						<?php
 						$value = get_post_meta( $post->ID, 'products', true );
-		
+
 						if ( empty( $value ) ) {
 							$value = array();
 				    		}
@@ -409,7 +419,7 @@ class EDD_DP_Admin {
 		$value      = ! empty( $_POST['value'] )      ? sanitize_key( strip_tags( stripslashes( trim( $_POST['value'] ) ) ) ) : false;
 		$products   = ! empty( $_POST['products'] )   ? array_map( "trim", $_POST['products'] ): array();
 		$categories = ! empty( $_POST['categories'] ) ? array_map( 'absint', array_map( "trim", $_POST['categories'] ) ) : array();
-		$tags 	    = ! empty( $_POST['tags'] ) 	  ? array_map( 'absint', array_map( "trim", $_POST['tags'] ) ) : array();		
+		$tags 	    = ! empty( $_POST['tags'] ) 	  ? array_map( 'absint', array_map( "trim", $_POST['tags'] ) ) : array();
 		$users      = ! empty( $_POST['users'] ) 	  ? array_map( "absint", array_map( "trim", $_POST['users'] ) ) : array();
 		$start 		= ! empty( $_POST['start'] )  	  ? sanitize_text_field( trim( $_POST['start'] ) ) : '';
 		$end   		= ! empty( $_POST['end'] )  	  ? sanitize_text_field( trim( $_POST['end'] ) ) : '';
@@ -487,7 +497,7 @@ class EDD_DP_Admin {
 
 			case 'groups':
 				$roles = get_post_meta( $post_id, 'groups', true );
-			
+
 				if ( empty( $groups ) || ! is_array( $groups ) ) {
 					echo __('All user roles', 'edd_dp');
 				} else {
