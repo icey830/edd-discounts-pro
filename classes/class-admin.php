@@ -356,7 +356,7 @@ class EDD_DP_Admin {
 				'product_quantity': "<?php _e( 'Quantity of selected product in cart to apply discount, i.e. 5.', 'edd_dp' ); ?>",
 				'cart_quantity':    "<?php _e( 'Number of products in cart to apply discount, i.e. 5.', 'edd_dp' ); ?>",
 				'each_x_products':  "<?php _e( 'Which product has a discount, i.e. every third is 3 in this field.', 'edd_dp' ); ?>",
-				'from_x_products':  "<?php _e( 'The discount will be applied to all products that increase the cart quantity beyond this field value. Example: with a field value of 2 and a cart with four products, the third and fourth products will receive the discount while the first and second products will not.', 'edd_dp' ); ?>",
+				'from_x_products':  "<?php _e( 'The first {quantity field} items in cart will not be discounted, the remaining items in the cart will be discounted by {amount}.', 'edd_dp' ); ?>",
 				'cart_threshold':   "<?php _e( 'Minimum cart value to apply discount.', 'edd_dp' ); ?>"
 			}
 			jQuery(document).ready(function ($) {
