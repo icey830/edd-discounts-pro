@@ -354,7 +354,8 @@ class EDD_Discounts {
 		}
 
 		// Check if discount is applicable to the product
-		if ( ! empty( $discount['products'] ) && !in_array( $product['compare_id'], $discount['products'] ) ) {
+		$nonvariation = intval( $product['compare_id'] );
+		if ( ! empty( $discount['products'] ) && !in_array( $product['compare_id'], $discount['products'] ) && !in_array( $nonvariation, $discount['products'] ) ) {
 			return false;
 		}
 
