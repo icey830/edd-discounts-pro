@@ -12,9 +12,6 @@ class EDD_DP_Admin {
 		add_filter( 'post_updated_messages', array( $this, 'form_updated_message' ) );
 		add_action( 'add_meta_boxes', array( $this, 'discount_metabox' ) );
 		add_action( 'save_post', array( $this, 'save_discount' ) );
-		add_action( 'wp_ajax_edd_json_search_products', array( $this, 'edd_json_search_products' ) );
-		add_action( 'wp_ajax_edd_json_search_products_and_variations', array( $this, 'ajax_search_product_vars' ) );
-		add_action( 'wp_ajax_edd_json_search_users_ajax', array( $this, 'edd_json_search_users' ) );
 		add_filter( 'manage_edit-customer_discount_columns', array( $this, 'columns' ) );
 		add_action( 'manage_customer_discount_posts_custom_column', array( $this, 'column_value' ), 10, 2 );
 
