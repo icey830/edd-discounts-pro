@@ -577,15 +577,6 @@ class EDD_DP_Admin {
 		return $roles;
 	}
 
-	public function get_users() {
-		$users_data = get_users();
-		$users      = array();
-		foreach ( $users_data as $user ) {
-			$users[$user->ID] = $user->display_name;
-		}
-		return $users;
-	}
-
 	public function get_discount_types() {
 		return array(
 			'fixed_price'      => __( 'Fixed Price', 'edd_dp' ),
