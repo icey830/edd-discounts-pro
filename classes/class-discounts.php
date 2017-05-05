@@ -567,11 +567,17 @@ class EDD_Discounts {
 		case 'percentage_price':
 		default:
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
-				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
-				$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
-				$total_discount += $value;
-				$applicable_items[$key]['value'] = $value;
+				$checkout_exclusive = 'yes' === edd_get_option( 'checkout_include_tax' ) ? false : true;
+				$item_price         = edd_get_cart_item_price( $item['id'], $item['options'], $checkout_exclusive );
+
+				if ( ! $checkout_exclusive && ! edd_prices_include_tax() ) {
+					$item_price += edd_get_cart_item_tax( $item['id'], $item['options'], $item_price );
+				}
+
+				$cart_quantity                       = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+				$value                               = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
+				$total_discount                      += $value;
+				$applicable_items[ $key ][ 'value' ] = $value;
 			}
 			break;
 		}
@@ -585,7 +591,7 @@ class EDD_Discounts {
 							'label'       => $discount['name']. ' - ' . get_the_title( $item['id'] ),
 							'id'          => 'dp_' . $key,
 							'download_id' => $item['id'],
-							'price_id'    => isset( $item['options']['price_id'] ) ? $item['options']['price_id'] : null
+							'price_id'    => isset( $item['options']['price_id'] ) ? $item['options']['price_id'] : null,
 						) );
 				}
 			}
