@@ -67,8 +67,8 @@ class EDD_DP_Setup {
 		}
 
 		$current_screen = get_current_screen();
-		
-		if ( $current_screen->post_type === 'download' || $current_screen->post_type === 'customer_discount' ) {
+
+		if ( $current_screen->post_type === 'customer_discount' ) {
 			wp_enqueue_script( 'edd-select2', EDD_DP_ASSETS_URL . 'js/select2.js', array( 'jquery' ), '2.1' );
 			wp_enqueue_script( 'jquery-ui-datepicker' );
 		}
