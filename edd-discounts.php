@@ -6,7 +6,7 @@
  * Author:              Easy Digital Downloads, LLC
  * Author URI:          https://easydigitaldownloads.com
  *
- * Version:             1.4.7
+ * Version:             1.4.8
  * Requires at least:   4.1
  * Tested up to:        4.5
  *
@@ -77,7 +77,7 @@ class edd_dp {
 		}
 		// Plugin Version
 		if ( ! defined( 'EDD_DP_PLUGIN_VERSION' ) ) {
-			define( 'EDD_DP_PLUGIN_VERSION', '1.4.7' );
+			define( 'EDD_DP_PLUGIN_VERSION', '1.4.8' );
 		}
 		// Plugin Root File
 		if ( ! defined( 'EDD_DP_PLUGIN_FILE' ) ) {
@@ -96,7 +96,7 @@ class edd_dp {
 			define( 'EDD_DP_ASSETS_URL', EDD_DP_PLUGIN_URL . 'assets/' );
 		}
 
-		$license = new EDD_License( __FILE__, EDD_DP_PLUGIN_NAME, EDD_DP_PLUGIN_VERSION, 'Chris Christoff' );
+		$license = new EDD_License( __FILE__, EDD_DP_PLUGIN_NAME, EDD_DP_PLUGIN_VERSION, 'EDD Team' );
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 	}

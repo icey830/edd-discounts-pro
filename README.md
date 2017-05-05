@@ -1,1 +1,1 @@
-# EDD Discounts PRO (v 1.4.6) #
+# EDD Discounts PRO (v 1.4.8) #
