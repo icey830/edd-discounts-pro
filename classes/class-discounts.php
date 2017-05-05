@@ -568,7 +568,7 @@ class EDD_Discounts {
 		default:
 			foreach ( $applicable_items as $key => $item ) {
 				$checkout_exclusive = 'yes' === edd_get_option( 'checkout_include_tax' ) ? false : true;
-				$item_price                          = edd_get_cart_item_price( $item['id'], $item['options'], $checkout_exclusive );
+				$item_price         = edd_get_cart_item_price( $item['id'], $item['options'], $checkout_exclusive );
 
 				if ( ! $checkout_exclusive && ! edd_prices_include_tax() ) {
 					$item_price += edd_get_cart_item_tax( $item['id'], $item['options'], $item_price );
