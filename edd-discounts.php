@@ -1,10 +1,10 @@
 <?php
 /**
  * Plugin Name:         Easy Digital Downloads - Discounts Pro
- * Plugin URI:          https://easydigitaldownloads.com/extension/discounts-pro/
+ * Plugin URI:          https://easydigitaldownloads.com/downloads/discounts-pro/
  * Description:         Add powerful discounting options to EDD
- * Author:              Chris Christoff
- * Author URI:          http://www.chriscct7.com
+ * Author:              Easy Digital Downloads, LLC
+ * Author URI:          https://easydigitaldownloads.com
  *
  * Version:             1.4.7
  * Requires at least:   4.1
@@ -14,8 +14,8 @@
  * Domain Path:         /languages/
  *
  * @category            Plugin
- * @copyright           Copyright © 2016 Chris Christoff
- * @author              Chris Christoff
+ * @copyright           Copyright © 2016 Easy Digital Downloads, LLC
+ * @author              Easy Digital Downloads
  * @package             EDD_DP
  */
 if ( ! defined( 'ABSPATH' ) ) {
