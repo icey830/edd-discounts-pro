@@ -61,7 +61,7 @@ class EDD_Discounts {
 
 		$option = edd_get_option( 'edd_dp_old_price_text', __( 'Old Price:', 'edd_dp' ) );
 
-		$line = $option . ' <s>' .  edd_currency_filter( edd_format_amount( $old_price ) ) . '</s>';
+		$line = '<span class="old-priced-container"><span class="old-price-title">' . $option . ' </span><s class="old-price">' .  edd_currency_filter( edd_format_amount( $old_price ) ) . '</s></span>';
 
 		$line = apply_filters( 'edd_dp_purchase_link_top', $line, $download_id );
 
@@ -95,7 +95,7 @@ class EDD_Discounts {
 
 		$option = edd_get_option( 'edd_dp_old_price_text', __( 'Old Price:', 'edd_dp' ) );
 
-		$line = '<br / >' . $option . ' <s>' . edd_currency_filter( edd_format_amount( $prices[ $key ]['amount'] ) ) . '</s>';
+		$line = '<span class="old-priced-container"><span class="old-price-title">' . $option . ' </span><s class="old-price">' . edd_currency_filter( edd_format_amount( $prices[ $key ]['amount'] ) ) . '</s></span>';
 
 		$line = apply_filters( 'edd_dp_purchase_link_variable', $line, $key, $prices[ $key ]['amount'], $download_id );
 
@@ -191,7 +191,7 @@ class EDD_Discounts {
 
 			$option = edd_get_option( 'edd_dp_old_price_text', __( 'Old Price:', 'edd_dp' ) );
 
-			$line = $option . ' <s>' . edd_currency_filter( edd_format_amount( $prices[ $key ]['amount'] ) ) . '</s><br / >';
+			$line = '<span class="old-priced-container"><span class="old-price-title">' . $option . ' </span><s class="old-price">' . edd_currency_filter( edd_format_amount( $prices[ $key ]['amount'] ) ) . '</s> </span>';
 
 			$line = apply_filters( 'edd_dp_edd_price_top', $line, $key, $prices[ $key ]['amount'], $download_id );
 
@@ -213,9 +213,9 @@ class EDD_Discounts {
 
 			$prices = edd_get_download_price( $download_id );
 
-			$option = edd_get_option( 'edd_dp_old_price_text', __( 'Old Price:', 'edd_dp' ) );
+			$option = edd_get_option( 'edd_dp_old_price_text',  __( 'Old Price:', 'edd_dp' ) );
 
-			$line = $option . ' <s>' . edd_currency_filter( edd_format_amount( $prices ) ) . '</s><br / >';
+			$line = '<span class="old-priced-container"><span class="old-price-title">' . $option . ' </span><s class="old-price">' . edd_currency_filter( edd_format_amount( $prices ) ) . '</s> </span>';
 
 			$line = apply_filters( 'edd_dp_edd_price_top', $line, $key, $prices, $download_id );
 
@@ -228,13 +228,27 @@ class EDD_Discounts {
 		$download = new EDD_Download( $download_id );
 		$price    = $download->price;
 
-		if ( !$key ) {
+		if ( ! $key ) {
 			$variable_pricing = edd_has_variable_prices( $download_id );
 
 			if ( $variable_pricing ) {
 				return $price;
 			}
 
+			$cart = array(
+				0 => array(
+					'id' => $download_id,
+					'quantity' => 1
+				)
+			);
+
+			$discount = $this->get_discount( $cart );
+
+			if ( ! $discount ) {
+				return $price;
+			}
+			return edd_sanitize_amount( $price - $discount );
+		} else {
 			$cart = array(
 				0 => array(
 					'id' => $download_id,
@@ -250,24 +264,7 @@ class EDD_Discounts {
 			if ( !$discount ) {
 				return $price;
 			}
-
-			return edd_format_amount( $price - $discount, edd_currency_decimal_filter() );
-
-		} else {
-			$cart = array(
-				0 => array(
-					'id' => $download_id,
-					'quantity' => 1,
-				)
-			);
-
-			$discount = $this->get_discount( $cart );
-
-			if ( !$discount ) {
-				return $price;
-			}
-
-			return edd_format_amount( $price - $discount, edd_currency_decimal_filter() );
+			return edd_sanitize_amount( $price - $discount );
 		}
 
 	}
@@ -441,6 +438,13 @@ class EDD_Discounts {
 		case 'cart_quantity':
 			$quantity = 0;
 			foreach ( $applicable_items as $key => $item ) {
+
+				$price_id = isset( $item['options']['price_id'] ) ? $item['options']['price_id'] : null;
+				if( edd_is_free_download( $item['id'], $price_id ) ) {
+					unset( $applicable_items[ $key ] );
+					continue;
+				}
+
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				$quantity += $cart_quantity;
 			}
@@ -452,7 +456,7 @@ class EDD_Discounts {
 		case 'cart_threshold':
 			$total = 0; // amount of applicable cart value
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+				$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				$total += $item_price * $cart_quantity;
 			}
@@ -498,7 +502,7 @@ class EDD_Discounts {
 
 		// we first need to know how large the applicable cart is
 		foreach ( $applicable_items as $key => $item ) {
-			$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+			$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 			$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 			$total_applicable_value += ( $item_price * $cart_quantity );
 		}
@@ -509,7 +513,7 @@ class EDD_Discounts {
 
 		// then find each item's weight ( $10 of 100 is 0.1. 0.1 is the weight. )
 		foreach ( $applicable_items as $key => $item ) {
-			$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+			$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 			$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 			$applicable_items[$key]['weight'] = ( $item_price * $cart_quantity ) / $total_applicable_value;
 		}
@@ -518,7 +522,7 @@ class EDD_Discounts {
 			// discount for quantities of a product
 		case 'product_quantity':
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+				$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				if ( $cart_quantity >= $discount['quantity'] ) {
 					$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
@@ -531,7 +535,7 @@ class EDD_Discounts {
 		case 'each_x_products':
 			$count = 1;
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+				$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				if ( $count == $discount['quantity'] ) {
 					$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
@@ -548,7 +552,7 @@ class EDD_Discounts {
 		case 'from_x_products':
 			$count = 1;
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
+				$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 				// if the cart quantity plus the next download's quantity is over the threshold
 				if ( $count >= $discount['quantity'] ) {
@@ -565,11 +569,17 @@ class EDD_Discounts {
 		case 'percentage_price':
 		default:
 			foreach ( $applicable_items as $key => $item ) {
-				$item_price = edd_get_cart_item_price( $item['id'], $item['options'] );
-				$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
-				$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
-				$total_discount += $value;
-				$applicable_items[$key]['value'] = $value;
+				$checkout_exclusive = 'yes' === edd_get_option( 'checkout_include_tax' ) ? false : true;
+				$item_price         = edd_get_cart_item_price( $item['id'], $item['options'], $checkout_exclusive );
+
+				if ( ! $checkout_exclusive && ! edd_prices_include_tax() ) {
+					$item_price += edd_get_cart_item_tax( $item['id'], $item['options'], $item_price );
+				}
+
+				$cart_quantity                       = edd_get_cart_item_quantity( $item['id'], $item['options'] );
+				$value                               = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
+				$total_discount                      += $value;
+				$applicable_items[ $key ][ 'value' ] = $value;
 			}
 			break;
 		}
@@ -582,7 +592,8 @@ class EDD_Discounts {
 							'amount'      => -1* $item['value'],
 							'label'       => $discount['name']. ' - ' . get_the_title( $item['id'] ),
 							'id'          => 'dp_' . $key,
-							'download_id' => $item['id']
+							'download_id' => $item['id'],
+							'price_id'    => isset( $item['options']['price_id'] ) ? $item['options']['price_id'] : null,
 						) );
 				}
 			}

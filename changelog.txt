@@ -1,3 +1,19 @@
+1.4.8: 5/5/2017
+* Fix: Taxes still included on checkout with 100% discount.
+* Fix: Load Select2 only on the Discounts Pro Add/Edd screen.
+* Fix: Start and End dates should count from 00:00:00 to 23:59:59.
+
+1.4.7: 7/6/2016
+* Fix: price_id not passed to add_fee() method when cart item has a variable price
+
+1.4.6: 5/17/2016
+* Added HTML to Old Price output for easier customization
+
+1.4.5: 3/24/2016
+* Added composer file
+* Fixes tax issue with EDD where discounts are miscalculated when product prices inclusive of tax
+* Don't count free products toward cart quantity discount
+
 1.4.3: 8/31/2015
 * Fixed a bug in quantity discounts
 * Updated translation file template
