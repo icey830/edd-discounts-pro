@@ -315,7 +315,7 @@ class EDD_Discounts {
 			// sort discounts so the discount that saves the most is on the top of the array
 			$price = array();
 			foreach ( $discounts as $key => $row ) {
-				$discount[$key] = $row['amount'];
+				$discount[ $key ] = $row['amount'];
 			}
 
 			array_multisort( $discount, SORT_DESC, $discounts );
@@ -430,9 +430,9 @@ class EDD_Discounts {
 		foreach ( $cart as $key => $item ) {
 			// if is_applicable
 			if ( $this->is_applicable( $discount, $customer, $item ) ) {
-				$applicable_items["$key"] = $item;
-				if ( !isset( $applicable_items["$key"]['options'] ) ){
-					$applicable_items["$key"]['options'] = array();
+				$applicable_items[ $key ] = $item;
+				if ( ! isset( $applicable_items[ $key ]['options'] ) ){
+					$applicable_items[ $key ]['options'] = array();
 				}
 			}
 		}
@@ -484,7 +484,7 @@ class EDD_Discounts {
 				foreach ( $applicable_items as $key => $item ) {
 					$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
 					if ( $cart_quantity < $discount['quantity'] ) {
-						unset( $applicable_items[$key] );
+						unset( $applicable_items[ $key ] );
 					}
 				}
 				if ( ! empty( $applicable_items ) ) {
@@ -534,7 +534,7 @@ class EDD_Discounts {
 		foreach ( $applicable_items as $key => $item ) {
 			$item_price = edd_get_cart_item_price( $item['id'], $item['options'], true );
 			$cart_quantity   = edd_get_cart_item_quantity( $item['id'], $item['options'] );
-			$applicable_items[$key]['weight'] = ( $item_price * $cart_quantity ) / $total_applicable_value;
+			$applicable_items[ $key ]['weight'] = ( $item_price * $cart_quantity ) / $total_applicable_value;
 		}
 
 		switch ( $discount['type'] ) {
@@ -548,7 +548,7 @@ class EDD_Discounts {
 					if ( $cart_quantity >= $discount['quantity'] ) {
 						$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
 						$total_discount += $value;
-						$applicable_items[$key]['value'] = $value;
+						$applicable_items[ $key ]['value'] = $value;
 					}
 				}
 
@@ -564,7 +564,7 @@ class EDD_Discounts {
 					if ( $count == $discount['quantity'] ) {
 						$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
 						$total_discount += $value;
-						$applicable_items[$key]['value'] = $value;
+						$applicable_items[ $key ]['value'] = $value;
 						$count = 1;
 					}
 					else {
@@ -585,7 +585,7 @@ class EDD_Discounts {
 					if ( $count >= $discount['quantity'] ) {
 						$value = $this->get_discount_amount( $discount, $cart_quantity, $item_price );
 						$total_discount += $value;
-						$applicable_items[$key]['value'] = $value;
+						$applicable_items[ $key ]['value'] = $value;
 					}
 					$count++;
 				}
