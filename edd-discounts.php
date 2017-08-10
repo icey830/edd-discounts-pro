@@ -54,7 +54,7 @@ class edd_dp {
 	 * @return The one true edd_dp
 	 */
 	public static function instance() {
-		if ( !isset( self::$instance ) && !( self::$instance instanceof edd_dp ) ) {
+		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof edd_dp ) ) {
 			self::$instance = new edd_dp;
 			self::$instance->define_globals();
 			self::$instance->includes();
@@ -68,9 +68,11 @@ class edd_dp {
 		return self::$instance;
 	}
 	public function define_globals() {
+
 		$this->title    = __( 'Discounts Pro', 'edd_dp' );
 		$this->file     = __FILE__;
 		$this->basename = apply_filters( 'edd_edd_dp_plugin_basename', plugin_basename( $this->file ) );
+
 		// Plugin Name
 		if ( ! defined( 'EDD_DP_PLUGIN_NAME' ) ) {
 			define( 'EDD_DP_PLUGIN_NAME', 'Discounts Pro' );
