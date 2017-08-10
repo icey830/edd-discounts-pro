@@ -4,10 +4,13 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 class EDD_Admin {
+
 	public function __construct() {
-		if ( !is_admin() ){
+
+		if ( ! is_admin() ){
 			return;
 		}
+
 		add_action( 'add_meta_boxes', array( $this, 'edd_remove_all_the_metaboxes' ), 100 );
 		add_filter( 'post_updated_messages', array( $this, 'form_updated_message' ) );
 		add_action( 'add_meta_boxes', array( $this, 'discount_metabox' ) );
@@ -50,6 +53,7 @@ class EDD_Admin {
 	}
 
 	public static function input( $field ) {
+
 		global $post;
 		$args = array(
 			'id'          => null,
@@ -74,24 +78,24 @@ class EDD_Admin {
 		$name  = isset( $name ) ? $name : $id;
 		$html  = '';
 		$html .= "<p class='form-field {$id}_field'>";
-		$html .= "<label for='{$id}'>$label{$after_label}</label>";
-		$html .= "<input type='{$type}' id='{$id}' name='{$name}' class='{$class}'";
-		$html .= " value='{$value}'";
-		if ( $type == 'number' ) {
-			if ( !empty( $min ) )
-				$html .= " min='{$min}'";
-			if ( !empty( $max ) )
-				$html .= " max='{$max}'";
-			if ( !empty( $step ) )
-				$html .= " step='{$step}'";
-		}
-		$html .= " placeholder='{$placeholder}' />";
-		if ( $tip ) {
-			$html .= '<a href="#" tip="' . $tip . '" class="tips" tabindex="99"></a>';
-		}
-		if ( $desc ) {
-			$html .= '<span class="description">' . $desc . '</span>';
-		}
+			$html .= "<label for='{$id}'>$label{$after_label}</label>";
+			$html .= "<input type='{$type}' id='{$id}' name='{$name}' class='{$class}'";
+			$html .= " value='{$value}'";
+			if ( $type == 'number' ) {
+				if ( !empty( $min ) )
+					$html .= " min='{$min}'";
+				if ( !empty( $max ) )
+					$html .= " max='{$max}'";
+				if ( !empty( $step ) )
+					$html .= " step='{$step}'";
+			}
+			$html .= " placeholder='{$placeholder}' />";
+			if ( $tip ) {
+				$html .= '<a href="#" tip="' . $tip . '" class="tips" tabindex="99"></a>';
+			}
+			if ( $desc ) {
+				$html .= '<span class="description">' . $desc . '</span>';
+			}
 		$html .= "</p>";
 
 		return $html;
@@ -120,34 +124,52 @@ class EDD_Admin {
 		$desc     = ( $desc ) ? esc_html( $desc ) : false;
 		$html     = '';
 		$html .= "<p class='form-field {$id}_field'>";
-		$html .= "<label for='{$id}'>$label{$after_label}</label>";
-		$html .= "<select {$multiple} id='{$id}' name='{$name}' class='{$class}' data-placeholder='{$placeholder}'>";
-		foreach ( $options as $value => $label ) {
-			if ( is_array( $label ) ) {
-				$html .= '<optgroup label="' . esc_attr( $value ) . '">';
-				foreach ( $label as $opt_value => $opt_label ) {
+
+			$html .= "<label for='{$id}'>$label{$after_label}</label>";
+			$html .= "<select {$multiple} id='{$id}' name='{$name}' class='{$class}' data-placeholder='{$placeholder}'>";
+
+			foreach ( $options as $value => $label ) {
+
+				if ( is_array( $label ) ) {
+
+					$html .= '<optgroup label="' . esc_attr( $value ) . '">';
+					foreach ( $label as $opt_value => $opt_label ) {
+
+						$mark = '';
+
+						if ( in_array( $opt_value, $selected ) ) {
+							$mark = 'selected="selected"';
+						}
+
+						$html .= '<option value="' . esc_attr( $opt_value ) . '"' . $mark . '>' . $opt_label . '</option>';
+					}
+
+					$html .= '</optgroup>';
+
+				} else {
+
 					$mark = '';
-					if ( in_array( $opt_value, $selected ) ) {
+
+					if ( in_array( $value, $selected ) ) {
 						$mark = 'selected="selected"';
 					}
-					$html .= '<option value="' . esc_attr( $opt_value ) . '"' . $mark . '>' . $opt_label . '</option>';
+
+					$html .= '<option value="' . esc_attr( $value ) . '"' . $mark . '>' . $label . '</option>';
+
 				}
-				$html .= '</optgroup>';
-			} else {
-				$mark = '';
-				if ( in_array( $value, $selected ) ) {
-					$mark = 'selected="selected"';
-				}
-				$html .= '<option value="' . esc_attr( $value ) . '"' . $mark . '>' . $label . '</option>';
+
 			}
-		}
-		$html .= "</select>";
-		if ( $tip ) {
-			$html .= '<a href="#" tip="' . $tip . '" class="tips" tabindex="99"></a>';
-		}
-		if ( $desc ) {
-			$html .= '<span class="description">' . $desc . '</span>';
-		}
+
+			$html .= "</select>";
+
+			if ( $tip ) {
+				$html .= '<a href="#" tip="' . $tip . '" class="tips" tabindex="99"></a>';
+			}
+
+			if ( $desc ) {
+				$html .= '<span class="description">' . $desc . '</span>';
+			}
+
 		$html .= "</p>";
 		$html .= '<script type="text/javascript">
 					/*<![CDATA[*/
@@ -180,14 +202,14 @@ class EDD_Admin {
 		$mark  = checked( $value, 1, false );
 		$html  = '';
 		$html .= "<p class='form-field {$id}_field'>";
-		$html .= "<label for='{$id}'>$label{$after_label}</label>";
-		$html .= "<input type='checkbox' name='{$name}' class='{$class}' id='{$id}' {$mark} />";
-		if ( $desc ) {
-			$html .= "<label for='{$id}' class='description'>$desc</label>";
-		}
-		if ( $tip ) {
-			$html .= '<a href="#" tip="' . $tip . '" class="tips" tabindex="99"></a>';
-		}
+			$html .= "<label for='{$id}'>$label{$after_label}</label>";
+			$html .= "<input type='checkbox' name='{$name}' class='{$class}' id='{$id}' {$mark} />";
+			if ( $desc ) {
+				$html .= "<label for='{$id}' class='description'>$desc</label>";
+			}
+			if ( $tip ) {
+				$html .= '<a href="#" tip="' . $tip . '" class="tips" tabindex="99"></a>';
+			}
 		$html .= "</p>";
 
 		return $html;
@@ -346,12 +368,12 @@ class EDD_Admin {
 		$date_format = $this->dateStringToDatepickerFormat(get_option( 'date_format' ));
 		$string = $date_format;
 ?>		<p class="form-field dp-date-start"><label for="dp-date-start">Start Date</label>
-		<input id="dp-date-start" type="text" class="datepicker" data-type="text" name="dp-date-start" value="<?php echo get_post_meta( $post->ID, 'start', true ); ?>" size="30" />
-		<span class="description">Select date when this discount may start being used. Leave blank for always on.</span>
+			<input id="dp-date-start" type="text" class="datepicker" data-type="text" name="dp-date-start" value="<?php echo get_post_meta( $post->ID, 'start', true ); ?>" size="30" />
+			<span class="description">Select date when this discount may start being used. Leave blank for always on.</span>
 		</p>
 		<p class="form-field dp-date-end"><label for="dp-date-end">End Date</label>
-		<input id="dp-date-end" type="text" class="datepicker" data-type="text" name="dp-date-end" value="<?php echo get_post_meta( $post->ID, 'end', true ); ?>" size="30" />
-		<span class="description">Select end date when this discount may no longer used. Leave blank for always on.</span>
+			<input id="dp-date-end" type="text" class="datepicker" data-type="text" name="dp-date-end" value="<?php echo get_post_meta( $post->ID, 'end', true ); ?>" size="30" />
+			<span class="description">Select end date when this discount may no longer used. Leave blank for always on.</span>
 		</p>
 		<script type="text/javascript">
 			jQuery(function($) {
@@ -774,8 +796,8 @@ class EDD_Admin {
 									foreach( $save_term as $sterm ){
 										if ( $product_id."_".$key == $sterm ){
 											$found_products[] = array(
-													'id' => $product_id . '_' . $key,
-													'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
+												'id' => $product_id . '_' . $key,
+												'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
 											);
 											$found = true;
 										}
@@ -784,8 +806,8 @@ class EDD_Admin {
 								if ( !$found ){
 									foreach ( $prices as $key => $value ) {
 										$found_products[] = array(
-												'id' => $product_id . '_' . $key,
-												'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
+											'id' => $product_id . '_' . $key,
+											'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
 										);
 									}
 								}
@@ -796,8 +818,8 @@ class EDD_Admin {
 							foreach ( $prices as $key => $value ) {
 								if ( $product_id."_".$key == $save_term ){
 									$found_products[] = array(
-											'id' => $product_id . '_' . $key,
-											'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
+										'id' => $product_id . '_' . $key,
+										'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
 									);
 									$found = true;
 								}
@@ -805,8 +827,8 @@ class EDD_Admin {
 							if ( !$found ){
 								foreach ( $prices as $key => $value ) {
 									$found_products[] = array(
-											'id' => $product_id . '_' . $key,
-											'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
+										'id' => $product_id . '_' . $key,
+										'text' => html_entity_decode( get_the_title( $product_id ), ENT_COMPAT, 'UTF-8' ) . ' (' . html_entity_decode( $value['name'], ENT_COMPAT, 'UTF-8' ) . ' )'
 									);
 								}
 							}
