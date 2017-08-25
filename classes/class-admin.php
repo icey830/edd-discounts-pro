@@ -300,17 +300,24 @@ class EDD_Admin {
 		echo $this->input( $args );
 		echo '</div>';
 		echo '<div class="options_group">';
-		$selected = implode( ',', (array) get_post_meta( $post->ID, 'products', true ) );
+
+		$selected = (array) get_post_meta( $post->ID, 'products', true );
+
 		$args     = array(
 			'id'          => 'products',
-			'type'        => 'hidden',
-			/* use hidden input type for Select2 custom data loading */
-			'class'       => 'long',
-			'label'       => __( 'Products', 'edd_dp' ),
-			'desc'        => __( 'Control which products this coupon can apply to.', 'edd_dp' ),
-			'value'       => $selected,
+			'name'        => 'products[]',
+			'multiple'    => true,
+			'selected'    => $selected,
+			'variations'  => true,
+			'chosen'      => true,
 		);
-		echo $this->input( $args );
+
+		echo "<p class='form-field'>";
+			echo "<label for='products'>" . __( 'Products', 'edd_dp' ) . "</label><br/>";
+			echo EDD()->html->product_dropdown( $args );
+			echo '<br/><span class="description">' . __( 'Control which products this coupon can apply to.', 'edd_dp' ) . '</span>';
+		echo "</p>";
+
 		$categories = array();
 		foreach ( get_terms( 'download_category', array( 'hide_empty' => false ) ) as $category ) {
 			$categories[ $category->term_id ] = $category->name;
@@ -413,45 +420,6 @@ class EDD_Admin {
 			});
 			$('#type').change();
 
-			// allow searching of products to use on a discount
-			jQuery("#products").select2({
-				minimumInputLength: 3,
-				multiple: true,
-				closeOnSelect: true,
-				placeholder: "<?php _e( 'Any product', 'edd_dp' ); ?>",
-				ajax: {
-					url: "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
-					dataType: 'json',
-					quietMillis: 100,
-					data: function(term, page) {
-						return {
-							term:       term,
-							action:     'edd_json_search_products_and_variations',
-							security:   '<?php echo wp_create_nonce( "search-products" ); ?>'
-						};
-					},
-					results: function( data, page ) {
-						return { results: data };
-					}
-				},
-				initSelection: function( element, callback ) {
-					var product_init_data = {
-						action:     'edd_json_search_products_and_variations',
-						security:   '<?php echo wp_create_nonce( "search-products" ); ?>',
-						term:       element.val()
-					};
-
-					jQuery.ajax({
-						type:     'GET',
-						url:      "<?php echo ( !is_ssl() ) ? str_replace( 'https', 'http', admin_url( 'admin-ajax.php' ) ) : admin_url( 'admin-ajax.php' ); ?>",
-						dataType: "json",
-						data:     product_init_data,
-						success: 	function( result ) {
-							callback( result );
-						}
-					});
-				}
-			});
 			// allow searching of users to use on a discount
 			jQuery("#users").select2({
 				minimumInputLength: 3,
@@ -548,14 +516,11 @@ class EDD_Admin {
 		$value    = strip_tags( stripslashes( trim( $_POST['value'] ) ) );
 
 		if ( isset( $_POST['products'] ) ) {
-			$products = strip_tags( stripslashes( trim( $_POST['products'] ) ) );
-			if ( $products == 'Array' ) {
-				$products = '';
-			}
-			$products = $products != '' ? explode( ',', $products ) : array();
+			$products = array_map( 'trim', $_POST['products'] );
 		} else {
 			$products = array();
 		}
+
 
 		if ( isset( $_POST['categories'] ) ) {
 			$categories = array_map( 'absint', $_POST['categories'] );
