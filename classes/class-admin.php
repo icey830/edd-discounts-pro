@@ -300,7 +300,6 @@ class EDD_Admin {
 		echo $this->input( $args );
 		echo '</div>';
 		echo '<div class="options_group">';
-
 		$selected = (array) get_post_meta( $post->ID, 'products', true );
 
 		$args     = array(
@@ -516,11 +515,10 @@ class EDD_Admin {
 		$value    = strip_tags( stripslashes( trim( $_POST['value'] ) ) );
 
 		if ( isset( $_POST['products'] ) ) {
-			$products = array_map( 'trim', $_POST['products'] );
+			$products = array_filter( array_map( 'trim', $_POST['products'] ) );
 		} else {
 			$products = array();
 		}
-
 
 		if ( isset( $_POST['categories'] ) ) {
 			$categories = array_map( 'absint', $_POST['categories'] );
